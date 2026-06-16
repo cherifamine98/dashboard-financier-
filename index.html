@@ -1,1 +1,559 @@
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Financier</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; background: #f2f2f7; color: #1c1c1e; font-size: 15px; padding-bottom: 40px; }
+
+  /* AUTH */
+  #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 32px; text-align: center; gap: 20px; background: #1c1c1e; }
+  #auth-screen h1 { font-size: 26px; font-weight: 700; color: #fff; }
+  #auth-screen p { font-size: 14px; color: #8e8e93; max-width: 300px; line-height: 1.5; }
+  .g-signin-btn { display: flex; align-items: center; gap: 12px; background: #fff; color: #1c1c1e; border: none; border-radius: 12px; padding: 14px 24px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .g-signin-btn svg { flex-shrink: 0; }
+
+  /* HEADER */
+  .header { background: #1c1c1e; padding: 14px 16px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .header-left h1 { font-size: 18px; font-weight: 700; color: #fff; }
+  .header-left p { font-size: 11px; color: #8e8e93; margin-top: 2px; }
+  .header-right { display: flex; gap: 8px; align-items: center; }
+  .btn-hdr { border: none; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .btn-sync { background: #30d158; color: #fff; }
+  .btn-sync:disabled { background: #3a5c42; color: #8e8e93; }
+  .btn-out { background: #3a3a3c; color: #aeaeb2; font-size: 11px; }
+
+  /* SOLDES */
+  .solde-bar { background: #2c2c2e; padding: 12px 16px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .solde-bar::-webkit-scrollbar { display: none; }
+  .sc { flex-shrink: 0; background: #3a3a3c; border-radius: 12px; padding: 10px 14px; min-width: 112px; }
+  .sc .lbl { font-size: 10px; color: #aeaeb2; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .sc .val { font-size: 18px; font-weight: 700; }
+  .sc .sub { font-size: 10px; color: #636366; margin-top: 2px; }
+  .g { color: #30d158; } .r { color: #ff453a; } .gr { color: #8e8e93; } .or { color: #ff9f0a; }
+
+  /* TABS */
+  .tabs { display: flex; overflow-x: auto; gap: 6px; padding: 12px 16px 0; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { flex-shrink: 0; font-size: 13px; font-weight: 500; padding: 6px 13px; border-radius: 20px; border: none; background: #e5e5ea; color: #3a3a3c; cursor: pointer; }
+  .tab.on { background: #1c1c1e; color: #fff; }
+
+  .panel { display: none; padding: 12px 16px; }
+  .panel.on { display: block; }
+  .stitle { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #8e8e93; margin: 4px 0 8px; }
+
+  /* TABLES */
+  .ct { background: #fff; border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
+  .cr { display: flex; align-items: center; padding: 10px 14px; border-bottom: 0.5px solid #e5e5ea; gap: 8px; }
+  .cr:last-child { border-bottom: none; }
+  .cr .cl { flex: 1; font-size: 13px; color: #1c1c1e; }
+  .cr .cv { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cr-tot { background: #f2f2f7; }
+  .cr-tot .cl { font-weight: 700; }
+  .cr-tot .cv { font-weight: 700; }
+  .cr-hi { background: #e8f5e9; }
+  .cr-hi .cl { font-weight: 700; color: #1a6b30; }
+  .cr-hi .cv { color: #1a6b30; font-weight: 700; }
+
+  .badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+  .bphc { background: #e1f0ff; color: #0055cc; }
+  .bneg { background: #ffe5e5; color: #cc0000; }
+  .bpos { background: #e8f5e9; color: #2e7d32; }
+  .bwait { background: #fff8e1; color: #c07000; }
+  .bappt { background: #fce4ec; color: #880e4f; }
+  .bdt { background: #f3e5f5; color: #6a1b9a; }
+  .bch { background: #fff3e0; color: #e65100; }
+  .tag-s { font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; background: #e8f5e9; color: #2e7d32; margin-left: 4px; }
+  .tag-b { font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; background: #e3f2fd; color: #1565c0; margin-left: 4px; }
+
+  /* FORMS */
+  .af { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .fr { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .fr input, .fr select, .fsi { flex: 1; min-width: 100px; padding: 9px 11px; border: 1px solid #e5e5ea; border-radius: 10px; font-size: 13px; background: #f9f9f9; color: #1c1c1e; outline: none; font-family: inherit; }
+  .fsf { width: 100%; padding: 9px 11px; border: 1px solid #e5e5ea; border-radius: 10px; font-size: 13px; background: #f9f9f9; margin-bottom: 8px; font-family: inherit; }
+  .fr input:focus, .fr select:focus { border-color: #007aff; background: #fff; }
+  .ba { width: 100%; padding: 11px; border: none; border-radius: 10px; background: #007aff; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .ba.red { background: #ff3b30; }
+  .bd { background: none; border: none; color: #ff3b30; font-size: 16px; cursor: pointer; padding: 0 4px; flex-shrink: 0; }
+
+  .bi { background: #e1f0ff; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px; color: #0055cc; }
+  .ba2 { background: #fce4ec; border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 12px; color: #880e4f; font-weight: 600; }
+  .legend { display: flex; gap: 10px; margin-bottom: 10px; }
+  .legend span { font-size: 11px; color: #8e8e93; display: flex; align-items: center; gap: 3px; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1c1c1e; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; display: none; z-index: 999; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <h1>💰 Dashboard Financier</h1>
+  <p>Connecte-toi avec Google pour synchroniser tes données sur tous tes appareils.</p>
+  <button class="g-signin-btn" onclick="startAuth()">
+    <svg width="20" height="20" viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+    Connexion avec Google
+  </button>
+  <p style="font-size:11px;color:#444">Tes données restent privées dans ton propre Google Drive.</p>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+
+<div class="header">
+  <div class="header-left">
+    <h1>💰 Dashboard Financier</h1>
+    <p id="sync-status">—</p>
+  </div>
+  <div class="header-right">
+    <button class="btn-hdr btn-sync" id="btn-sync" onclick="saveData()">💾 Sync</button>
+    <button class="btn-hdr btn-out" onclick="signOut()">⏏ Déco</button>
+  </div>
+</div>
+
+<div class="solde-bar">
+  <div class="sc"><div class="lbl">Net Aziz</div><div class="val g" id="c-aziz">—</div><div class="sub">Solde PHC</div></div>
+  <div class="sc"><div class="lbl">Dispo/mois</div><div class="val or" id="c-dispo">—</div><div class="sub">Après loyer+charges</div></div>
+  <div class="sc"><div class="lbl">Airbnb</div><div class="val g" id="c-airbnb">—</div><div class="sub">Net tous mois</div></div>
+  <div class="sc"><div class="lbl">Appart</div><div class="val r" id="c-appt">—</div><div class="sub">Dépenses totales</div></div>
+  <div class="sc"><div class="lbl">Avoirs DT</div><div class="val gr" id="c-dt">—</div><div class="sub">Pa + PHC stock</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="sw('revenus',this)">💶 Revenus</button>
+  <button class="tab" onclick="sw('aziz',this)">Aziz</button>
+  <button class="tab" onclick="sw('airbnb',this)">Airbnb</button>
+  <button class="tab" onclick="sw('appart',this)">Appart</button>
+  <button class="tab" onclick="sw('avoirs',this)">Avoirs</button>
+</div>
+
+<!-- REVENUS -->
+<div id="pan-revenus" class="panel on">
+  <p class="stitle">Revenu mensuel</p>
+  <div class="ct">
+    <div class="cr"><span class="cl">Salaire net</span><span class="badge bpos">Fixe</span><span class="cv g" id="rv-sal">+ 2 000 €</span></div>
+    <div class="cr"><span class="cl">Loyer</span><span class="badge bneg">Fixe</span><span class="cv r">− 820 €</span></div>
+    <div class="cr"><span class="cl">Charges fixes</span><span class="badge bneg">Fixe</span><span class="cv r">− 95 €</span></div>
+    <div class="cr cr-hi"><span class="cl">Disponible / mois</span><span class="cv" id="rv-dispo">1 085 €</span></div>
+  </div>
+  <p class="stitle">➕ Ajouter revenu / charge</p>
+  <div class="af">
+    <div class="fr">
+      <input type="text" id="rv-d" placeholder="Description (ex: Prime, Netflix…)">
+      <input type="number" id="rv-a" placeholder="Montant €" min="0">
+    </div>
+    <select class="fsf" id="rv-t">
+      <option value="in">+ Revenu supplémentaire</option>
+      <option value="out">− Nouvelle charge fixe</option>
+    </select>
+    <button class="ba" onclick="addRev()">+ Ajouter</button>
+  </div>
+  <p class="stitle">Ajouts</p>
+  <div class="ct" id="l-revenus"><div class="cr"><span class="cl gr" style="font-style:italic;font-size:12px">Aucun ajout</span></div></div>
+</div>
+
+<!-- AZIZ -->
+<div id="pan-aziz" class="panel">
+  <p class="stitle">Récapitulatif</p>
+  <div class="ct">
+    <div class="cr"><span class="cl">Net PHC (après logement)</span><span class="cv g">+ 6 822 €</span></div>
+    <div class="cr"><span class="cl">Dépenses réglées</span><span class="cv r">− 692 €</span></div>
+    <div class="cr"><span class="cl">Déductions précédentes</span><span class="cv r">− 819 €</span></div>
+    <div class="cr"><span class="cl">Canapé (ma part 430 ÷ 2)</span><span class="cv r">− 215 €</span></div>
+    <div class="cr cr-tot"><span class="cl">Base Aziz</span><span class="cv g">5 096 €</span></div>
+  </div>
+  <p class="stitle">➕ Entrée PHC</p>
+  <div class="af">
+    <div class="fr">
+      <input type="text" id="in-d" placeholder="Description (ex: Novedad)">
+      <input type="number" id="in-a" placeholder="Montant €" min="0">
+    </div>
+    <div class="fr">
+      <select id="in-w" class="fsi"><option value="">— Personne —</option><option value="S">Souhail (S)</option><option value="B">Baganda (B)</option><option value="">Autre</option></select>
+      <select id="in-t" class="fsi"><option value="PHC">PHC</option><option value="Famille">Famille</option><option value="Autre">Autre</option></select>
+    </div>
+    <button class="ba" onclick="addIn()">+ Ajouter entrée</button>
+  </div>
+  <p class="stitle">➖ Déduction</p>
+  <div class="af">
+    <div class="fr">
+      <input type="text" id="dd-d" placeholder="Description">
+      <input type="number" id="dd-a" placeholder="Montant €" min="0">
+    </div>
+    <button class="ba red" onclick="addDed()">− Ajouter déduction</button>
+  </div>
+  <p class="stitle">Entrées ajoutées</p>
+  <div class="ct" id="l-entrees"><div class="cr"><span class="cl gr" style="font-style:italic;font-size:12px">Aucune entrée</span></div></div>
+  <p class="stitle">Déductions ajoutées</p>
+  <div class="ct" id="l-deds"><div class="cr"><span class="cl gr" style="font-style:italic;font-size:12px">Aucune déduction</span></div></div>
+  <div class="ct"><div class="cr cr-hi"><span class="cl">Net Aziz total</span><span class="cv" id="net-aziz">—</span></div></div>
+  <p class="stitle">Détail PHC historique</p>
+  <div class="legend"><span><span class="tag-s">S</span> Souhail</span><span><span class="tag-b">B</span> Baganda</span></div>
+  <div class="ct">
+    <div class="cr"><span class="cl">2 820 €</span><span class="badge bphc">PHC</span><span class="cv g">+ 2 820 €</span></div>
+    <div class="cr"><span class="cl">BC</span><span class="badge bphc">PHC</span><span class="cv g">+ 462 €</span></div>
+    <div class="cr"><span class="cl">CJM</span><span class="badge bphc">PHC</span><span class="cv g">+ 425 €</span></div>
+    <div class="cr"><span class="cl">1 146 €</span><span class="badge bphc">PHC</span><span class="cv g">+ 1 146 €</span></div>
+    <div class="cr"><span class="cl">Billets avion <span style="font-size:11px;color:#8e8e93">Avance parents</span></span><span class="cv g">+ 420 €</span></div>
+    <div class="cr"><span class="cl">663 €</span><span class="badge bphc">PHC</span><span class="cv g">+ 663 €</span></div>
+    <div class="cr"><span class="cl">CJM (2ème)</span><span class="badge bphc">PHC</span><span class="cv g">+ 663 €</span></div>
+    <div class="cr"><span class="cl">BC (2ème)</span><span class="badge bphc">PHC</span><span class="cv g">+ 895 €</span></div>
+    <div class="cr"><span class="cl">Volange</span><span class="badge bphc">PHC</span><span class="cv g">+ 234 €</span></div>
+    <div class="cr"><span class="cl">Volange</span><span class="badge bphc">PHC</span><span class="cv g">+ 580 € <span class="tag-s">S</span></span></div>
+    <div class="cr"><span class="cl">Volange</span><span class="badge bphc">PHC</span><span class="cv g">+ 300 € <span class="tag-b">B</span></span></div>
+    <div class="cr"><span class="cl">BC PROD</span><span class="badge bphc">PHC</span><span class="cv g">+ 930 € <span class="tag-b">B</span></span></div>
+    <div class="cr"><span class="cl">Nama</span><span class="badge bphc">PHC</span><span class="cv g">+ 117 € <span class="tag-s">S</span></span></div>
+    <div class="cr"><span class="cl">Nomis PROD</span><span class="badge bphc">PHC</span><span class="cv g">+ 351 € <span class="tag-b">B</span></span></div>
+    <div class="cr"><span class="cl">Novedad</span><span class="badge bphc">PHC</span><span class="cv g">+ 390 € <span class="tag-s">S</span></span></div>
+    <div class="cr cr-tot"><span class="cl">Sous-total brut</span><span class="cv">10 396 €</span></div>
+    <div class="cr"><span class="cl">Virement logement</span><span class="cv r">− 3 574 €</span></div>
+    <div class="cr cr-tot"><span class="cl">Net PHC</span><span class="cv g">6 822 €</span></div>
+  </div>
+</div>
+
+<!-- AIRBNB -->
+<div id="pan-airbnb" class="panel">
+  <p class="stitle">Base</p>
+  <div class="ct">
+    <div class="cr"><span class="cl">Net Janvier</span><span class="cv g">+ 1 180 €</span></div>
+    <div class="cr"><span class="cl">Net Mai</span><span class="cv g">+ 405 €</span></div>
+    <div class="cr"><span class="cl">Billet avion</span><span class="cv r">− 310 €</span></div>
+    <div class="cr cr-tot"><span class="cl">Total base</span><span class="cv g">1 275 €</span></div>
+  </div>
+  <p class="stitle">➕ Ajouter paiement</p>
+  <div class="af">
+    <div class="fr">
+      <input type="text" id="ab-m" placeholder="Mois (ex: Juin)">
+      <input type="number" id="ab-a" placeholder="Montant €" min="0">
+    </div>
+    <select class="fsf" id="ab-t"><option value="in">Paiement reçu ✅</option><option value="out">Déduction ➖</option></select>
+    <button class="ba" onclick="addAir()">+ Ajouter</button>
+  </div>
+  <p class="stitle">Mouvements ajoutés</p>
+  <div class="ct" id="l-air"><div class="cr"><span class="cl gr" style="font-style:italic;font-size:12px">Aucun mouvement</span></div></div>
+  <div class="ct"><div class="cr cr-hi"><span class="cl">Total net Airbnb</span><span class="cv" id="air-tot">—</span></div></div>
+</div>
+
+<!-- APPART -->
+<div id="pan-appart" class="panel">
+  <div class="ba2">🏠 Total appart : <span id="apt-tot">—</span></div>
+  <div class="bi">Les dépenses "÷ 2" déduisent ta part du net Aziz</div>
+  <p class="stitle">➕ Ajouter dépense</p>
+  <div class="af">
+    <div class="fr">
+      <input type="text" id="ap-d" placeholder="Description (ex: Lampe)">
+      <input type="number" id="ap-a" placeholder="Montant €" min="0">
+    </div>
+    <div class="fr">
+      <select id="ap-c" class="fsi"><option>Mobilier</option><option>Équipement</option><option>Travaux</option><option>Divers</option></select>
+      <select id="ap-s" class="fsi"><option value="full">Entier</option><option value="half">Divisé ÷ 2</option></select>
+    </div>
+    <button class="ba" onclick="addApt()">+ Ajouter</button>
+  </div>
+  <p class="stitle">Base existante</p>
+  <div class="ct">
+    <div class="cr"><span class="cl">TV</span><span class="badge bappt">Équipement</span><span class="cv r">− 366 €</span></div>
+    <div class="cr"><span class="cl">Ikea</span><span class="badge bappt">Mobilier</span><span class="cv r">− 1 800 €</span></div>
+    <div class="cr"><span class="cl">Temu</span><span class="badge bappt">Divers</span><span class="cv r">− 208 €</span></div>
+    <div class="cr"><span class="cl">Leroy Merlin</span><span class="badge bappt">Travaux</span><span class="cv r">− 80 €</span></div>
+    <div class="cr"><span class="cl">Canapé <span style="font-size:11px;color:#8e8e93">÷ 2 → 215 € déduit net</span></span><span class="badge bappt">Mobilier</span><span class="cv r">− 430 €</span></div>
+    <div class="cr cr-tot"><span class="cl">Sous-total base</span><span class="cv r">2 884 €</span></div>
+  </div>
+  <p class="stitle">Nouvelles dépenses</p>
+  <div class="ct" id="l-apt"><div class="cr"><span class="cl gr" style="font-style:italic;font-size:12px">Aucune</span></div></div>
+</div>
+
+<!-- AVOIRS -->
+<div id="pan-avoirs" class="panel">
+  <p class="stitle">➕ Ajouter avoir</p>
+  <div class="af">
+    <div class="fr">
+      <input type="text" id="av-d" placeholder="Personne / Description">
+      <input type="number" id="av-a" placeholder="Montant" min="0">
+    </div>
+    <div class="fr">
+      <select id="av-dv" class="fsi"><option value="€">€ Euros</option><option value="DT">DT Dinars</option></select>
+      <select id="av-st" class="fsi"><option>En attente</option><option>Reçu</option><option>Déduit</option></select>
+    </div>
+    <button class="ba" onclick="addAv()">+ Ajouter</button>
+  </div>
+  <p class="stitle">Avoirs existants</p>
+  <div class="ct">
+    <div class="cr"><span class="cl">Pa — principal</span><span class="badge bwait">En attente</span><span class="cv gr">3 000 DT</span></div>
+    <div class="cr"><span class="cl">Pa — complément</span><span class="badge bwait">En attente</span><span class="cv gr">1 600 DT</span></div>
+    <div class="cr"><span class="cl">Pa — tabac</span><span class="badge bneg">Déduit</span><span class="cv r">− 400 DT</span></div>
+    <div class="cr cr-tot"><span class="cl">Net Pa</span><span class="cv gr">4 200 DT</span></div>
+    <div class="cr"><span class="cl">Tshirts PHC</span><span class="badge bdt">Stock</span><span class="cv gr">7 000 DT</span></div>
+    <div class="cr cr-tot"><span class="cl">Total base (DT)</span><span class="cv gr">11 200 DT</span></div>
+  </div>
+  <p class="stitle">Avoirs ajoutés</p>
+  <div class="ct" id="l-av"><div class="cr"><span class="cl gr" style="font-style:italic;font-size:12px">Aucun avoir</span></div></div>
+  <div class="ct"><div class="cr cr-hi"><span class="cl">Total avoirs (DT)</span><span class="cv" id="av-tot">11 200 DT</span></div></div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────
+const CLIENT_ID = '1080899511515-sm2u3tuf69tc7b60cv1o7b8nko7ukhn6.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+const FILE_NAME = 'dashboard_financier_amine.json';
+
+// ─── BASE VALUES ─────────────────────────────────────────
+const B = { aziz:5096, airbnb:1275, appart:2884, dt:11200, sal:2000, loyer:820, charges:95 };
+
+// ─── DATA ────────────────────────────────────────────────
+let D = { revenus:[], entrees:[], deds:[], airbnb:[], appart:[], avoirs:[] };
+let TOKEN = null;
+let FILE_ID = null;
+
+// ─── TOAST ───────────────────────────────────────────────
+function toast(msg, ms=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => t.style.display='none', ms);
+}
+
+// ─── AUTH ────────────────────────────────────────────────
+function startAuth() {
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: window.location.href.split('?')[0].split('#')[0],
+    response_type: 'token',
+    scope: SCOPES,
+    prompt: 'select_account'
+  });
+  const popup = window.open(
+    'https://accounts.google.com/o/oauth2/v2/auth?' + params,
+    'gauth', 'width=500,height=620,left=200,top=100'
+  );
+  const check = setInterval(() => {
+    try {
+      if (!popup || popup.closed) { clearInterval(check); return; }
+      const hash = popup.location.hash;
+      if (hash && hash.includes('access_token')) {
+        clearInterval(check); popup.close();
+        const p = new URLSearchParams(hash.slice(1));
+        TOKEN = p.get('access_token');
+        localStorage.setItem('gd_tok', TOKEN);
+        showApp();
+        loadData();
+      }
+    } catch(e) {}
+  }, 400);
+}
+
+function signOut() {
+  TOKEN = null; FILE_ID = null;
+  localStorage.removeItem('gd_tok');
+  localStorage.removeItem('gd_fid');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+  toast('👋 Déconnecté');
+}
+
+function showApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+// ─── DRIVE API ───────────────────────────────────────────
+async function getFileId() {
+  if (FILE_ID) return FILE_ID;
+  const saved = localStorage.getItem('gd_fid');
+  if (saved) { FILE_ID = saved; return FILE_ID; }
+  // Cherche le fichier
+  const r = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=name%3D'${FILE_NAME}'%20and%20trashed%3Dfalse&fields=files(id)`,
+    { headers: { Authorization: `Bearer ${TOKEN}` } }
+  );
+  const j = await r.json();
+  if (j.files && j.files.length > 0) {
+    FILE_ID = j.files[0].id;
+    localStorage.setItem('gd_fid', FILE_ID);
+    return FILE_ID;
+  }
+  // Crée le fichier
+  const c = await fetch('https://www.googleapis.com/drive/v3/files', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: FILE_NAME, mimeType: 'application/json' })
+  });
+  const f = await c.json();
+  FILE_ID = f.id;
+  localStorage.setItem('gd_fid', FILE_ID);
+  return FILE_ID;
+}
+
+async function saveData() {
+  const btn = document.getElementById('btn-sync');
+  btn.disabled = true; btn.textContent = '⏳';
+  // Sauvegarde locale immédiate
+  localStorage.setItem('dash_data', JSON.stringify(D));
+  try {
+    const fid = await getFileId();
+    await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fid}?uploadType=media`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(D)
+    });
+    const now = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+    setStatus(`✅ Google Drive — ${now}`);
+    toast('✅ Sauvegardé sur Google Drive !');
+  } catch(e) {
+    setStatus('💾 Local uniquement');
+    toast('⚠️ Drive indisponible — sauvegardé localement');
+  }
+  btn.disabled = false; btn.textContent = '💾 Sync';
+}
+
+async function loadData() {
+  setStatus('Chargement...');
+  // Essaie d'abord Drive
+  try {
+    const fid = await getFileId();
+    const r = await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`, {
+      headers: { Authorization: `Bearer ${TOKEN}` }
+    });
+    if (r.ok) {
+      const txt = await r.text();
+      if (txt && txt.trim().startsWith('{')) {
+        const p = JSON.parse(txt);
+        mergeData(p);
+        setStatus('✅ Google Drive chargé');
+        toast('📂 Données chargées depuis Drive');
+        renderAll(); return;
+      }
+    }
+  } catch(e) {}
+  // Fallback localStorage
+  try {
+    const raw = localStorage.getItem('dash_data');
+    if (raw) { mergeData(JSON.parse(raw)); setStatus('📱 Local chargé'); toast('📱 Données locales chargées'); }
+    else setStatus('Nouveau fichier');
+  } catch(e) { setStatus('Erreur chargement'); }
+  renderAll();
+}
+
+function mergeData(p) {
+  ['revenus','entrees','deds','airbnb','appart','avoirs'].forEach(k => { if(p[k]) D[k]=p[k]; });
+}
+
+function setStatus(msg) { document.getElementById('sync-status').textContent = msg; }
+
+function autoSave() {
+  localStorage.setItem('dash_data', JSON.stringify(D));
+  setStatus('🔄 Modifié — pense à Sync');
+}
+
+// ─── NAV ─────────────────────────────────────────────────
+function sw(name, btn) {
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pan-'+name).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ─── RENDER ──────────────────────────────────────────────
+function renderAll() { rRev(); rAziz(); rAir(); rApt(); rAv(); }
+function f(n) { return n.toLocaleString('fr-FR')+' €'; }
+function mt(t='') { return `<div class="cr"><span class="cl gr" style="font-style:italic;font-size:12px">${t||'Aucun élément'}</span></div>`; }
+
+function rRev() {
+  const ai = D.revenus.filter(x=>x.t==='in').reduce((s,x)=>s+x.a,0);
+  const ao = D.revenus.filter(x=>x.t==='out').reduce((s,x)=>s+x.a,0);
+  const sal = B.sal + ai;
+  const dispo = sal - B.loyer - B.charges - ao;
+  document.getElementById('rv-sal').textContent = '+ '+f(sal);
+  document.getElementById('rv-dispo').textContent = f(dispo);
+  document.getElementById('c-dispo').textContent = f(dispo);
+  const el = document.getElementById('l-revenus');
+  el.innerHTML = D.revenus.length===0 ? mt('Aucun ajout')
+    : D.revenus.map((x,i)=>`<div class="cr"><span class="cl">${x.d}</span><span class="badge ${x.t==='in'?'bpos':'bch'}">${x.t==='in'?'Revenu':'Charge'}</span><span class="cv ${x.t==='in'?'g':'r'}">${x.t==='in'?'+':'−'} ${f(x.a)}</span><button class="bd" onclick="del('revenus',${i})">✕</button></div>`).join('');
+}
+
+function rAziz() {
+  const tE = D.entrees.reduce((s,x)=>s+x.a,0);
+  const tD = D.deds.reduce((s,x)=>s+x.a,0);
+  const tA = D.appart.reduce((s,x)=>s+(x.s==='half'?x.a/2:0),0);
+  const net = B.aziz + tE - tD - tA;
+  document.getElementById('c-aziz').textContent = f(net);
+  document.getElementById('net-aziz').textContent = f(net);
+  const le = document.getElementById('l-entrees');
+  le.innerHTML = D.entrees.length===0 ? mt('Aucune entrée')
+    : D.entrees.map((x,i)=>`<div class="cr"><span class="cl">${x.d}${x.w?` <span class="tag-${x.w==='S'?'s':'b'}">${x.w}</span>`:''}</span><span class="badge bphc">${x.tp}</span><span class="cv g">+ ${f(x.a)}</span><button class="bd" onclick="del('entrees',${i})">✕</button></div>`).join('');
+  const ld = document.getElementById('l-deds');
+  ld.innerHTML = D.deds.length===0 ? mt('Aucune déduction')
+    : D.deds.map((x,i)=>`<div class="cr"><span class="cl">${x.d}</span><span class="cv r">− ${f(x.a)}</span><button class="bd" onclick="del('deds',${i})">✕</button></div>`).join('');
+}
+
+function rAir() {
+  const tot = D.airbnb.reduce((s,x)=>s+(x.t==='in'?x.a:-x.a),0);
+  const net = B.airbnb + tot;
+  document.getElementById('c-airbnb').textContent = f(net);
+  document.getElementById('air-tot').textContent = f(net);
+  const la = document.getElementById('l-air');
+  la.innerHTML = D.airbnb.length===0 ? mt('Aucun mouvement')
+    : D.airbnb.map((x,i)=>`<div class="cr"><span class="cl">${x.m}</span><span class="cv ${x.t==='in'?'g':'r'}">${x.t==='in'?'+':'−'} ${f(x.a)}</span><button class="bd" onclick="del('airbnb',${i})">✕</button></div>`).join('');
+}
+
+function rApt() {
+  const tot = B.appart + D.appart.reduce((s,x)=>s+x.a,0);
+  document.getElementById('c-appt').textContent = tot.toLocaleString('fr-FR')+' €';
+  document.getElementById('apt-tot').textContent = tot.toLocaleString('fr-FR')+' €';
+  const ln = document.getElementById('l-apt');
+  ln.innerHTML = D.appart.length===0 ? mt('Aucune dépense')
+    : D.appart.map((x,i)=>`<div class="cr"><span class="cl">${x.d}${x.s==='half'?` <span style="font-size:11px;color:#8e8e93">÷2 → ${Math.round(x.a/2)} € déduit</span>`:''}</span><span class="badge bappt">${x.c}</span><span class="cv r">− ${f(x.a)}</span><button class="bd" onclick="del('appart',${i})">✕</button></div>`).join('');
+}
+
+function rAv() {
+  const tDT = B.dt + D.avoirs.filter(x=>x.dv==='DT').reduce((s,x)=>s+x.a,0);
+  document.getElementById('c-dt').textContent = tDT.toLocaleString('fr-FR')+' DT';
+  document.getElementById('av-tot').textContent = tDT.toLocaleString('fr-FR')+' DT';
+  const la = document.getElementById('l-av');
+  la.innerHTML = D.avoirs.length===0 ? mt('Aucun avoir')
+    : D.avoirs.map((x,i)=>`<div class="cr"><span class="cl">${x.d}</span><span class="badge bwait">${x.st}</span><span class="cv ${x.st==='Déduit'?'r':'gr'}">${x.st==='Déduit'?'−':'+'} ${x.a.toLocaleString('fr-FR')} ${x.dv}</span><button class="bd" onclick="del('avoirs',${i})">✕</button></div>`).join('');
+}
+
+// ─── ACTIONS ─────────────────────────────────────────────
+function g(id) { return document.getElementById(id); }
+function clr(...ids) { ids.forEach(i=>g(i).value=''); }
+function chk(d,a) { if(!d||!a||a<=0){alert('Remplis tous les champs');return false;} return true; }
+
+function addRev() { const d=g('rv-d').value.trim(),a=parseFloat(g('rv-a').value),t=g('rv-t').value; if(!chk(d,a))return; D.revenus.push({d,a,t}); clr('rv-d','rv-a'); renderAll(); autoSave(); }
+function addIn()  { const d=g('in-d').value.trim(),a=parseFloat(g('in-a').value),w=g('in-w').value,tp=g('in-t').value; if(!chk(d,a))return; D.entrees.push({d,a,w,tp}); clr('in-d','in-a'); renderAll(); autoSave(); }
+function addDed() { const d=g('dd-d').value.trim(),a=parseFloat(g('dd-a').value); if(!chk(d,a))return; D.deds.push({d,a}); clr('dd-d','dd-a'); renderAll(); autoSave(); }
+function addAir() { const m=g('ab-m').value.trim(),a=parseFloat(g('ab-a').value),t=g('ab-t').value; if(!chk(m,a))return; D.airbnb.push({m,a,t}); clr('ab-m','ab-a'); renderAll(); autoSave(); }
+function addApt() { const d=g('ap-d').value.trim(),a=parseFloat(g('ap-a').value),c=g('ap-c').value,s=g('ap-s').value; if(!chk(d,a))return; D.appart.push({d,a,c,s}); clr('ap-d','ap-a'); renderAll(); autoSave(); }
+function addAv()  { const d=g('av-d').value.trim(),a=parseFloat(g('av-a').value),dv=g('av-dv').value,st=g('av-st').value; if(!chk(d,a))return; D.avoirs.push({d,a,dv,st}); clr('av-d','av-a'); renderAll(); autoSave(); }
+function del(k,i) { D[k].splice(i,1); renderAll(); autoSave(); }
+
+// ─── INIT ────────────────────────────────────────────────
+const savedTok = localStorage.getItem('gd_tok');
+const savedFid = localStorage.getItem('gd_fid');
+if (savedFid) FILE_ID = savedFid;
+if (savedTok) {
+  TOKEN = savedTok;
+  showApp();
+  loadData();
+} else {
+  // Mode local sans auth
+  showApp();
+  setStatus('Mode local — connecte-toi pour sync Drive');
+  try { const r=localStorage.getItem('dash_data'); if(r){mergeData(JSON.parse(r));} } catch(e){}
+  renderAll();
+}
+</script>
+</body>
+</html>
