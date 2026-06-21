@@ -5,516 +5,1471 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Dashboard Amine</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Google Sign-In — redirect mode (fix mobile Safari popup block) -->
+<meta name="google-signin-client_id" content="1080899511515-sm2u3tuf69tc7b60cv1o7b8nko7ukhn6.apps.googleusercontent.com">
+
 <style>
-  :root {
-    --bg:    #0e0e0e;
-    --bg2:   #161616;
-    --bg3:   #1e1e1e;
-    --bg4:   #272727;
-    --bg5:   #303030;
-    --green: #00c896;
-    --green-dim: rgba(0,200,150,0.1);
-    --red:   #ff4d4d;
-    --red-dim: rgba(255,77,77,0.1);
-    --blue:  #4d9cff;
-    --blue-dim: rgba(77,156,255,0.1);
-    --text:  #ffffff;
-    --text2: #999999;
-    --text3: #555555;
-    --border: rgba(255,255,255,0.06);
-    --border2: rgba(255,255,255,0.1);
-    --r: 14px;
-    --r-sm: 10px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; min-height: 100vh; padding-bottom: 40px; -webkit-font-smoothing: antialiased; }
+/* ── Reset & Base ── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --bg3:#1a1a24;
+  --border:#ffffff0f;
+  --border2:#ffffff18;
+  --text:#f0f0f5;
+  --text2:#8888a0;
+  --text3:#55556a;
+  --green:#00e87a;
+  --green-dim:#00e87a22;
+  --red:#ff4757;
+  --red-dim:#ff475722;
+  --blue:#4d9fff;
+  --blue-dim:#4d9fff22;
+  --purple:#a855f7;
+  --purple-dim:#a855f722;
+  --orange:#ff8c42;
+  --orange-dim:#ff8c4222;
+  --gold:#f5c842;
+  --gold-dim:#f5c84222;
+  --radius:14px;
+  --radius-sm:8px;
+  --font:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;overscroll-behavior:none}
 
-  #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 24px; text-align: center; gap: 20px; }
-  .auth-logo { font-size: 48px; }
-  #auth-screen h1 { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
-  #auth-screen p { font-size: 14px; font-weight: 400; color: var(--text2); max-width: 260px; line-height: 1.6; }
-  .g-btn { display: flex; align-items: center; gap: 12px; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r); padding: 14px 22px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; color: var(--text); transition: background 0.15s; }
-  .g-btn:active { background: var(--bg4); }
-  .auth-note { font-size: 11px; color: var(--text3); font-weight: 400; }
+/* ── Login Screen ── */
+#login-screen{
+  position:fixed;inset:0;z-index:999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);padding:40px 24px;
+}
+#login-screen .logo{font-size:42px;margin-bottom:16px}
+#login-screen h1{font-size:22px;font-weight:700;margin-bottom:6px;text-align:center}
+#login-screen p{font-size:14px;color:var(--text2);text-align:center;margin-bottom:40px;max-width:280px}
+.google-btn{
+  display:flex;align-items:center;gap:12px;
+  background:#fff;color:#1f1f1f;
+  border:none;border-radius:24px;
+  padding:14px 24px;font-size:15px;font-weight:600;
+  cursor:pointer;width:100%;max-width:320px;justify-content:center;
+  box-shadow:0 2px 12px #0006;
+}
+.google-btn img{width:20px;height:20px}
+.google-btn:active{opacity:.85;transform:scale(.98)}
+.login-note{font-size:12px;color:var(--text3);margin-top:20px;text-align:center}
+.user-badge{
+  display:none;align-items:center;gap:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:24px;padding:6px 14px 6px 8px;
+  font-size:13px;cursor:pointer;
+}
+.user-badge img{width:28px;height:28px;border-radius:50%}
+.user-badge.visible{display:flex}
 
-  .header { padding: 56px 20px 16px; display: flex; justify-content: space-between; align-items: flex-start; }
-  .header-left h1 { font-size: 21px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; }
-  #sync-status { font-size: 11px; font-weight: 400; color: var(--text3); margin-top: 3px; }
-  .header-actions { display: flex; gap: 8px; }
-  .btn-grey { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 9px 14px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; color: var(--text2); transition: background 0.15s; }
-  .btn-grey:active { background: var(--bg4); }
-  .btn-grey:disabled { color: var(--text3); }
-  .btn-icon { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 9px 12px; font-size: 13px; cursor: pointer; color: var(--text3); }
+/* ── App Shell ── */
+#app{display:none;flex-direction:column;min-height:100vh}
+#app.visible{display:flex}
 
-  .soldes { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 20px; scrollbar-width: none; }
-  .soldes::-webkit-scrollbar { display: none; }
-  .sc { flex-shrink: 0; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; min-width: 124px; }
-  .sc .lbl { font-size: 11px; font-weight: 500; color: var(--text3); margin-bottom: 6px; }
-  .sc .val { font-size: 19px; font-weight: 600; letter-spacing: -0.5px; }
-  .sc .sub { font-size: 10px; font-weight: 400; color: var(--text3); margin-top: 3px; }
-  .vg { color: var(--green); }
-  .vr { color: var(--red); }
-  .vb { color: var(--blue); }
-  .vw { color: var(--text); }
-  .vm { color: var(--text2); }
+/* ── Header ── */
+.hdr{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg)cc;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 16px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.hdr-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.sync-btn{
+  background:var(--bg3);border:1px solid var(--border);border-radius:20px;
+  padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;gap:5px;
+}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.sync-dot.off{background:var(--text3)}
 
-  .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 0 20px 1px; scrollbar-width: none; border-bottom: 1px solid var(--border); }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab { flex-shrink: 0; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 20px; border: none; background: transparent; color: var(--text3); cursor: pointer; font-family: inherit; transition: all 0.15s; }
-  .tab.on { background: var(--bg3); color: var(--text); border: 1px solid var(--border2); }
+/* ── KPI Cards ── */
+.kpi-scroll{
+  display:flex;gap:10px;padding:16px 16px 4px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.kpi-scroll::-webkit-scrollbar{display:none}
+.kpi{
+  flex-shrink:0;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;min-width:148px;
+}
+.kpi-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px}
+.kpi-val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.kpi-val.green{color:var(--green)}
+.kpi-val.red{color:var(--red)}
+.kpi-val.muted{color:var(--text2)}
 
-  .panel { display: none; padding: 20px; }
-  .panel.on { display: block; }
-  .slabel { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin: 0 0 10px; }
+/* ── Tabs ── */
+.tabs{
+  display:flex;gap:6px;padding:12px 16px 0;
+  overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex-shrink:0;font-size:13px;font-weight:500;
+  padding:7px 16px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--text2);cursor:pointer;
+  transition:all .15s;
+}
+.tab.on{background:var(--text);color:var(--bg);border-color:transparent;font-weight:600}
 
-  .ct { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 20px; }
-  .cr { display: flex; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--border); gap: 10px; }
-  .cr:last-child { border-bottom: none; }
-  .cl { flex: 1; font-size: 14px; font-weight: 400; color: var(--text); line-height: 1.4; }
-  .cl .sub2 { font-size: 11px; font-weight: 400; color: var(--text3); margin-top: 2px; }
-  .cv { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .cr-tot { background: var(--bg3); }
-  .cr-tot .cl { font-weight: 500; }
-  .cr-tot .cv { font-weight: 700; }
-  .cr-hi { background: var(--green-dim); }
-  .cr-hi .cl { font-weight: 500; color: var(--green); }
-  .cr-hi .cv { color: var(--green); font-weight: 700; }
-  .cr-blue { background: var(--blue-dim); }
-  .cr-blue .cl { font-weight: 500; color: var(--blue); }
-  .cr-blue .cv { color: var(--blue); font-weight: 700; }
+/* ── Panels ── */
+.panels{padding:16px;padding-bottom:80px}
+.panel{display:none}
+.panel.on{display:block}
 
-  .badge { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
-  .bphc  { background: var(--blue-dim);  color: var(--blue); }
-  .bpos  { background: var(--green-dim); color: var(--green); }
-  .bneg  { background: var(--red-dim);   color: var(--red); }
-  .bwait { background: var(--bg4);       color: var(--text2); }
-  .bappt { background: var(--bg4);       color: var(--text2); }
-  .bdt   { background: var(--bg4);       color: var(--text2); }
-  .bch   { background: var(--bg4);       color: var(--text2); }
-  .tag-s { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: var(--green-dim); color: var(--green); margin-left: 5px; }
-  .tag-b { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: var(--blue-dim); color: var(--blue); margin-left: 5px; }
+/* ── Section ── */
+.sec{margin-bottom:20px}
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)}
+.sec-total{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
 
-  .af { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; margin-bottom: 20px; }
-  .fr { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-  .fr input, .fr select, .fsi, .fsf {
-    flex: 1; min-width: 120px; padding: 12px 14px;
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: var(--r-sm); font-size: 14px; font-family: 'Poppins', sans-serif; color: var(--text);
-    outline: none; transition: border-color 0.15s;
-    -webkit-appearance: none;
-  }
-  .fsf { width: 100%; margin-bottom: 10px; min-width: unset; }
-  .fr input:focus, .fr select:focus, .fsi:focus { border-color: var(--border2); background: var(--bg4); }
-  .fr input::placeholder { color: var(--text3); font-family: 'Poppins', sans-serif; }
-  .fr select option, .fsi option, .fsf option { background: var(--bg3); color: var(--text); }
-  .btn-action { width: 100%; padding: 13px; border: none; border-radius: var(--r-sm); background: var(--bg4); color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s; }
-  .btn-action:active { background: var(--bg5); }
-  .btn-action.danger { background: var(--red-dim); color: var(--red); }
-  .bd { background: none; border: none; color: var(--text3); font-size: 16px; cursor: pointer; padding: 0 4px; flex-shrink: 0; }
-  .bd:active { color: var(--red); }
+/* ── Table ── */
+.tbl{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.tbl-row{
+  display:grid;gap:8px;padding:11px 14px;
+  border-bottom:1px solid var(--border);
+  align-items:center;position:relative;
+}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row.entry-row{grid-template-columns:1fr auto auto}
+.tbl-row.entry-row-4{grid-template-columns:1fr auto auto auto}
+.tbl-head{
+  display:grid;gap:8px;padding:8px 14px;
+  background:var(--bg3);border-bottom:1px solid var(--border);
+}
+.tbl-head.h3{grid-template-columns:1fr auto auto}
+.tbl-head.h4{grid-template-columns:1fr auto auto auto}
+.th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.th.r{text-align:right}
+.td{font-size:13px;color:var(--text)}
+.td.muted{color:var(--text2)}
+.td.r{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.td.green{color:var(--green)}
+.td.red{color:var(--red)}
+.td.sub{font-size:11px;color:var(--text3);margin-top:1px}
+.tbl-tot{
+  display:grid;gap:8px;padding:11px 14px;
+  background:var(--bg3);border-top:1px solid var(--border2);
+}
+.tbl-tot.t2{grid-template-columns:1fr auto}
+.tbl-tot.t3{grid-template-columns:1fr auto auto}
+.tbl-tot.t4{grid-template-columns:1fr auto auto auto}
+.tbl-tot .td{font-weight:700}
 
-  .info { background: var(--bg3); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 16px; font-size: 12px; font-weight: 400; color: var(--text2); line-height: 1.6; }
-  .legend { display: flex; gap: 12px; margin-bottom: 10px; }
-  .legend span { font-size: 11px; font-weight: 400; color: var(--text2); display: flex; align-items: center; gap: 4px; }
-  .empty { padding: 20px 16px; text-align: center; font-size: 13px; font-weight: 400; color: var(--text3); }
-  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--bg4); border: 1px solid var(--border2); color: var(--text); padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; display: none; z-index: 999; white-space: nowrap; }
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap}
+.b-phc{background:#1a3a6a;color:var(--blue)}
+.b-fam{background:#3a2500;color:var(--orange)}
+.b-log{background:#2a1a3a;color:var(--purple)}
+.b-appt{background:#1a2a4a;color:#7ab3ff}
+.b-ok{background:#003a20;color:var(--green)}
+.b-wait{background:#3a2a00;color:var(--gold)}
+.b-neg{background:#3a0010;color:var(--red)}
+.tag{display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;width:18px;height:18px;border-radius:5px;flex-shrink:0}
+.tag-s{background:#003a20;color:var(--green)}
+.tag-b{background:#1a2a4a;color:var(--blue)}
+
+/* ── Action Buttons ── */
+.row-actions{display:flex;gap:4px}
+.btn-edit,.btn-del{
+  width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  transition:all .15s;
+}
+.btn-edit{background:var(--bg3);color:var(--text2)}
+.btn-edit:hover,.btn-edit:active{background:#1a2a4a;color:var(--blue)}
+.btn-del{background:var(--bg3);color:var(--text2)}
+.btn-del:hover,.btn-del:active{background:#3a0010;color:var(--red)}
+
+/* ── Inline Edit ── */
+.inline-edit{
+  display:none;background:var(--bg3);border:1px solid var(--blue);
+  border-radius:var(--radius);padding:14px;margin:-1px;position:relative;z-index:10;
+}
+.inline-edit.open{display:block}
+.inline-edit input,.inline-edit select{
+  width:100%;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);font-size:14px;
+  padding:10px 12px;margin-bottom:8px;font-family:var(--font);
+}
+.inline-edit input:focus,.inline-edit select:focus{outline:none;border-color:var(--blue)}
+.ie-row{display:flex;gap:6px}
+.ie-row input{flex:1}
+.ie-btns{display:flex;gap:6px;margin-top:4px}
+.btn-save,.btn-cancel{
+  flex:1;padding:10px;border-radius:var(--radius-sm);border:none;
+  font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);
+}
+.btn-save{background:var(--blue);color:#fff}
+.btn-cancel{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
+
+/* ── Add Row Button ── */
+.add-row-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;padding:11px;border:1px dashed var(--border2);border-radius:var(--radius);
+  background:transparent;color:var(--text3);font-size:13px;cursor:pointer;
+  margin-top:8px;transition:all .15s;font-family:var(--font);
+}
+.add-row-btn:hover,.add-row-btn:active{border-color:var(--blue);color:var(--blue)}
+
+/* ── Add Form ── */
+.add-form{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;margin-top:8px;
+  display:none;
+}
+.add-form.open{display:block}
+.add-form label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
+.add-form input,.add-form select{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);font-size:14px;
+  padding:10px 12px;margin-bottom:12px;font-family:var(--font);
+}
+.add-form input:focus,.add-form select:focus{outline:none;border-color:var(--blue)}
+.form-row{display:flex;gap:8px}
+.form-row > div{flex:1}
+.btn-primary{
+  width:100%;padding:12px;background:var(--blue);color:#fff;
+  border:none;border-radius:var(--radius-sm);font-size:14px;
+  font-weight:600;cursor:pointer;font-family:var(--font);
+}
+.btn-primary:active{opacity:.85}
+
+/* ── Calc Rows ── */
+.calc-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;border-bottom:1px solid var(--border);
+}
+.calc-row:last-child{border-bottom:none}
+.calc-row .label{font-size:13px;color:var(--text2)}
+.calc-row .val{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.calc-row.sub .label,.calc-row.sub .val{font-size:11px;color:var(--text3)}
+.calc-row.tot{background:var(--bg3)}
+.calc-row.tot .label{font-weight:700;color:var(--text)}
+.calc-row.tot .val{font-size:15px;font-weight:700}
+
+/* ── Month Block ── */
+.month-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--text3);padding:6px 0;margin-top:12px;margin-bottom:6px;
+  display:flex;align-items:center;gap:6px;
+}
+.month-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── Coloc Banner ── */
+.coloc-banner{
+  background:var(--blue-dim);border:1px solid var(--blue)44;
+  border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;
+  font-size:13px;color:var(--blue);
+}
+.coloc-banner strong{color:var(--text)}
+
+/* ── Strikethrough (réglé) ── */
+.regle .td{text-decoration:line-through;opacity:.5}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:24px;padding:10px 20px;font-size:13px;
+  transition:transform .25s cubic-bezier(.175,.885,.32,1.275);
+  pointer-events:none;z-index:9999;white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── Bottom nav placeholder ── */
+.bottom-safe{height:env(safe-area-inset-bottom,0px)}
 </style>
 </head>
 <body>
 
-<div class="toast" id="toast"></div>
-
-<div id="auth-screen">
-  <div class="auth-logo">💳</div>
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="login-screen">
+  <div class="logo">💳</div>
   <h1>Dashboard Amine</h1>
-  <p>Connecte-toi avec Google pour accéder à tes données sur tous tes appareils.</p>
-  <button class="g-btn" onclick="startAuth()">
-    <svg width="18" height="18" viewBox="0 0 48 48">
-      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-    </svg>
+  <p>Connecte-toi pour accéder à tes données et les synchroniser sur tous tes appareils.</p>
+  <button class="google-btn" onclick="signInWithGoogle()">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
     Continuer avec Google
   </button>
-  <p class="auth-note">Données stockées dans ton Google Drive personnel.</p>
+  <p class="login-note">Données stockées dans ton Google Drive personnel.</p>
 </div>
 
-<div id="app" style="display:none">
+<!-- ══ APP ══ -->
+<div id="app">
 
-<div class="header">
-  <div class="header-left">
-    <h1>Dashboard Amine</h1>
-    <div id="sync-status">—</div>
-  </div>
-  <div class="header-actions">
-    <button class="btn-grey" id="btn-sync" onclick="saveData()">↑ Sync</button>
-    <button class="btn-icon" onclick="signOut()">⏏</button>
-  </div>
-</div>
-
-<div class="soldes">
-  <div class="sc"><div class="lbl">Solde Aziz</div><div class="val vg" id="c-aziz">—</div><div class="sub">PHC net</div></div>
-  <div class="sc"><div class="lbl">Disponible</div><div class="val vw" id="c-dispo">—</div><div class="sub">par mois</div></div>
-  <div class="sc"><div class="lbl">Airbnb</div><div class="val vg" id="c-airbnb">—</div><div class="sub">net cumulé</div></div>
-  <div class="sc"><div class="lbl">Appart</div><div class="val vr" id="c-appt">—</div><div class="sub">dépenses</div></div>
-  <div class="sc"><div class="lbl">Avoirs</div><div class="val vm" id="c-dt">—</div><div class="sub">en dinars</div></div>
-</div>
-
-<div class="tabs">
-  <button class="tab on" onclick="sw('revenus',this)">Revenus</button>
-  <button class="tab" onclick="sw('aziz',this)">PHC / Aziz</button>
-  <button class="tab" onclick="sw('airbnb',this)">Airbnb</button>
-  <button class="tab" onclick="sw('appart',this)">Appart</button>
-  <button class="tab" onclick="sw('avoirs',this)">Avoirs</button>
-</div>
-
-<!-- REVENUS -->
-<div id="pan-revenus" class="panel on">
-  <p class="slabel">Revenu mensuel net</p>
-  <div class="ct">
-    <div class="cr"><span class="cl">Salaire net</span><span class="badge bpos">Fixe</span><span class="cv vg" id="rv-sal">+ 2 000 €</span></div>
-    <div class="cr"><span class="cl">Loyer</span><span class="badge bneg">Fixe</span><span class="cv vr">− 820 €</span></div>
-    <div class="cr"><span class="cl">Charges mensuelles</span><span class="badge bneg">Fixe</span><span class="cv vr">− 110 €</span></div>
-    <div class="cr cr-hi"><span class="cl">Disponible / mois</span><span class="cv" id="rv-dispo">1 070 €</span></div>
-  </div>
-
-  <p class="slabel">Ajouter</p>
-  <div class="af">
-    <div class="fr">
-      <input type="text" id="rv-d" placeholder="Libellé (ex : Prime, Netflix)">
-      <input type="number" id="rv-a" placeholder="Montant €" min="0" inputmode="decimal">
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-title">Dashboard Amine</div>
+    <div class="hdr-right">
+      <div class="sync-btn" onclick="syncData()">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span id="sync-label">Sync</span>
+      </div>
+      <div class="user-badge" id="user-badge" onclick="signOut()">
+        <img id="user-photo" src="" alt="">
+        <span id="user-name"></span>
+      </div>
     </div>
-    <select class="fsf" id="rv-t">
-      <option value="in">Revenu supplémentaire</option>
-      <option value="out">Charge fixe supplémentaire</option>
-    </select>
-    <button class="btn-action" onclick="addRev()">Ajouter</button>
   </div>
 
-  <p class="slabel">Historique</p>
-  <div class="ct" id="l-revenus"><div class="empty">Aucun élément</div></div>
-</div>
-
-<!-- AZIZ / PHC -->
-<div id="pan-aziz" class="panel">
-  <p class="slabel">Solde Aziz</p>
-  <div class="ct">
-    <div class="cr"><span class="cl">Net PHC après virement logement</span><span class="cv vg">+ 6 822 €</span></div>
-    <div class="cr"><span class="cl">Dépenses remboursées</span><span class="cv vr">− 692 €</span></div>
-    <div class="cr"><span class="cl">Déductions antérieures</span><span class="cv vr">− 819 €</span></div>
-    <div class="cr"><span class="cl">Canapé — quote-part (÷ 2)</span><span class="cv vr">− 215 €</span></div>
-    <div class="cr cr-tot"><span class="cl">Base de référence</span><span class="cv vg">5 096 €</span></div>
-  </div>
-
-  <p class="slabel">Nouvelle entrée</p>
-  <div class="af">
-    <div class="fr">
-      <input type="text" id="in-d" placeholder="Libellé (ex : Novedad)">
-      <input type="number" id="in-a" placeholder="Montant €" min="0" inputmode="decimal">
+  <!-- KPI Cards -->
+  <div class="kpi-scroll">
+    <div class="kpi">
+      <div class="kpi-label">Net Aziz</div>
+      <div class="kpi-val green" id="kpi-aziz">5 030 €</div>
+      <div class="kpi-sub">PHC − dépenses</div>
     </div>
-    <div class="fr">
-      <select id="in-w" class="fsi"><option value="">— Émetteur —</option><option value="S">Souhail (S)</option><option value="B">Baganda (B)</option><option value="">Autre</option></select>
-      <select id="in-t" class="fsi"><option value="PHC">PHC</option><option value="Famille">Famille</option><option value="Autre">Autre</option></select>
+    <div class="kpi">
+      <div class="kpi-label">PHC net</div>
+      <div class="kpi-val green" id="kpi-phc">6 822 €</div>
+      <div class="kpi-sub">Après virement</div>
     </div>
-    <button class="btn-action" onclick="addIn()">Enregistrer l'entrée</button>
-  </div>
-
-  <p class="slabel">Nouvelle déduction</p>
-  <div class="af">
-    <div class="fr">
-      <input type="text" id="dd-d" placeholder="Libellé">
-      <input type="number" id="dd-a" placeholder="Montant €" min="0" inputmode="decimal">
+    <div class="kpi">
+      <div class="kpi-label">Airbnb</div>
+      <div class="kpi-val green" id="kpi-airbnb">1 585 €</div>
+      <div class="kpi-sub">Jan + Mai</div>
     </div>
-    <button class="btn-action danger" onclick="addDed()">Enregistrer la déduction</button>
-  </div>
-
-  <p class="slabel">Entrées</p>
-  <div class="ct" id="l-entrees"><div class="empty">Aucune entrée</div></div>
-
-  <p class="slabel">Déductions</p>
-  <div class="ct" id="l-deds"><div class="empty">Aucune déduction</div></div>
-
-  <div class="ct"><div class="cr cr-hi"><span class="cl">Solde Aziz total</span><span class="cv" id="net-aziz">—</span></div></div>
-
-  <p class="slabel">Détail PHC — historique</p>
-  <div class="legend"><span><span class="tag-s">S</span> Souhail</span><span><span class="tag-b">B</span> Baganda</span></div>
-  <div class="ct">
-    <div class="cr"><span class="cl">2 820 €</span><span class="badge bphc">PHC</span><span class="cv vg">+ 2 820 €</span></div>
-    <div class="cr"><span class="cl">BC</span><span class="badge bphc">PHC</span><span class="cv vg">+ 462 €</span></div>
-    <div class="cr"><span class="cl">CJM</span><span class="badge bphc">PHC</span><span class="cv vg">+ 425 €</span></div>
-    <div class="cr"><span class="cl">1 146 €</span><span class="badge bphc">PHC</span><span class="cv vg">+ 1 146 €</span></div>
-    <div class="cr"><span class="cl">Billets avion<div class="sub2">Avance famille — remboursement père</div></span><span class="cv vg">+ 420 €</span></div>
-    <div class="cr"><span class="cl">663 €</span><span class="badge bphc">PHC</span><span class="cv vg">+ 663 €</span></div>
-    <div class="cr"><span class="cl">CJM — 2ème versement</span><span class="badge bphc">PHC</span><span class="cv vg">+ 663 €</span></div>
-    <div class="cr"><span class="cl">BC — 2ème versement</span><span class="badge bphc">PHC</span><span class="cv vg">+ 895 €</span></div>
-    <div class="cr"><span class="cl">Volange</span><span class="badge bphc">PHC</span><span class="cv vg">+ 234 €</span></div>
-    <div class="cr"><span class="cl">Volange</span><span class="badge bphc">PHC</span><span class="cv vg">+ 580 € <span class="tag-s">S</span></span></div>
-    <div class="cr"><span class="cl">Volange</span><span class="badge bphc">PHC</span><span class="cv vg">+ 300 € <span class="tag-b">B</span></span></div>
-    <div class="cr"><span class="cl">BC PROD</span><span class="badge bphc">PHC</span><span class="cv vg">+ 930 € <span class="tag-b">B</span></span></div>
-    <div class="cr"><span class="cl">Nama</span><span class="badge bphc">PHC</span><span class="cv vg">+ 117 € <span class="tag-s">S</span></span></div>
-    <div class="cr"><span class="cl">Nomis PROD</span><span class="badge bphc">PHC</span><span class="cv vg">+ 351 € <span class="tag-b">B</span></span></div>
-    <div class="cr"><span class="cl">Novedad</span><span class="badge bphc">PHC</span><span class="cv vg">+ 390 € <span class="tag-s">S</span></span></div>
-    <div class="cr cr-tot"><span class="cl">Total brut</span><span class="cv">10 396 €</span></div>
-    <div class="cr"><span class="cl">Virement logement</span><span class="cv vr">− 3 574 €</span></div>
-    <div class="cr cr-tot"><span class="cl">Net PHC</span><span class="cv vg">6 822 €</span></div>
-  </div>
-</div>
-
-<!-- AIRBNB -->
-<div id="pan-airbnb" class="panel">
-  <p class="slabel">Base</p>
-  <div class="ct">
-    <div class="cr"><span class="cl">Janvier — net</span><span class="cv vg">+ 1 180 €</span></div>
-    <div class="cr"><span class="cl">Mai — net</span><span class="cv vg">+ 405 €</span></div>
-    <div class="cr"><span class="cl">Billets avion — déduction</span><span class="cv vr">− 310 €</span></div>
-    <div class="cr cr-tot"><span class="cl">Sous-total</span><span class="cv vg">1 275 €</span></div>
-    <div class="cr"><span class="cl">Paris — Juin<div class="sub2">Déjà déduit</div></span><span class="cv vr">− 775 €</span></div>
-    <div class="cr cr-tot"><span class="cl">Total base</span><span class="cv vg">500 €</span></div>
-  </div>
-
-  <p class="slabel">Nouveau mouvement</p>
-  <div class="af">
-    <div class="fr">
-      <input type="text" id="ab-m" placeholder="Période (ex : Juillet)">
-      <input type="number" id="ab-a" placeholder="Montant €" min="0" inputmode="decimal">
+    <div class="kpi">
+      <div class="kpi-label">Appart</div>
+      <div class="kpi-val red" id="kpi-appart">2 884 €</div>
+      <div class="kpi-sub">Dépenses totales</div>
     </div>
-    <select class="fsf" id="ab-t"><option value="in">Encaissement</option><option value="out">Déduction</option></select>
-    <button class="btn-action" onclick="addAir()">Enregistrer</button>
-  </div>
-
-  <p class="slabel">Mouvements</p>
-  <div class="ct" id="l-air"><div class="empty">Aucun mouvement</div></div>
-  <div class="ct"><div class="cr cr-hi"><span class="cl">Total net Airbnb</span><span class="cv" id="air-tot">—</span></div></div>
-</div>
-
-<!-- APPART -->
-<div id="pan-appart" class="panel">
-  <div class="info">Total dépenses appart : <strong id="apt-tot">—</strong><br>Les achats partagés (÷ 2) sont automatiquement déduits du solde Aziz.</div>
-
-  <p class="slabel">Nouvelle dépense</p>
-  <div class="af">
-    <div class="fr">
-      <input type="text" id="ap-d" placeholder="Libellé (ex : Bureau)">
-      <input type="number" id="ap-a" placeholder="Montant €" min="0" inputmode="decimal">
+    <div class="kpi">
+      <div class="kpi-label">Avoirs</div>
+      <div class="kpi-val muted" id="kpi-avoirs">4 200 DT</div>
+      <div class="kpi-sub">Pa (dinars)</div>
     </div>
-    <div class="fr">
-      <select id="ap-c" class="fsi"><option>Mobilier</option><option>Équipement</option><option>Travaux</option><option>Divers</option></select>
-      <select id="ap-s" class="fsi"><option value="full">Montant total</option><option value="half">Partagé ÷ 2</option></select>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab on" onclick="sw('phc',this)">PHC</button>
+    <button class="tab" onclick="sw('aziz',this)">Aziz</button>
+    <button class="tab" onclick="sw('airbnb',this)">Airbnb</button>
+    <button class="tab" onclick="sw('appart',this)">Appart</button>
+    <button class="tab" onclick="sw('avoirs',this)">Avoirs</button>
+    <button class="tab" onclick="sw('charges',this)">Charges</button>
+  </div>
+
+  <!-- ══ PANELS ══ -->
+  <div class="panels">
+
+    <!-- ── PHC ── -->
+    <div id="pan-phc" class="panel on">
+      <div class="sec">
+        <div class="sec-head">
+          <div class="sec-title">Détail PHC — Historique</div>
+          <div style="display:flex;gap:8px;font-size:11px;align-items:center">
+            <span class="tag tag-s">S</span><span style="color:var(--text3)">Souhail</span>
+            <span class="tag tag-b" style="margin-left:4px">B</span><span style="color:var(--text3)">Baganda</span>
+          </div>
+        </div>
+        <div class="tbl">
+          <div class="tbl-head h3">
+            <span class="th">Description</span>
+            <span class="th">Origine</span>
+            <span class="th r">Montant</span>
+          </div>
+          <div id="phc-entries"></div>
+          <div class="tbl-tot t3">
+            <span class="td">Sous-total brut</span>
+            <span class="td"></span>
+            <span class="td r" id="phc-brut">10 396 €</span>
+          </div>
+          <div class="calc-row sub">
+            <span class="label">Virement logement</span>
+            <span class="val red">− 3 574 €</span>
+          </div>
+          <div class="calc-row tot">
+            <span class="label">Net PHC</span>
+            <span class="val green" id="phc-net-display">6 822 €</span>
+          </div>
+        </div>
+        <button class="add-row-btn" onclick="toggleForm('form-phc')">+ Ajouter une entrée PHC</button>
+        <div id="form-phc" class="add-form">
+          <label>Description</label>
+          <input type="text" id="phc-desc" placeholder="Ex: BC, CJM, Novedad…">
+          <div class="form-row">
+            <div>
+              <label>Montant (€)</label>
+              <input type="number" id="phc-amt" placeholder="0">
+            </div>
+            <div>
+              <label>Provenance</label>
+              <select id="phc-from">
+                <option value="">—</option>
+                <option value="S">Souhail (S)</option>
+                <option value="B">Baganda (B)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="addPHCEntry()">Enregistrer</button>
+        </div>
+      </div>
     </div>
-    <button class="btn-action" onclick="addApt()">Enregistrer</button>
-  </div>
 
-  <p class="slabel">Dépenses initiales</p>
-  <div class="ct">
-    <div class="cr"><span class="cl">Télévision</span><span class="badge bappt">Équipement</span><span class="cv vr">− 366 €</span></div>
-    <div class="cr"><span class="cl">IKEA</span><span class="badge bappt">Mobilier</span><span class="cv vr">− 1 800 €</span></div>
-    <div class="cr"><span class="cl">Temu</span><span class="badge bappt">Divers</span><span class="cv vr">− 208 €</span></div>
-    <div class="cr"><span class="cl">Leroy Merlin</span><span class="badge bappt">Travaux</span><span class="cv vr">− 80 €</span></div>
-    <div class="cr"><span class="cl">Canapé<div class="sub2">Partagé ÷ 2 — 215 € déduits du solde</div></span><span class="badge bappt">Mobilier</span><span class="cv vr">− 430 €</span></div>
-    <div class="cr cr-tot"><span class="cl">Sous-total initial</span><span class="cv vr">2 884 €</span></div>
-  </div>
+    <!-- ── AZIZ ── -->
+    <div id="pan-aziz" class="panel">
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">Solde Aziz</div></div>
+        <div class="tbl">
+          <div class="calc-row">
+            <span class="label">Net PHC après virement</span>
+            <span class="val green">+ 6 822 €</span>
+          </div>
+          <div class="calc-row sub">
+            <span class="label">Dépenses remboursées</span>
+            <span class="val red">− 692 €</span>
+          </div>
+          <div class="calc-row sub">
+            <span class="label">Déductions antérieures</span>
+            <span class="val red">− 819 €</span>
+          </div>
+          <div class="calc-row sub">
+            <span class="label">Canapé (÷ 2)</span>
+            <span class="val red">− 215 €</span>
+          </div>
+          <div class="calc-row tot">
+            <span class="label">Net Aziz</span>
+            <span class="val green" id="aziz-net-display">5 096 €</span>
+          </div>
+        </div>
+      </div>
 
-  <p class="slabel">Nouvelles dépenses</p>
-  <div class="ct" id="l-apt"><div class="empty">Aucune dépense enregistrée</div></div>
-</div>
-
-<!-- AVOIRS -->
-<div id="pan-avoirs" class="panel">
-  <p class="slabel">Nouvel avoir</p>
-  <div class="af">
-    <div class="fr">
-      <input type="text" id="av-d" placeholder="Bénéficiaire / Libellé">
-      <input type="number" id="av-a" placeholder="Montant" min="0" inputmode="decimal">
+      <div class="sec">
+        <div class="sec-head">
+          <div class="sec-title">Ce qu'il me doit / je lui dois</div>
+        </div>
+        <div class="tbl">
+          <div class="tbl-head h3">
+            <span class="th">Description</span>
+            <span class="th">Statut</span>
+            <span class="th r">Montant</span>
+          </div>
+          <div id="aziz-entries"></div>
+        </div>
+        <button class="add-row-btn" onclick="toggleForm('form-aziz')">+ Ajouter une ligne</button>
+        <div id="form-aziz" class="add-form">
+          <label>Description</label>
+          <input type="text" id="aziz-desc" placeholder="Ex: Pizza, courses…">
+          <div class="form-row">
+            <div>
+              <label>Montant (€)</label>
+              <input type="number" id="aziz-amt" placeholder="0">
+            </div>
+            <div>
+              <label>Type</label>
+              <select id="aziz-type">
+                <option value="credit">Il me doit (+)</option>
+                <option value="debit">Je lui dois (−)</option>
+              </select>
+            </div>
+          </div>
+          <label>Statut</label>
+          <select id="aziz-status">
+            <option value="pending">En attente</option>
+            <option value="done">Réglé</option>
+          </select>
+          <button class="btn-primary" onclick="addAzizEntry()">Enregistrer</button>
+        </div>
+      </div>
     </div>
-    <div class="fr">
-      <select id="av-dv" class="fsi"><option value="€">Euros (€)</option><option value="DT">Dinars (DT)</option></select>
-      <select id="av-st" class="fsi"><option>En attente</option><option>Reçu</option><option>Déduit</option></select>
+
+    <!-- ── AIRBNB ── -->
+    <div id="pan-airbnb" class="panel">
+      <div class="sec">
+        <div class="sec-head">
+          <div class="sec-title">Airbnb — par mois</div>
+          <div class="sec-total green" id="airbnb-total">1 585 €</div>
+        </div>
+
+        <div class="month-label">Janvier</div>
+        <div class="tbl">
+          <div class="tbl-head h3"><span class="th">Élément</span><span class="th">Détail</span><span class="th r">Montant</span></div>
+          <div class="tbl-row entry-row">
+            <span class="td">Revenus bruts</span><span class="td"></span>
+            <span class="td r green">+ 1 600 €</span>
+          </div>
+          <div class="tbl-row entry-row">
+            <span class="td">Billets avion (1)</span><span class="td muted">Déduction</span>
+            <span class="td r red">− 370 €</span>
+          </div>
+          <div class="tbl-row entry-row">
+            <span class="td">Billets avion (2)</span><span class="td muted">Déduction</span>
+            <span class="td r red">− 420 €</span>
+          </div>
+          <div class="tbl-tot t2"><span class="td">Net Janvier</span><span class="td r green">1 180 €</span></div>
+        </div>
+
+        <div class="month-label">Mai</div>
+        <div class="tbl">
+          <div class="tbl-head h3"><span class="th">Élément</span><span class="th">Détail</span><span class="th r">Montant</span></div>
+          <div id="airbnb-may"></div>
+          <div class="tbl-tot t2"><span class="td">Net Mai</span><span class="td r green" id="airbnb-may-total">405 €</span></div>
+        </div>
+
+        <div id="airbnb-other-months"></div>
+
+        <button class="add-row-btn" onclick="toggleForm('form-airbnb')">+ Ajouter un mouvement</button>
+        <div id="form-airbnb" class="add-form">
+          <label>Mois</label>
+          <input type="text" id="ab-month" placeholder="Ex: Juin 2025">
+          <label>Description</label>
+          <input type="text" id="ab-desc" placeholder="Ex: Réservation 4">
+          <div class="form-row">
+            <div>
+              <label>Montant (€)</label>
+              <input type="number" id="ab-amt" placeholder="0">
+            </div>
+            <div>
+              <label>Type</label>
+              <select id="ab-type">
+                <option value="credit">Encaissement</option>
+                <option value="debit">Déduction</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="addAirbnbEntry()">Enregistrer</button>
+        </div>
+      </div>
     </div>
-    <button class="btn-action" onclick="addAv()">Enregistrer</button>
-  </div>
 
-  <p class="slabel">Avoirs enregistrés</p>
-  <div class="ct">
-    <div class="cr"><span class="cl">Pa — montant principal</span><span class="badge bwait">En attente</span><span class="cv vm">3 000 DT</span></div>
-    <div class="cr"><span class="cl">Pa — complément</span><span class="badge bwait">En attente</span><span class="cv vm">1 600 DT</span></div>
-    <div class="cr"><span class="cl">Pa — tabac (déduit)</span><span class="badge bneg">Déduit</span><span class="cv vr">− 400 DT</span></div>
-    <div class="cr cr-tot"><span class="cl">Net Pa</span><span class="cv vm">4 200 DT</span></div>
-    <div class="cr"><span class="cl">Stock tshirts PHC</span><span class="badge bdt">Stock</span><span class="cv vm">7 000 DT</span></div>
-    <div class="cr cr-tot"><span class="cl">Total de base (DT)</span><span class="cv vm">11 200 DT</span></div>
-  </div>
+    <!-- ── APPART ── -->
+    <div id="pan-appart" class="panel">
+      <div class="coloc-banner">
+        <strong>Dépenses partagées</strong> — les achats ÷ 2 sont automatiquement déduits du solde Aziz.
+      </div>
+      <div class="sec">
+        <div class="sec-head">
+          <div class="sec-title">Dépenses Appart</div>
+          <div class="sec-total red" id="appart-total">2 884 €</div>
+        </div>
+        <div class="tbl">
+          <div class="tbl-head h4">
+            <span class="th">Poste</span>
+            <span class="th">Cat.</span>
+            <span class="th r">Montant</span>
+            <span class="th r">Actions</span>
+          </div>
+          <div id="appart-entries"></div>
+          <div class="tbl-tot t2">
+            <span class="td">Total dépenses appart</span>
+            <span class="td r red" id="appart-total-row">2 884 €</span>
+          </div>
+        </div>
+        <button class="add-row-btn" onclick="toggleForm('form-appart')">+ Ajouter une dépense</button>
+        <div id="form-appart" class="add-form">
+          <label>Description</label>
+          <input type="text" id="ap-desc" placeholder="Ex: Canapé, Machine à laver…">
+          <div class="form-row">
+            <div>
+              <label>Montant (€)</label>
+              <input type="number" id="ap-amt" placeholder="0">
+            </div>
+            <div>
+              <label>Catégorie</label>
+              <select id="ap-cat">
+                <option value="Mobilier">Mobilier</option>
+                <option value="Équipement">Équipement</option>
+                <option value="Travaux">Travaux</option>
+                <option value="Courses">Courses ÷ 2</option>
+                <option value="Divers">Divers</option>
+              </select>
+            </div>
+          </div>
+          <label><input type="checkbox" id="ap-shared"> Partagé ÷ 2 (déduit du solde Aziz)</label>
+          <br><br>
+          <button class="btn-primary" onclick="addAppartEntry()">Enregistrer</button>
+        </div>
+      </div>
+    </div>
 
-  <p class="slabel">Avoirs ajoutés</p>
-  <div class="ct" id="l-av"><div class="empty">Aucun avoir ajouté</div></div>
-  <div class="ct"><div class="cr cr-blue"><span class="cl">Total avoirs (DT)</span><span class="cv" id="av-tot">11 200 DT</span></div></div>
-</div>
+    <!-- ── AVOIRS ── -->
+    <div id="pan-avoirs" class="panel">
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">Avoirs — dettes à recevoir</div></div>
+        <div class="tbl">
+          <div class="tbl-head h3"><span class="th">Personne</span><span class="th">Statut</span><span class="th r">Montant</span></div>
+          <div id="avoir-entries"></div>
+        </div>
+        <button class="add-row-btn" onclick="toggleForm('form-avoir')">+ Ajouter un avoir</button>
+        <div id="form-avoir" class="add-form">
+          <label>Personne</label>
+          <input type="text" id="av-pers" placeholder="Ex: Pa, Mamie Ghaith…">
+          <label>Détail</label>
+          <input type="text" id="av-detail" placeholder="Ex: Principal, Bolt…">
+          <div class="form-row">
+            <div>
+              <label>Montant</label>
+              <input type="number" id="av-amt" placeholder="0">
+            </div>
+            <div>
+              <label>Devise</label>
+              <select id="av-currency">
+                <option value="EUR">€ Euros</option>
+                <option value="DT">DT Dinars</option>
+              </select>
+            </div>
+          </div>
+          <label>Statut</label>
+          <select id="av-status">
+            <option value="pending">En attente</option>
+            <option value="received">Reçu</option>
+            <option value="deducted">Déduit</option>
+          </select>
+          <button class="btn-primary" onclick="addAvoir()">Enregistrer</button>
+        </div>
+      </div>
+    </div>
 
-</div>
+    <!-- ── CHARGES ── -->
+    <div id="pan-charges" class="panel">
+      <div class="sec">
+        <div class="sec-head">
+          <div class="sec-title">Charges fixes mensuelles</div>
+          <div class="sec-total red" id="charges-total">95 €</div>
+        </div>
+        <div class="tbl">
+          <div class="tbl-head h3"><span class="th">Poste</span><span class="th">Fréq.</span><span class="th r">Montant</span></div>
+          <div id="charges-entries"></div>
+          <div class="tbl-tot t2">
+            <span class="td">Total mensuel</span>
+            <span class="td r red" id="charges-total-row">95 €</span>
+          </div>
+        </div>
+        <button class="add-row-btn" onclick="toggleForm('form-charge')">+ Ajouter une charge</button>
+        <div id="form-charge" class="add-form">
+          <label>Poste</label>
+          <input type="text" id="ch-desc" placeholder="Ex: Netflix, Assurance…">
+          <div class="form-row">
+            <div>
+              <label>Montant (€)</label>
+              <input type="number" id="ch-amt" placeholder="0">
+            </div>
+            <div>
+              <label>Fréquence</label>
+              <select id="ch-freq">
+                <option value="Mensuel">Mensuel</option>
+                <option value="Annuel">Annuel</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="addCharge()">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panels -->
+  <div class="bottom-safe"></div>
+</div><!-- /app -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ SCRIPTS ══ -->
+
+<!-- Google Identity Services — redirect flow (fix mobile) -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
-const CLIENT_ID = '1080899511515-sm2u3tuf69tc7b60cv1o7b8nko7ukhn6.apps.googleusercontent.com';
-const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-const FILE_NAME = 'dashboard_financier_amine.json';
-const B = { aziz:5096, airbnb:500, appart:2884, dt:11200, sal:2000, loyer:820, charges:110 };
-let D = { revenus:[], entrees:[], deds:[], airbnb:[], appart:[], avoirs:[] };
-let TOKEN = null, FILE_ID = null;
+// ─── CONFIG ────────────────────────────────────────────────────
+const CLIENT_ID = '1080899511515-sm2u3tuf69tc7b60cv1o7b8nko7ukhn6.apps.googleusercontent.com'; // ← remplace ici
+const REDIRECT_URI = window.location.origin + window.location.pathname;
+const SCOPES = 'https://www.googleapis.com/auth/drive.file openid profile email';
+const FILE_NAME = 'dashboard-amine-data.json';
 
-function toast(msg, ms=2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.style.display = 'block';
-  clearTimeout(t._t); t._t = setTimeout(()=>t.style.display='none', ms);
-}
+// ─── DATA MODEL ────────────────────────────────────────────────
+let DATA = {
+  phcEntries: [
+    {id:'p1',desc:'2 820 €',amt:2820,from:'',origin:'PHC'},
+    {id:'p2',desc:'BC',amt:462,from:'',origin:'PHC'},
+    {id:'p3',desc:'CJM',amt:425,from:'',origin:'PHC'},
+    {id:'p4',desc:'1 146 €',amt:1146,from:'',origin:'PHC'},
+    {id:'p5',desc:'Billets avion',amt:420,from:'',origin:'Famille'},
+    {id:'p6',desc:'663 €',amt:663,from:'',origin:'PHC'},
+    {id:'p7',desc:'CJM — 2ème versement',amt:663,from:'',origin:'PHC'},
+    {id:'p8',desc:'BC — 2ème versement',amt:895,from:'',origin:'PHC'},
+    {id:'p9',desc:'Volange',amt:234,from:'',origin:'PHC'},
+    {id:'p10',desc:'Volange',amt:580,from:'S',origin:'PHC'},
+    {id:'p11',desc:'Volange',amt:300,from:'B',origin:'PHC'},
+    {id:'p12',desc:'BC PROD',amt:930,from:'B',origin:'PHC'},
+    {id:'p13',desc:'Nama',amt:117,from:'S',origin:'PHC'},
+    {id:'p14',desc:'Nomis PROD',amt:351,from:'B',origin:'PHC'},
+    {id:'p15',desc:'Novedad',amt:390,from:'S',origin:'PHC'},
+  ],
+  azizEntries: [],
+  airbnbMay: [
+    {id:'a1',desc:'Réservation 1',amt:142,type:'credit'},
+    {id:'a2',desc:'Réservation 2',amt:103,type:'credit'},
+    {id:'a3',desc:'Réservation 3',amt:160,type:'credit'},
+  ],
+  airbnbExtra: [],
+  appartEntries: [
+    {id:'ap1',desc:'Télévision',cat:'Équipement',amt:366,shared:false},
+    {id:'ap2',desc:'IKEA',cat:'Mobilier',amt:1800,shared:false},
+    {id:'ap3',desc:'Temu',cat:'Divers',amt:208,shared:false},
+    {id:'ap4',desc:'Leroy Merlin',cat:'Travaux',amt:80,shared:false},
+    {id:'ap5',desc:'Canapé',cat:'Mobilier',amt:430,shared:true},
+  ],
+  avoirEntries: [
+    {id:'av1',pers:'Pa',detail:'Principal',amt:3000,currency:'DT',status:'pending'},
+    {id:'av2',pers:'Pa',detail:'Complément',amt:1600,currency:'DT',status:'pending'},
+    {id:'av3',pers:'Pa',detail:'Tabac (déduit)',amt:-400,currency:'DT',status:'deducted'},
+    {id:'av4',pers:'Stock tshirts PHC',detail:'Stock',amt:7000,currency:'DT',status:'pending'},
+  ],
+  chargesEntries: [
+    {id:'c1',desc:'ChatGPT',amt:20,freq:'Mensuel'},
+    {id:'c2',desc:'SIM',amt:15,freq:'Mensuel'},
+    {id:'c3',desc:'Coiffeur',amt:15,freq:'Mensuel'},
+    {id:'c4',desc:'Revolut',amt:10,freq:'Mensuel'},
+    {id:'c5',desc:'Salle de sport',amt:35,freq:'Mensuel'},
+  ],
+  driveFileId: null,
+};
 
-function startAuth() {
-  const p = new URLSearchParams({ client_id:CLIENT_ID, redirect_uri:location.href.split('?')[0].split('#')[0], response_type:'token', scope:SCOPES, prompt:'select_account' });
-  const popup = window.open('https://accounts.google.com/o/oauth2/v2/auth?'+p, 'gauth', 'width=500,height=620,left=200,top=100');
-  const check = setInterval(()=>{
-    try {
-      if (!popup||popup.closed){clearInterval(check);return;}
-      const h = popup.location.hash;
-      if (h&&h.includes('access_token')) {
-        clearInterval(check); popup.close();
-        TOKEN = new URLSearchParams(h.slice(1)).get('access_token');
-        localStorage.setItem('gd_tok', TOKEN);
-        showApp(); loadData();
-      }
-    } catch(e){}
-  }, 400);
+// ─── AUTH ───────────────────────────────────────────────────────
+let accessToken = null;
+let userInfo = null;
+
+function signInWithGoogle() {
+  // Redirect flow — works on all mobile browsers (no popup)
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: 'token',
+    scope: SCOPES,
+    include_granted_scopes: 'true',
+  });
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
 }
 
 function signOut() {
-  TOKEN=null; FILE_ID=null;
-  localStorage.removeItem('gd_tok'); localStorage.removeItem('gd_fid');
-  document.getElementById('app').style.display='none';
-  document.getElementById('auth-screen').style.display='flex';
+  if(!confirm('Déconnexion ?')) return;
+  accessToken = null;
+  userInfo = null;
+  localStorage.removeItem('gat');
+  localStorage.removeItem('gat_exp');
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('user-badge').classList.remove('visible');
 }
 
-function showApp() {
-  document.getElementById('auth-screen').style.display='none';
-  document.getElementById('app').style.display='block';
+function handleRedirectToken() {
+  const hash = window.location.hash;
+  if (!hash) return false;
+  const params = new URLSearchParams(hash.substring(1));
+  const token = params.get('access_token');
+  const expiresIn = params.get('expires_in');
+  if (!token) return false;
+
+  accessToken = token;
+  const expiry = Date.now() + parseInt(expiresIn) * 1000;
+  localStorage.setItem('gat', token);
+  localStorage.setItem('gat_exp', expiry);
+
+  // Clean URL
+  history.replaceState(null, '', window.location.pathname);
+  return true;
 }
 
-async function getFileId() {
-  if (FILE_ID) return FILE_ID;
-  const s = localStorage.getItem('gd_fid');
-  if (s) { FILE_ID=s; return FILE_ID; }
-  const r = await fetch(`https://www.googleapis.com/drive/v3/files?q=name%3D'${FILE_NAME}'%20and%20trashed%3Dfalse&fields=files(id)`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-  const j = await r.json();
-  if (j.files&&j.files.length>0) { FILE_ID=j.files[0].id; localStorage.setItem('gd_fid',FILE_ID); return FILE_ID; }
-  const c = await fetch('https://www.googleapis.com/drive/v3/files',{method:'POST',headers:{Authorization:`Bearer ${TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({name:FILE_NAME,mimeType:'application/json'})});
-  FILE_ID=(await c.json()).id; localStorage.setItem('gd_fid',FILE_ID); return FILE_ID;
-}
-
-async function saveData() {
-  const btn=document.getElementById('btn-sync');
-  btn.disabled=true; btn.textContent='…';
-  localStorage.setItem('dash_data',JSON.stringify(D));
-  try {
-    const fid=await getFileId();
-    await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fid}?uploadType=media`,{method:'PATCH',headers:{Authorization:`Bearer ${TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify(D)});
-    const t=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    setStatus(`Synchronisé — ${t}`);
-    toast('Sauvegardé sur Google Drive');
-  } catch(e) {
-    setStatus('Sauvegarde locale uniquement');
-    toast('Drive indisponible — données sauvegardées localement');
+function loadStoredToken() {
+  const token = localStorage.getItem('gat');
+  const exp = localStorage.getItem('gat_exp');
+  if (token && exp && Date.now() < parseInt(exp)) {
+    accessToken = token;
+    return true;
   }
-  btn.disabled=false; btn.textContent='↑ Sync';
+  localStorage.removeItem('gat');
+  localStorage.removeItem('gat_exp');
+  return false;
 }
 
-async function loadData() {
-  setStatus('Chargement…');
+async function fetchUserInfo() {
   try {
-    const fid=await getFileId();
-    const r=await fetch(`https://www.googleapis.com/drive/v3/files/${fid}?alt=media`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-    if (r.ok) {
-      const txt=await r.text();
-      if (txt&&txt.trim().startsWith('{')) { merge(JSON.parse(txt)); setStatus('Synchronisé'); renderAll(); return; }
+    const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {Authorization: 'Bearer ' + accessToken}
+    });
+    userInfo = await r.json();
+    document.getElementById('user-name').textContent = userInfo.given_name || 'Moi';
+    document.getElementById('user-photo').src = userInfo.picture || '';
+    document.getElementById('user-badge').classList.add('visible');
+  } catch(e) { console.warn('userinfo failed', e); }
+}
+
+// ─── DRIVE SYNC ─────────────────────────────────────────────────
+let driveFileId = null;
+
+async function findOrCreateDriveFile() {
+  if (!accessToken) return;
+  try {
+    const r = await fetch(
+      `https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}'+and+trashed=false&fields=files(id,name)`,
+      {headers:{Authorization:'Bearer '+accessToken}}
+    );
+    const json = await r.json();
+    if (json.files && json.files.length > 0) {
+      driveFileId = json.files[0].id;
+      await loadFromDrive();
+    } else {
+      await saveToDrive();
     }
-  } catch(e){}
-  try { const raw=localStorage.getItem('dash_data'); if(raw){merge(JSON.parse(raw));setStatus('Données locales');} else setStatus('Nouveau fichier'); } catch(e){}
+  } catch(e) { console.warn('Drive search failed', e); }
+}
+
+async function saveToDrive() {
+  if (!accessToken) { saveLocal(); return; }
+  const content = JSON.stringify(DATA, null, 2);
+  const boundary = '-------314159265358979323846';
+  const metadata = JSON.stringify({name: FILE_NAME, mimeType: 'application/json'});
+  const body = `--${boundary}\r\nContent-Type: application/json\r\n\r\n${metadata}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${content}\r\n--${boundary}--`;
+
+  const url = driveFileId
+    ? `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`
+    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+  const method = driveFileId ? 'PATCH' : 'POST';
+
+  try {
+    const r = await fetch(url, {
+      method, headers: {
+        Authorization: 'Bearer ' + accessToken,
+        'Content-Type': `multipart/related; boundary="${boundary}"`,
+      },
+      body
+    });
+    const json = await r.json();
+    if (json.id) driveFileId = json.id;
+    updateSyncDot(true);
+    saveLocal();
+  } catch(e) {
+    console.warn('Drive save failed', e);
+    saveLocal();
+    updateSyncDot(false);
+  }
+}
+
+async function loadFromDrive() {
+  if (!accessToken || !driveFileId) { loadLocal(); return; }
+  try {
+    const r = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,
+      {headers:{Authorization:'Bearer '+accessToken}}
+    );
+    const json = await r.json();
+    if (json.phcEntries) {
+      DATA = {...DATA, ...json};
+    }
+    renderAll();
+    updateSyncDot(true);
+  } catch(e) {
+    loadLocal();
+    updateSyncDot(false);
+  }
+}
+
+function saveLocal() {
+  try { localStorage.setItem('dashboard-data', JSON.stringify(DATA)); } catch(e){}
+}
+
+function loadLocal() {
+  try {
+    const d = localStorage.getItem('dashboard-data');
+    if (d) DATA = {...DATA, ...JSON.parse(d)};
+  } catch(e) {}
   renderAll();
 }
 
-function merge(p) { ['revenus','entrees','deds','airbnb','appart','avoirs'].forEach(k=>{if(p[k])D[k]=p[k];}); }
-function setStatus(m) { document.getElementById('sync-status').textContent=m; }
-function autoSave() { localStorage.setItem('dash_data',JSON.stringify(D)); setStatus('Non synchronisé'); }
+async function syncData() {
+  document.getElementById('sync-label').textContent = '…';
+  await saveToDrive();
+  document.getElementById('sync-label').textContent = 'Sync';
+  showToast('Sauvegardé ✓');
+}
 
-function sw(name,btn) {
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+function updateSyncDot(ok) {
+  document.getElementById('sync-dot').className = 'sync-dot' + (ok ? '' : ' off');
+}
+
+// ─── RENDER HELPERS ────────────────────────────────────────────
+function fmt(n) {
+  return new Intl.NumberFormat('fr-FR').format(Math.abs(n)) + ' €';
+}
+
+function uid() {
+  return Math.random().toString(36).substr(2,9);
+}
+
+function badgeHTML(origin) {
+  if (origin === 'PHC') return '<span class="badge b-phc">PHC</span>';
+  if (origin === 'Famille') return '<span class="badge b-fam">Famille</span>';
+  return '<span class="badge b-log">'+origin+'</span>';
+}
+
+function tagHTML(from) {
+  if (from === 'S') return ' <span class="tag tag-s">S</span>';
+  if (from === 'B') return ' <span class="tag tag-b">B</span>';
+  return '';
+}
+
+function statusBadge(s) {
+  if (s === 'done') return '<span class="badge b-ok">✓ Réglé</span>';
+  if (s === 'pending') return '<span class="badge b-wait">En attente</span>';
+  if (s === 'received') return '<span class="badge b-ok">Reçu</span>';
+  if (s === 'deducted') return '<span class="badge b-neg">Déduit</span>';
+  return '';
+}
+
+// ─── PHC RENDER ────────────────────────────────────────────────
+function renderPHC() {
+  const el = document.getElementById('phc-entries');
+  let brut = 0;
+  el.innerHTML = DATA.phcEntries.map(e => {
+    brut += e.amt;
+    return `
+    <div class="tbl-row entry-row" id="row-${e.id}">
+      <span class="td">${e.desc}${tagHTML(e.from)}</span>
+      <span class="td">${badgeHTML(e.origin)}</span>
+      <span class="td r green">+ ${fmt(e.amt)}</span>
+    </div>
+    <div class="inline-edit" id="ie-${e.id}">
+      <input type="text" id="ie-desc-${e.id}" value="${e.desc}" placeholder="Description">
+      <div class="ie-row">
+        <input type="number" id="ie-amt-${e.id}" value="${e.amt}" placeholder="Montant">
+        <select id="ie-from-${e.id}" style="width:100px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
+          <option value="" ${!e.from?'selected':''}>—</option>
+          <option value="S" ${e.from==='S'?'selected':''}>Souhail (S)</option>
+          <option value="B" ${e.from==='B'?'selected':''}>Baganda (B)</option>
+        </select>
+      </div>
+      <div class="ie-btns">
+        <button class="btn-save" onclick="savePHC('${e.id}')">Sauvegarder</button>
+        <button class="btn-cancel" onclick="closeEdit('ie-${e.id}')">Annuler</button>
+        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deletePHC('${e.id}')">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Add edit buttons overlay — tap description to edit
+  DATA.phcEntries.forEach(e => {
+    const row = document.getElementById('row-'+e.id);
+    if (row) row.addEventListener('click', () => toggleEdit('ie-'+e.id));
+  });
+
+  const net = brut - 3574;
+  document.getElementById('phc-brut').textContent = fmt(brut);
+  document.getElementById('phc-net-display').textContent = fmt(net);
+  document.getElementById('kpi-phc').textContent = fmt(net);
+}
+
+function addPHCEntry() {
+  const desc = document.getElementById('phc-desc').value.trim();
+  const amt = parseFloat(document.getElementById('phc-amt').value) || 0;
+  const from = document.getElementById('phc-from').value;
+  if (!desc || !amt) { showToast('Remplis la description et le montant'); return; }
+  DATA.phcEntries.push({id:uid(), desc, amt, from, origin:'PHC'});
+  document.getElementById('phc-desc').value = '';
+  document.getElementById('phc-amt').value = '';
+  document.getElementById('phc-from').value = '';
+  toggleForm('form-phc');
+  renderPHC();
+  calcAziz();
+  autoSave();
+  showToast('Entrée PHC ajoutée ✓');
+}
+
+function savePHC(id) {
+  const e = DATA.phcEntries.find(x => x.id === id);
+  if (!e) return;
+  e.desc = document.getElementById('ie-desc-'+id).value;
+  e.amt = parseFloat(document.getElementById('ie-amt-'+id).value) || 0;
+  e.from = document.getElementById('ie-from-'+id).value;
+  closeEdit('ie-'+id);
+  renderPHC(); calcAziz(); autoSave();
+  showToast('Modifié ✓');
+}
+
+function deletePHC(id) {
+  if (!confirm('Supprimer cette entrée ?')) return;
+  DATA.phcEntries = DATA.phcEntries.filter(x => x.id !== id);
+  renderPHC(); calcAziz(); autoSave();
+  showToast('Supprimé');
+}
+
+// ─── AZIZ RENDER ───────────────────────────────────────────────
+function calcAziz() {
+  const phcBrut = DATA.phcEntries.reduce((s,e) => s + e.amt, 0);
+  const phcNet = phcBrut - 3574;
+  const depReg = 692;
+  const dedAnt = 819;
+  const canape = 215;
+  const net = phcNet - depReg - dedAnt - canape;
+  document.getElementById('aziz-net-display').textContent = fmt(net);
+  document.getElementById('kpi-aziz').textContent = fmt(net);
+}
+
+function renderAziz() {
+  const el = document.getElementById('aziz-entries');
+  if (!DATA.azizEntries.length) {
+    el.innerHTML = '<div class="tbl-row entry-row"><span class="td muted" style="grid-column:1/-1">Aucune ligne</span></div>';
+    return;
+  }
+  el.innerHTML = DATA.azizEntries.map(e => {
+    const sign = e.type === 'credit' ? '+' : '−';
+    const cls = e.type === 'credit' ? 'green' : 'red';
+    return `
+    <div class="tbl-row entry-row" id="row-az-${e.id}">
+      <span class="td">${e.desc}</span>
+      <span class="td">${statusBadge(e.status)}</span>
+      <span class="td r ${cls}">${sign} ${fmt(e.amt)}</span>
+    </div>
+    <div class="inline-edit" id="ie-az-${e.id}">
+      <input type="text" id="ie-az-desc-${e.id}" value="${e.desc}" placeholder="Description">
+      <div class="ie-row">
+        <input type="number" id="ie-az-amt-${e.id}" value="${e.amt}" placeholder="Montant">
+      </div>
+      <select id="ie-az-type-${e.id}" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
+        <option value="credit" ${e.type==='credit'?'selected':''}>Il me doit (+)</option>
+        <option value="debit" ${e.type==='debit'?'selected':''}>Je lui dois (−)</option>
+      </select>
+      <select id="ie-az-status-${e.id}" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
+        <option value="pending" ${e.status==='pending'?'selected':''}>En attente</option>
+        <option value="done" ${e.status==='done'?'selected':''}>Réglé</option>
+      </select>
+      <div class="ie-btns">
+        <button class="btn-save" onclick="saveAziz('${e.id}')">Sauvegarder</button>
+        <button class="btn-cancel" onclick="closeEdit('ie-az-${e.id}')">Annuler</button>
+        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAziz('${e.id}')">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  DATA.azizEntries.forEach(e => {
+    const row = document.getElementById('row-az-'+e.id);
+    if (row) row.addEventListener('click', () => toggleEdit('ie-az-'+e.id));
+  });
+}
+
+function addAzizEntry() {
+  const desc = document.getElementById('aziz-desc').value.trim();
+  const amt = parseFloat(document.getElementById('aziz-amt').value) || 0;
+  const type = document.getElementById('aziz-type').value;
+  const status = document.getElementById('aziz-status').value;
+  if (!desc || !amt) { showToast('Remplis la description et le montant'); return; }
+  DATA.azizEntries.push({id:uid(), desc, amt, type, status});
+  document.getElementById('aziz-desc').value = '';
+  document.getElementById('aziz-amt').value = '';
+  toggleForm('form-aziz');
+  renderAziz(); autoSave();
+  showToast('Ligne ajoutée ✓');
+}
+
+function saveAziz(id) {
+  const e = DATA.azizEntries.find(x => x.id === id);
+  if (!e) return;
+  e.desc = document.getElementById('ie-az-desc-'+id).value;
+  e.amt = parseFloat(document.getElementById('ie-az-amt-'+id).value) || 0;
+  e.type = document.getElementById('ie-az-type-'+id).value;
+  e.status = document.getElementById('ie-az-status-'+id).value;
+  closeEdit('ie-az-'+id);
+  renderAziz(); autoSave();
+  showToast('Modifié ✓');
+}
+
+function deleteAziz(id) {
+  if (!confirm('Supprimer ?')) return;
+  DATA.azizEntries = DATA.azizEntries.filter(x => x.id !== id);
+  renderAziz(); autoSave();
+  showToast('Supprimé');
+}
+
+// ─── AIRBNB RENDER ─────────────────────────────────────────────
+function renderAirbnb() {
+  const may = document.getElementById('airbnb-may');
+  may.innerHTML = DATA.airbnbMay.map(e => `
+    <div class="tbl-row entry-row" id="row-ab-${e.id}">
+      <span class="td">${e.desc}</span>
+      <span class="td muted">Paiement reçu</span>
+      <span class="td r green">+ ${fmt(e.amt)}</span>
+    </div>
+    <div class="inline-edit" id="ie-ab-${e.id}">
+      <input type="text" id="ie-ab-desc-${e.id}" value="${e.desc}" placeholder="Description">
+      <input type="number" id="ie-ab-amt-${e.id}" value="${e.amt}" placeholder="Montant">
+      <div class="ie-btns">
+        <button class="btn-save" onclick="saveAirbnbMay('${e.id}')">Sauvegarder</button>
+        <button class="btn-cancel" onclick="closeEdit('ie-ab-${e.id}')">Annuler</button>
+        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAirbnbMay('${e.id}')">Supprimer</button>
+      </div>
+    </div>`).join('');
+
+  DATA.airbnbMay.forEach(e => {
+    const row = document.getElementById('row-ab-'+e.id);
+    if (row) row.addEventListener('click', () => toggleEdit('ie-ab-'+e.id));
+  });
+
+  const mayTotal = DATA.airbnbMay.reduce((s,e) => s + e.amt, 0);
+  document.getElementById('airbnb-may-total').textContent = fmt(mayTotal);
+
+  const grandTotal = 1180 + mayTotal;
+  document.getElementById('airbnb-total').textContent = fmt(grandTotal);
+  document.getElementById('kpi-airbnb').textContent = fmt(grandTotal);
+}
+
+function saveAirbnbMay(id) {
+  const e = DATA.airbnbMay.find(x => x.id === id);
+  if (!e) return;
+  e.desc = document.getElementById('ie-ab-desc-'+id).value;
+  e.amt = parseFloat(document.getElementById('ie-ab-amt-'+id).value) || 0;
+  closeEdit('ie-ab-'+id);
+  renderAirbnb(); autoSave();
+  showToast('Modifié ✓');
+}
+
+function deleteAirbnbMay(id) {
+  if (!confirm('Supprimer ?')) return;
+  DATA.airbnbMay = DATA.airbnbMay.filter(x => x.id !== id);
+  renderAirbnb(); autoSave();
+  showToast('Supprimé');
+}
+
+function addAirbnbEntry() {
+  const month = document.getElementById('ab-month').value.trim();
+  const desc = document.getElementById('ab-desc').value.trim();
+  const amt = parseFloat(document.getElementById('ab-amt').value) || 0;
+  const type = document.getElementById('ab-type').value;
+  if (!desc || !amt) { showToast('Remplis la description et le montant'); return; }
+  const entry = {id:uid(), month, desc, amt, type};
+  if (!month || month.toLowerCase().includes('mai')) {
+    DATA.airbnbMay.push(entry);
+  } else {
+    DATA.airbnbExtra.push(entry);
+  }
+  document.getElementById('ab-desc').value = '';
+  document.getElementById('ab-amt').value = '';
+  document.getElementById('ab-month').value = '';
+  toggleForm('form-airbnb');
+  renderAirbnb(); autoSave();
+  showToast('Mouvement Airbnb ajouté ✓');
+}
+
+// ─── APPART RENDER ─────────────────────────────────────────────
+function renderAppart() {
+  const el = document.getElementById('appart-entries');
+  el.innerHTML = DATA.appartEntries.map(e => `
+    <div class="tbl-row entry-row-4" id="row-ap-${e.id}">
+      <span class="td">${e.desc}${e.shared?' <span style="font-size:10px;color:var(--blue)">÷2</span>':''}</span>
+      <span class="td"><span class="badge b-appt">${e.cat}</span></span>
+      <span class="td r red">− ${fmt(e.amt)}</span>
+      <span class="row-actions">
+        <button class="btn-edit" onclick="event.stopPropagation();toggleEdit('ie-ap-${e.id}')">✏️</button>
+        <button class="btn-del" onclick="event.stopPropagation();deleteAppart('${e.id}')">🗑</button>
+      </span>
+    </div>
+    <div class="inline-edit" id="ie-ap-${e.id}">
+      <input type="text" id="ie-ap-desc-${e.id}" value="${e.desc}" placeholder="Description">
+      <div class="ie-row">
+        <input type="number" id="ie-ap-amt-${e.id}" value="${e.amt}" placeholder="Montant">
+        <select id="ie-ap-cat-${e.id}" style="width:120px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
+          <option ${e.cat==='Mobilier'?'selected':''}>Mobilier</option>
+          <option ${e.cat==='Équipement'?'selected':''}>Équipement</option>
+          <option ${e.cat==='Travaux'?'selected':''}>Travaux</option>
+          <option ${e.cat==='Courses'?'selected':''}>Courses ÷ 2</option>
+          <option ${e.cat==='Divers'?'selected':''}>Divers</option>
+        </select>
+      </div>
+      <label style="font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <input type="checkbox" id="ie-ap-shared-${e.id}" ${e.shared?'checked':''}> Partagé ÷ 2
+      </label>
+      <div class="ie-btns">
+        <button class="btn-save" onclick="saveAppart('${e.id}')">Sauvegarder</button>
+        <button class="btn-cancel" onclick="closeEdit('ie-ap-${e.id}')">Annuler</button>
+      </div>
+    </div>`).join('');
+
+  const total = DATA.appartEntries.reduce((s,e) => s + e.amt, 0);
+  document.getElementById('appart-total').textContent = fmt(total);
+  document.getElementById('appart-total-row').textContent = fmt(total);
+  document.getElementById('kpi-appart').textContent = fmt(total);
+}
+
+function addAppartEntry() {
+  const desc = document.getElementById('ap-desc').value.trim();
+  const amt = parseFloat(document.getElementById('ap-amt').value) || 0;
+  const cat = document.getElementById('ap-cat').value;
+  const shared = document.getElementById('ap-shared').checked;
+  if (!desc || !amt) { showToast('Remplis la description et le montant'); return; }
+  DATA.appartEntries.push({id:uid(), desc, cat, amt, shared});
+  document.getElementById('ap-desc').value = '';
+  document.getElementById('ap-amt').value = '';
+  document.getElementById('ap-shared').checked = false;
+  toggleForm('form-appart');
+  renderAppart(); autoSave();
+  showToast('Dépense appart ajoutée ✓');
+}
+
+function saveAppart(id) {
+  const e = DATA.appartEntries.find(x => x.id === id);
+  if (!e) return;
+  e.desc = document.getElementById('ie-ap-desc-'+id).value;
+  e.amt = parseFloat(document.getElementById('ie-ap-amt-'+id).value) || 0;
+  e.cat = document.getElementById('ie-ap-cat-'+id).value;
+  e.shared = document.getElementById('ie-ap-shared-'+id).checked;
+  closeEdit('ie-ap-'+id);
+  renderAppart(); autoSave();
+  showToast('Modifié ✓');
+}
+
+function deleteAppart(id) {
+  if (!confirm('Supprimer ?')) return;
+  DATA.appartEntries = DATA.appartEntries.filter(x => x.id !== id);
+  renderAppart(); autoSave();
+  showToast('Supprimé');
+}
+
+// ─── AVOIRS RENDER ─────────────────────────────────────────────
+function renderAvoirs() {
+  const el = document.getElementById('avoir-entries');
+  let totalEur = 0, totalDT = 0;
+  el.innerHTML = DATA.avoirEntries.map(e => {
+    if (e.currency === 'DT') totalDT += e.amt;
+    else totalEur += e.amt;
+    const valStr = (e.amt < 0 ? '− ' : '+ ') + Math.abs(e.amt).toLocaleString('fr-FR') + ' ' + e.currency;
+    const cls = e.amt < 0 ? 'red' : 'green';
+    return `
+    <div class="tbl-row entry-row" id="row-av-${e.id}">
+      <span class="td">${e.pers}<br><span class="td sub">${e.detail}</span></span>
+      <span class="td">${statusBadge(e.status)}</span>
+      <span class="td r ${cls}">${valStr}</span>
+    </div>
+    <div class="inline-edit" id="ie-av-${e.id}">
+      <input type="text" id="ie-av-pers-${e.id}" value="${e.pers}" placeholder="Personne">
+      <input type="text" id="ie-av-detail-${e.id}" value="${e.detail}" placeholder="Détail">
+      <div class="ie-row">
+        <input type="number" id="ie-av-amt-${e.id}" value="${e.amt}" placeholder="Montant">
+        <select id="ie-av-curr-${e.id}" style="width:80px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
+          <option value="EUR" ${e.currency==='EUR'?'selected':''}>€</option>
+          <option value="DT" ${e.currency==='DT'?'selected':''}>DT</option>
+        </select>
+      </div>
+      <select id="ie-av-status-${e.id}" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
+        <option value="pending" ${e.status==='pending'?'selected':''}>En attente</option>
+        <option value="received" ${e.status==='received'?'selected':''}>Reçu</option>
+        <option value="deducted" ${e.status==='deducted'?'selected':''}>Déduit</option>
+      </select>
+      <div class="ie-btns">
+        <button class="btn-save" onclick="saveAvoir('${e.id}')">Sauvegarder</button>
+        <button class="btn-cancel" onclick="closeEdit('ie-av-${e.id}')">Annuler</button>
+        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAvoir('${e.id}')">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  DATA.avoirEntries.forEach(e => {
+    const row = document.getElementById('row-av-'+e.id);
+    if (row) row.addEventListener('click', () => toggleEdit('ie-av-'+e.id));
+  });
+
+  document.getElementById('kpi-avoirs').textContent = totalDT.toLocaleString('fr-FR') + ' DT' + (totalEur ? ' + ' + fmt(totalEur) : '');
+}
+
+function addAvoir() {
+  const pers = document.getElementById('av-pers').value.trim();
+  const detail = document.getElementById('av-detail').value.trim();
+  const amt = parseFloat(document.getElementById('av-amt').value) || 0;
+  const currency = document.getElementById('av-currency').value;
+  const status = document.getElementById('av-status').value;
+  if (!pers || !amt) { showToast('Remplis la personne et le montant'); return; }
+  DATA.avoirEntries.push({id:uid(), pers, detail, amt, currency, status});
+  document.getElementById('av-pers').value = '';
+  document.getElementById('av-detail').value = '';
+  document.getElementById('av-amt').value = '';
+  toggleForm('form-avoir');
+  renderAvoirs(); autoSave();
+  showToast('Avoir ajouté ✓');
+}
+
+function saveAvoir(id) {
+  const e = DATA.avoirEntries.find(x => x.id === id);
+  if (!e) return;
+  e.pers = document.getElementById('ie-av-pers-'+id).value;
+  e.detail = document.getElementById('ie-av-detail-'+id).value;
+  e.amt = parseFloat(document.getElementById('ie-av-amt-'+id).value) || 0;
+  e.currency = document.getElementById('ie-av-curr-'+id).value;
+  e.status = document.getElementById('ie-av-status-'+id).value;
+  closeEdit('ie-av-'+id);
+  renderAvoirs(); autoSave();
+  showToast('Modifié ✓');
+}
+
+function deleteAvoir(id) {
+  if (!confirm('Supprimer ?')) return;
+  DATA.avoirEntries = DATA.avoirEntries.filter(x => x.id !== id);
+  renderAvoirs(); autoSave();
+  showToast('Supprimé');
+}
+
+// ─── CHARGES RENDER ────────────────────────────────────────────
+function renderCharges() {
+  const el = document.getElementById('charges-entries');
+  let total = 0;
+  el.innerHTML = DATA.chargesEntries.map(e => {
+    total += e.amt;
+    return `
+    <div class="tbl-row entry-row" id="row-ch-${e.id}">
+      <span class="td">${e.desc}</span>
+      <span class="td muted">${e.freq}</span>
+      <span class="td r red">− ${fmt(e.amt)}</span>
+    </div>
+    <div class="inline-edit" id="ie-ch-${e.id}">
+      <input type="text" id="ie-ch-desc-${e.id}" value="${e.desc}" placeholder="Poste">
+      <div class="ie-row">
+        <input type="number" id="ie-ch-amt-${e.id}" value="${e.amt}" placeholder="Montant">
+        <select id="ie-ch-freq-${e.id}" style="width:110px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
+          <option ${e.freq==='Mensuel'?'selected':''}>Mensuel</option>
+          <option ${e.freq==='Annuel'?'selected':''}>Annuel</option>
+        </select>
+      </div>
+      <div class="ie-btns">
+        <button class="btn-save" onclick="saveCharge('${e.id}')">Sauvegarder</button>
+        <button class="btn-cancel" onclick="closeEdit('ie-ch-${e.id}')">Annuler</button>
+        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteCharge('${e.id}')">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  DATA.chargesEntries.forEach(e => {
+    const row = document.getElementById('row-ch-'+e.id);
+    if (row) row.addEventListener('click', () => toggleEdit('ie-ch-'+e.id));
+  });
+
+  document.getElementById('charges-total').textContent = fmt(total);
+  document.getElementById('charges-total-row').textContent = fmt(total);
+}
+
+function addCharge() {
+  const desc = document.getElementById('ch-desc').value.trim();
+  const amt = parseFloat(document.getElementById('ch-amt').value) || 0;
+  const freq = document.getElementById('ch-freq').value;
+  if (!desc || !amt) { showToast('Remplis le poste et le montant'); return; }
+  DATA.chargesEntries.push({id:uid(), desc, amt, freq});
+  document.getElementById('ch-desc').value = '';
+  document.getElementById('ch-amt').value = '';
+  toggleForm('form-charge');
+  renderCharges(); autoSave();
+  showToast('Charge ajoutée ✓');
+}
+
+function saveCharge(id) {
+  const e = DATA.chargesEntries.find(x => x.id === id);
+  if (!e) return;
+  e.desc = document.getElementById('ie-ch-desc-'+id).value;
+  e.amt = parseFloat(document.getElementById('ie-ch-amt-'+id).value) || 0;
+  e.freq = document.getElementById('ie-ch-freq-'+id).value;
+  closeEdit('ie-ch-'+id);
+  renderCharges(); autoSave();
+  showToast('Modifié ✓');
+}
+
+function deleteCharge(id) {
+  if (!confirm('Supprimer ?')) return;
+  DATA.chargesEntries = DATA.chargesEntries.filter(x => x.id !== id);
+  renderCharges(); autoSave();
+  showToast('Supprimé');
+}
+
+// ─── UI HELPERS ────────────────────────────────────────────────
+function sw(name, btn) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
   document.getElementById('pan-'+name).classList.add('on');
   btn.classList.add('on');
 }
 
-function renderAll() { rRev(); rAziz(); rAir(); rApt(); rAv(); }
-function f(n) { return n.toLocaleString('fr-FR')+' €'; }
-function empty(msg) { return `<div class="empty">${msg}</div>`; }
-
-function rRev() {
-  const ai=D.revenus.filter(x=>x.t==='in').reduce((s,x)=>s+x.a,0);
-  const ao=D.revenus.filter(x=>x.t==='out').reduce((s,x)=>s+x.a,0);
-  const sal=B.sal+ai, dispo=sal-B.loyer-B.charges-ao;
-  document.getElementById('rv-sal').textContent='+ '+f(sal);
-  document.getElementById('rv-dispo').textContent=f(dispo);
-  document.getElementById('c-dispo').textContent=f(dispo);
-  const el=document.getElementById('l-revenus');
-  el.innerHTML=D.revenus.length===0?empty('Aucun élément'):D.revenus.map((x,i)=>`<div class="cr"><span class="cl">${x.d}</span><span class="badge ${x.t==='in'?'bpos':'bch'}">${x.t==='in'?'Revenu':'Charge'}</span><span class="cv ${x.t==='in'?'vg':'vr'}">${x.t==='in'?'+':'−'} ${f(x.a)}</span><button class="bd" onclick="del('revenus',${i})">✕</button></div>`).join('');
+function toggleForm(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+  if (el.classList.contains('open')) {
+    el.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
 }
 
-function rAziz() {
-  const tE=D.entrees.reduce((s,x)=>s+x.a,0);
-  const tD=D.deds.reduce((s,x)=>s+x.a,0);
-  const tA=D.appart.reduce((s,x)=>s+(x.s==='half'?x.a/2:0),0);
-  const net=B.aziz+tE-tD-tA;
-  document.getElementById('c-aziz').textContent=f(net);
-  document.getElementById('net-aziz').textContent=f(net);
-  document.getElementById('l-entrees').innerHTML=D.entrees.length===0?empty('Aucune entrée'):D.entrees.map((x,i)=>`<div class="cr"><span class="cl">${x.d}${x.w?` <span class="tag-${x.w==='S'?'s':'b'}">${x.w}</span>`:''}</span><span class="badge bphc">${x.tp}</span><span class="cv vg">+ ${f(x.a)}</span><button class="bd" onclick="del('entrees',${i})">✕</button></div>`).join('');
-  document.getElementById('l-deds').innerHTML=D.deds.length===0?empty('Aucune déduction'):D.deds.map((x,i)=>`<div class="cr"><span class="cl">${x.d}</span><span class="cv vr">− ${f(x.a)}</span><button class="bd" onclick="del('deds',${i})">✕</button></div>`).join('');
+function toggleEdit(id) {
+  const all = document.querySelectorAll('.inline-edit');
+  all.forEach(el => { if (el.id !== id) el.classList.remove('open'); });
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.toggle('open');
+    if (el.classList.contains('open')) {
+      el.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+  }
 }
 
-function rAir() {
-  const tot=D.airbnb.reduce((s,x)=>s+(x.t==='in'?x.a:-x.a),0);
-  const net=B.airbnb+tot;
-  document.getElementById('c-airbnb').textContent=f(net);
-  document.getElementById('air-tot').textContent=f(net);
-  document.getElementById('l-air').innerHTML=D.airbnb.length===0?empty('Aucun mouvement'):D.airbnb.map((x,i)=>`<div class="cr"><span class="cl">${x.m}</span><span class="cv ${x.t==='in'?'vg':'vr'}">${x.t==='in'?'+':'−'} ${f(x.a)}</span><button class="bd" onclick="del('airbnb',${i})">✕</button></div>`).join('');
+function closeEdit(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
 }
 
-function rApt() {
-  const tot=B.appart+D.appart.reduce((s,x)=>s+x.a,0);
-  document.getElementById('c-appt').textContent=tot.toLocaleString('fr-FR')+' €';
-  document.getElementById('apt-tot').textContent=tot.toLocaleString('fr-FR')+' €';
-  document.getElementById('l-apt').innerHTML=D.appart.length===0?empty('Aucune dépense enregistrée'):D.appart.map((x,i)=>`<div class="cr"><span class="cl">${x.d}${x.s==='half'?`<div class="sub2">Partagé ÷ 2 — ${Math.round(x.a/2)} € déduits du solde</div>`:''}</span><span class="badge bappt">${x.c}</span><span class="cv vr">− ${f(x.a)}</span><button class="bd" onclick="del('appart',${i})">✕</button></div>`).join('');
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-function rAv() {
-  const tDT=B.dt+D.avoirs.filter(x=>x.dv==='DT').reduce((s,x)=>s+x.a,0);
-  document.getElementById('c-dt').textContent=tDT.toLocaleString('fr-FR')+' DT';
-  document.getElementById('av-tot').textContent=tDT.toLocaleString('fr-FR')+' DT';
-  document.getElementById('l-av').innerHTML=D.avoirs.length===0?empty('Aucun avoir enregistré'):D.avoirs.map((x,i)=>`<div class="cr"><span class="cl">${x.d}</span><span class="badge bwait">${x.st}</span><span class="cv ${x.st==='Déduit'?'vr':'vm'}">${x.st==='Déduit'?'−':'+'} ${x.a.toLocaleString('fr-FR')} ${x.dv}</span><button class="bd" onclick="del('avoirs',${i})">✕</button></div>`).join('');
+function renderAll() {
+  renderPHC();
+  renderAziz();
+  renderAirbnb();
+  renderAppart();
+  renderAvoirs();
+  renderCharges();
+  calcAziz();
 }
 
-function g(id){return document.getElementById(id);}
-function clr(...ids){ids.forEach(i=>g(i).value='');}
-function chk(d,a){if(!d||!a||a<=0){toast('Remplis tous les champs');return false;}return true;}
+function autoSave() {
+  saveLocal();
+  // Debounced Drive save
+  clearTimeout(autoSave._t);
+  autoSave._t = setTimeout(() => saveToDrive(), 3000);
+}
 
-function addRev(){const d=g('rv-d').value.trim(),a=parseFloat(g('rv-a').value),t=g('rv-t').value;if(!chk(d,a))return;D.revenus.push({d,a,t});clr('rv-d','rv-a');renderAll();autoSave();}
-function addIn(){const d=g('in-d').value.trim(),a=parseFloat(g('in-a').value),w=g('in-w').value,tp=g('in-t').value;if(!chk(d,a))return;D.entrees.push({d,a,w,tp});clr('in-d','in-a');renderAll();autoSave();}
-function addDed(){const d=g('dd-d').value.trim(),a=parseFloat(g('dd-a').value);if(!chk(d,a))return;D.deds.push({d,a});clr('dd-d','dd-a');renderAll();autoSave();}
-function addAir(){const m=g('ab-m').value.trim(),a=parseFloat(g('ab-a').value),t=g('ab-t').value;if(!chk(m,a))return;D.airbnb.push({m,a,t});clr('ab-m','ab-a');renderAll();autoSave();}
-function addApt(){const d=g('ap-d').value.trim(),a=parseFloat(g('ap-a').value),c=g('ap-c').value,s=g('ap-s').value;if(!chk(d,a))return;D.appart.push({d,a,c,s});clr('ap-d','ap-a');renderAll();autoSave();}
-function addAv(){const d=g('av-d').value.trim(),a=parseFloat(g('av-a').value),dv=g('av-dv').value,st=g('av-st').value;if(!chk(d,a))return;D.avoirs.push({d,a,dv,st});clr('av-d','av-a');renderAll();autoSave();}
-function del(k,i){D[k].splice(i,1);renderAll();autoSave();}
+// ─── BOOT ──────────────────────────────────────────────────────
+async function boot() {
+  const hadRedirect = handleRedirectToken();
+  const hasStored = loadStoredToken();
 
-const tok=localStorage.getItem('gd_tok');
-const fid=localStorage.getItem('gd_fid');
-if(fid)FILE_ID=fid;
-if(tok){TOKEN=tok;showApp();loadData();}
-else{showApp();setStatus('Non connecté');try{const r=localStorage.getItem('dash_data');if(r)merge(JSON.parse(r));}catch(e){}renderAll();}
+  if (accessToken) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('app').classList.add('visible');
+    await fetchUserInfo();
+    loadLocal(); // render immediately from local
+    await findOrCreateDriveFile(); // then sync from Drive
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+}
+
+window.addEventListener('load', boot);
 </script>
 </body>
 </html>
