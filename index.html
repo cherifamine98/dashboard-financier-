@@ -1,305 +1,107 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Dashboard Amine</title>
-
-<!-- Google Sign-In — redirect mode (fix mobile Safari popup block) -->
 <meta name="google-signin-client_id" content="1080899511515-sm2u3tuf69tc7b60cv1o7b8nko7ukhn6.apps.googleusercontent.com">
-
 <style>
-/* ── Reset & Base ── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#0a0a0f;
-  --bg2:#111118;
-  --bg3:#1a1a24;
-  --border:#ffffff0f;
-  --border2:#ffffff18;
-  --text:#f0f0f5;
-  --text2:#8888a0;
-  --text3:#55556a;
-  --green:#00e87a;
-  --green-dim:#00e87a22;
-  --red:#ff4757;
-  --red-dim:#ff475722;
-  --blue:#4d9fff;
-  --blue-dim:#4d9fff22;
-  --purple:#a855f7;
-  --purple-dim:#a855f722;
-  --orange:#ff8c42;
-  --orange-dim:#ff8c4222;
-  --gold:#f5c842;
-  --gold-dim:#f5c84222;
-  --radius:14px;
-  --radius-sm:8px;
-  --font:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-}
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--border:#ffffff0f;--border2:#ffffff18;--text:#f0f0f5;--text2:#8888a0;--text3:#55556a;--green:#00e87a;--green-dim:#00e87a22;--red:#ff4757;--red-dim:#ff475722;--blue:#4d9fff;--blue-dim:#4d9fff22;--purple:#a855f7;--orange:#ff8c42;--gold:#f5c842;--radius:14px;--radius-sm:8px;--font:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;overscroll-behavior:none}
-
-/* ── Login Screen ── */
-#login-screen{
-  position:fixed;inset:0;z-index:999;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:var(--bg);padding:40px 24px;
-}
+#login-screen{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);padding:40px 24px}
 #login-screen .logo{font-size:42px;margin-bottom:16px}
 #login-screen h1{font-size:22px;font-weight:700;margin-bottom:6px;text-align:center}
 #login-screen p{font-size:14px;color:var(--text2);text-align:center;margin-bottom:40px;max-width:280px}
-.google-btn{
-  display:flex;align-items:center;gap:12px;
-  background:#fff;color:#1f1f1f;
-  border:none;border-radius:24px;
-  padding:14px 24px;font-size:15px;font-weight:600;
-  cursor:pointer;width:100%;max-width:320px;justify-content:center;
-  box-shadow:0 2px 12px #0006;
-}
+.google-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#1f1f1f;border:none;border-radius:24px;padding:14px 24px;font-size:15px;font-weight:600;cursor:pointer;width:100%;max-width:320px;justify-content:center;box-shadow:0 2px 12px #0006}
 .google-btn img{width:20px;height:20px}
 .google-btn:active{opacity:.85;transform:scale(.98)}
 .login-note{font-size:12px;color:var(--text3);margin-top:20px;text-align:center}
-.user-badge{
-  display:none;align-items:center;gap:8px;
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:24px;padding:6px 14px 6px 8px;
-  font-size:13px;cursor:pointer;
-}
+.user-badge{display:none;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:24px;padding:6px 14px 6px 8px;font-size:13px;cursor:pointer}
 .user-badge img{width:28px;height:28px;border-radius:50%}
 .user-badge.visible{display:flex}
-
-/* ── App Shell ── */
 #app{display:none;flex-direction:column;min-height:100vh}
 #app.visible{display:flex}
-
-/* ── Header ── */
-.hdr{
-  position:sticky;top:0;z-index:100;
-  background:var(--bg)cc;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  padding:0 16px;height:56px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-}
+.hdr{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .hdr-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
 .hdr-right{display:flex;align-items:center;gap:8px}
-.sync-btn{
-  background:var(--bg3);border:1px solid var(--border);border-radius:20px;
-  padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;
-  display:flex;align-items:center;gap:5px;
-}
+.sync-btn{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
 .sync-dot.off{background:var(--text3)}
-
-/* ── KPI Cards ── */
-.kpi-scroll{
-  display:flex;gap:10px;padding:16px 16px 4px;
-  overflow-x:auto;scrollbar-width:none;
-}
+.kpi-scroll{display:flex;gap:10px;padding:16px 16px 4px;overflow-x:auto;scrollbar-width:none}
 .kpi-scroll::-webkit-scrollbar{display:none}
-.kpi{
-  flex-shrink:0;
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius);padding:14px 16px;min-width:148px;
-}
+.kpi{flex-shrink:0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;min-width:148px}
 .kpi-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px}
 .kpi-val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
 .kpi-sub{font-size:11px;color:var(--text3);margin-top:3px}
-.kpi-val.green{color:var(--green)}
-.kpi-val.red{color:var(--red)}
-.kpi-val.muted{color:var(--text2)}
-
-/* ── Tabs ── */
-.tabs{
-  display:flex;gap:6px;padding:12px 16px 0;
-  overflow-x:auto;scrollbar-width:none;
-}
+.kpi-val.green{color:var(--green)}.kpi-val.red{color:var(--red)}.kpi-val.muted{color:var(--text2)}
+.tabs{display:flex;gap:6px;padding:12px 16px 0;overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{
-  flex-shrink:0;font-size:13px;font-weight:500;
-  padding:7px 16px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--text2);cursor:pointer;
-  transition:all .15s;
-}
+.tab{flex-shrink:0;font-size:13px;font-weight:500;padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab.on{background:var(--text);color:var(--bg);border-color:transparent;font-weight:600}
-
-/* ── Panels ── */
 .panels{padding:16px;padding-bottom:80px}
-.panel{display:none}
-.panel.on{display:block}
-
-/* ── Section ── */
+.panel{display:none}.panel.on{display:block}
 .sec{margin-bottom:20px}
-.sec-head{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px;
-}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .sec-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)}
 .sec-total{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
-
-/* ── Table ── */
-.tbl{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius);overflow:hidden;
-}
-.tbl-row{
-  display:grid;gap:8px;padding:11px 14px;
-  border-bottom:1px solid var(--border);
-  align-items:center;position:relative;
-}
+.tbl{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.tbl-row{display:grid;gap:8px;padding:11px 14px;border-bottom:1px solid var(--border);align-items:center;position:relative;cursor:pointer}
 .tbl-row:last-child{border-bottom:none}
 .tbl-row.entry-row{grid-template-columns:1fr auto auto}
 .tbl-row.entry-row-4{grid-template-columns:1fr auto auto auto}
-.tbl-head{
-  display:grid;gap:8px;padding:8px 14px;
-  background:var(--bg3);border-bottom:1px solid var(--border);
-}
-.tbl-head.h3{grid-template-columns:1fr auto auto}
-.tbl-head.h4{grid-template-columns:1fr auto auto auto}
+.tbl-head{display:grid;gap:8px;padding:8px 14px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.tbl-head.h3{grid-template-columns:1fr auto auto}.tbl-head.h4{grid-template-columns:1fr auto auto auto}
 .th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
 .th.r{text-align:right}
-.td{font-size:13px;color:var(--text)}
-.td.muted{color:var(--text2)}
-.td.r{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
-.td.green{color:var(--green)}
-.td.red{color:var(--red)}
-.td.sub{font-size:11px;color:var(--text3);margin-top:1px}
-.tbl-tot{
-  display:grid;gap:8px;padding:11px 14px;
-  background:var(--bg3);border-top:1px solid var(--border2);
-}
-.tbl-tot.t2{grid-template-columns:1fr auto}
-.tbl-tot.t3{grid-template-columns:1fr auto auto}
-.tbl-tot.t4{grid-template-columns:1fr auto auto auto}
-.tbl-tot .td{font-weight:700}
-
-/* ── Badges ── */
+.td{font-size:13px;color:var(--text)}.td.muted{color:var(--text2)}.td.r{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.td.green{color:var(--green)}.td.red{color:var(--red)}.td.sub{font-size:11px;color:var(--text3);margin-top:1px}
+.tbl-tot{display:grid;gap:8px;padding:11px 14px;background:var(--bg3);border-top:1px solid var(--border2)}
+.tbl-tot.t2{grid-template-columns:1fr auto}.tbl-tot.t3{grid-template-columns:1fr auto auto}.tbl-tot .td{font-weight:700}
 .badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap}
-.b-phc{background:#1a3a6a;color:var(--blue)}
-.b-fam{background:#3a2500;color:var(--orange)}
-.b-log{background:#2a1a3a;color:var(--purple)}
-.b-appt{background:#1a2a4a;color:#7ab3ff}
-.b-ok{background:#003a20;color:var(--green)}
-.b-wait{background:#3a2a00;color:var(--gold)}
-.b-neg{background:#3a0010;color:var(--red)}
+.b-phc{background:#1a3a6a;color:var(--blue)}.b-fam{background:#3a2500;color:var(--orange)}.b-log{background:#2a1a3a;color:var(--purple)}
+.b-appt{background:#1a2a4a;color:#7ab3ff}.b-ok{background:#003a20;color:var(--green)}.b-wait{background:#3a2a00;color:var(--gold)}.b-neg{background:#3a0010;color:var(--red)}
 .tag{display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;width:18px;height:18px;border-radius:5px;flex-shrink:0}
-.tag-s{background:#003a20;color:var(--green)}
-.tag-b{background:#1a2a4a;color:var(--blue)}
-
-/* ── Action Buttons ── */
+.tag-s{background:#003a20;color:var(--green)}.tag-b{background:#1a2a4a;color:var(--blue)}
 .row-actions{display:flex;gap:4px}
-.btn-edit,.btn-del{
-  width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:13px;
-  transition:all .15s;
-}
-.btn-edit{background:var(--bg3);color:var(--text2)}
-.btn-edit:hover,.btn-edit:active{background:#1a2a4a;color:var(--blue)}
-.btn-del{background:var(--bg3);color:var(--text2)}
-.btn-del:hover,.btn-del:active{background:#3a0010;color:var(--red)}
-
-/* ── Inline Edit ── */
-.inline-edit{
-  display:none;background:var(--bg3);border:1px solid var(--blue);
-  border-radius:var(--radius);padding:14px;margin:-1px;position:relative;z-index:10;
-}
+.btn-edit,.btn-del{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
+.btn-edit{background:var(--bg3);color:var(--text2)}.btn-edit:active{background:#1a2a4a;color:var(--blue)}
+.btn-del{background:var(--bg3);color:var(--text2)}.btn-del:active{background:#3a0010;color:var(--red)}
+.inline-edit{display:none;background:var(--bg3);border:1px solid var(--blue);border-radius:var(--radius);padding:14px;position:relative;z-index:10}
 .inline-edit.open{display:block}
-.inline-edit input,.inline-edit select{
-  width:100%;background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius-sm);color:var(--text);font-size:14px;
-  padding:10px 12px;margin-bottom:8px;font-family:var(--font);
-}
+.inline-edit input,.inline-edit select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;padding:10px 12px;margin-bottom:8px;font-family:var(--font)}
 .inline-edit input:focus,.inline-edit select:focus{outline:none;border-color:var(--blue)}
-.ie-row{display:flex;gap:6px}
-.ie-row input{flex:1}
+.ie-row{display:flex;gap:6px}.ie-row input{flex:1}
 .ie-btns{display:flex;gap:6px;margin-top:4px}
-.btn-save,.btn-cancel{
-  flex:1;padding:10px;border-radius:var(--radius-sm);border:none;
-  font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);
-}
-.btn-save{background:var(--blue);color:#fff}
-.btn-cancel{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
-
-/* ── Add Row Button ── */
-.add-row-btn{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  width:100%;padding:11px;border:1px dashed var(--border2);border-radius:var(--radius);
-  background:transparent;color:var(--text3);font-size:13px;cursor:pointer;
-  margin-top:8px;transition:all .15s;font-family:var(--font);
-}
-.add-row-btn:hover,.add-row-btn:active{border-color:var(--blue);color:var(--blue)}
-
-/* ── Add Form ── */
-.add-form{
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius);padding:16px;margin-top:8px;
-  display:none;
-}
+.btn-save,.btn-cancel{flex:1;padding:10px;border-radius:var(--radius-sm);border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.btn-save{background:var(--blue);color:#fff}.btn-cancel{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
+.add-row-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border:1px dashed var(--border2);border-radius:var(--radius);background:transparent;color:var(--text3);font-size:13px;cursor:pointer;margin-top:8px;transition:all .15s;font-family:var(--font)}
+.add-row-btn:active{border-color:var(--blue);color:var(--blue)}
+.add-form{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:8px;display:none}
 .add-form.open{display:block}
 .add-form label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
-.add-form input,.add-form select{
-  width:100%;background:var(--bg3);border:1px solid var(--border);
-  border-radius:var(--radius-sm);color:var(--text);font-size:14px;
-  padding:10px 12px;margin-bottom:12px;font-family:var(--font);
-}
+.add-form input,.add-form select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;padding:10px 12px;margin-bottom:12px;font-family:var(--font)}
 .add-form input:focus,.add-form select:focus{outline:none;border-color:var(--blue)}
-.form-row{display:flex;gap:8px}
-.form-row > div{flex:1}
-.btn-primary{
-  width:100%;padding:12px;background:var(--blue);color:#fff;
-  border:none;border-radius:var(--radius-sm);font-size:14px;
-  font-weight:600;cursor:pointer;font-family:var(--font);
-}
+.form-row{display:flex;gap:8px}.form-row>div{flex:1}
+.btn-primary{width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
 .btn-primary:active{opacity:.85}
-
-/* ── Calc Rows ── */
-.calc-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 14px;border-bottom:1px solid var(--border);
-}
+.calc-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
 .calc-row:last-child{border-bottom:none}
-.calc-row .label{font-size:13px;color:var(--text2)}
-.calc-row .val{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.calc-row .label{font-size:13px;color:var(--text2)}.calc-row .val{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
 .calc-row.sub .label,.calc-row.sub .val{font-size:11px;color:var(--text3)}
-.calc-row.tot{background:var(--bg3)}
-.calc-row.tot .label{font-weight:700;color:var(--text)}
-.calc-row.tot .val{font-size:15px;font-weight:700}
-
-/* ── Month Block ── */
-.month-label{
-  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
-  color:var(--text3);padding:6px 0;margin-top:12px;margin-bottom:6px;
-  display:flex;align-items:center;gap:6px;
-}
+.calc-row.tot{background:var(--bg3)}.calc-row.tot .label{font-weight:700;color:var(--text)}.calc-row.tot .val{font-size:15px;font-weight:700}
+.month-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);padding:6px 0;margin-top:12px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .month-label::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* ── Coloc Banner ── */
-.coloc-banner{
-  background:var(--blue-dim);border:1px solid var(--blue)44;
-  border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;
-  font-size:13px;color:var(--blue);
-}
+.coloc-banner{background:var(--blue-dim);border:1px solid #4d9fff44;border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--blue)}
 .coloc-banner strong{color:var(--text)}
-
-/* ── Strikethrough (réglé) ── */
-.regle .td{text-decoration:line-through;opacity:.5}
-
-/* ── Toast ── */
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
-  background:var(--bg3);border:1px solid var(--border2);
-  border-radius:24px;padding:10px 20px;font-size:13px;
-  transition:transform .25s cubic-bezier(.175,.885,.32,1.275);
-  pointer-events:none;z-index:9999;white-space:nowrap;
-}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--border2);border-radius:24px;padding:10px 20px;font-size:13px;transition:transform .25s cubic-bezier(.175,.885,.32,1.275);pointer-events:none;z-index:9999;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
-
-/* ── Bottom nav placeholder ── */
 .bottom-safe{height:env(safe-area-inset-bottom,0px)}
+.ie-sel{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px}
 </style>
 </head>
 <body>
 
-<!-- ══ LOGIN SCREEN ══ -->
 <div id="login-screen">
   <div class="logo">💳</div>
   <h1>Dashboard Amine</h1>
@@ -311,10 +113,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
   <p class="login-note">Données stockées dans ton Google Drive personnel.</p>
 </div>
 
-<!-- ══ APP ══ -->
 <div id="app">
-
-  <!-- Header -->
   <div class="hdr">
     <div class="hdr-title">Dashboard Amine</div>
     <div class="hdr-right">
@@ -329,36 +128,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
 
-  <!-- KPI Cards -->
   <div class="kpi-scroll">
-    <div class="kpi">
-      <div class="kpi-label">Net Aziz</div>
-      <div class="kpi-val green" id="kpi-aziz">5 030 €</div>
-      <div class="kpi-sub">PHC − dépenses</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">PHC net</div>
-      <div class="kpi-val green" id="kpi-phc">6 822 €</div>
-      <div class="kpi-sub">Après virement</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Airbnb</div>
-      <div class="kpi-val green" id="kpi-airbnb">1 585 €</div>
-      <div class="kpi-sub">Jan + Mai</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Appart</div>
-      <div class="kpi-val red" id="kpi-appart">2 884 €</div>
-      <div class="kpi-sub">Dépenses totales</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Avoirs</div>
-      <div class="kpi-val muted" id="kpi-avoirs">4 200 DT</div>
-      <div class="kpi-sub">Pa (dinars)</div>
-    </div>
+    <div class="kpi"><div class="kpi-label">Net Aziz</div><div class="kpi-val green" id="kpi-aziz">—</div><div class="kpi-sub">PHC − dépenses</div></div>
+    <div class="kpi"><div class="kpi-label">PHC net</div><div class="kpi-val green" id="kpi-phc">—</div><div class="kpi-sub">Après virement</div></div>
+    <div class="kpi"><div class="kpi-label">Airbnb</div><div class="kpi-val green" id="kpi-airbnb">—</div><div class="kpi-sub">Tous mois</div></div>
+    <div class="kpi"><div class="kpi-label">Appart</div><div class="kpi-val red" id="kpi-appart">—</div><div class="kpi-sub">Dépenses totales</div></div>
+    <div class="kpi"><div class="kpi-label">Avoirs</div><div class="kpi-val muted" id="kpi-avoirs">—</div><div class="kpi-sub">Pa (dinars)</div></div>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
     <button class="tab on" onclick="sw('phc',this)">PHC</button>
     <button class="tab" onclick="sw('aziz',this)">Aziz</button>
@@ -368,56 +145,32 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <button class="tab" onclick="sw('charges',this)">Charges</button>
   </div>
 
-  <!-- ══ PANELS ══ -->
   <div class="panels">
 
-    <!-- ── PHC ── -->
+    <!-- PHC -->
     <div id="pan-phc" class="panel on">
       <div class="sec">
         <div class="sec-head">
-          <div class="sec-title">Détail PHC — Historique</div>
+          <div class="sec-title">Historique PHC</div>
           <div style="display:flex;gap:8px;font-size:11px;align-items:center">
             <span class="tag tag-s">S</span><span style="color:var(--text3)">Souhail</span>
             <span class="tag tag-b" style="margin-left:4px">B</span><span style="color:var(--text3)">Baganda</span>
           </div>
         </div>
         <div class="tbl">
-          <div class="tbl-head h3">
-            <span class="th">Description</span>
-            <span class="th">Origine</span>
-            <span class="th r">Montant</span>
-          </div>
+          <div class="tbl-head h3"><span class="th">Description</span><span class="th">Origine</span><span class="th r">Montant</span></div>
           <div id="phc-entries"></div>
-          <div class="tbl-tot t3">
-            <span class="td">Sous-total brut</span>
-            <span class="td"></span>
-            <span class="td r" id="phc-brut">10 396 €</span>
-          </div>
-          <div class="calc-row sub">
-            <span class="label">Virement logement</span>
-            <span class="val red">− 3 574 €</span>
-          </div>
-          <div class="calc-row tot">
-            <span class="label">Net PHC</span>
-            <span class="val green" id="phc-net-display">6 822 €</span>
-          </div>
+          <div class="tbl-tot t3"><span class="td">Sous-total brut</span><span class="td"></span><span class="td r" id="phc-brut">—</span></div>
+          <div class="calc-row sub"><span class="label">Virement logement</span><span class="val red">− 3 574 €</span></div>
+          <div class="calc-row tot"><span class="label">Net PHC</span><span class="val green" id="phc-net-display">—</span></div>
         </div>
         <button class="add-row-btn" onclick="toggleForm('form-phc')">+ Ajouter une entrée PHC</button>
         <div id="form-phc" class="add-form">
-          <label>Description</label>
-          <input type="text" id="phc-desc" placeholder="Ex: BC, CJM, Novedad…">
+          <label>Description</label><input type="text" id="phc-desc" placeholder="Ex: BC, CJM, Novedad…">
           <div class="form-row">
-            <div>
-              <label>Montant (€)</label>
-              <input type="number" id="phc-amt" placeholder="0">
-            </div>
-            <div>
-              <label>Provenance</label>
-              <select id="phc-from">
-                <option value="">—</option>
-                <option value="S">Souhail (S)</option>
-                <option value="B">Baganda (B)</option>
-              </select>
+            <div><label>Montant (€)</label><input type="number" id="phc-amt" placeholder="0"></div>
+            <div><label>Provenance</label>
+              <select id="phc-from"><option value="">—</option><option value="S">Souhail (S)</option><option value="B">Baganda (B)</option></select>
             </div>
           </div>
           <button class="btn-primary" onclick="addPHCEntry()">Enregistrer</button>
@@ -425,183 +178,99 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       </div>
     </div>
 
-    <!-- ── AZIZ ── -->
+    <!-- AZIZ -->
     <div id="pan-aziz" class="panel">
       <div class="sec">
         <div class="sec-head"><div class="sec-title">Solde Aziz</div></div>
         <div class="tbl">
-          <div class="calc-row">
-            <span class="label">Net PHC après virement</span>
-            <span class="val green">+ 6 822 €</span>
-          </div>
-          <div class="calc-row sub">
-            <span class="label">Dépenses remboursées</span>
-            <span class="val red">− 692 €</span>
-          </div>
-          <div class="calc-row sub">
-            <span class="label">Déductions antérieures</span>
-            <span class="val red">− 819 €</span>
-          </div>
-          <div class="calc-row sub">
-            <span class="label">Canapé (÷ 2)</span>
-            <span class="val red">− 215 €</span>
-          </div>
-          <div class="calc-row tot">
-            <span class="label">Net Aziz</span>
-            <span class="val green" id="aziz-net-display">5 096 €</span>
-          </div>
+          <div class="calc-row"><span class="label">Net PHC après virement</span><span class="val green" id="az-phc-net">—</span></div>
+          <div class="calc-row sub"><span class="label">Dépenses remboursées</span><span class="val red">− 692 €</span></div>
+          <div class="calc-row sub"><span class="label">Déductions antérieures</span><span class="val red">− 819 €</span></div>
+          <div class="calc-row sub"><span class="label">Canapé (÷ 2)</span><span class="val red">− 215 €</span></div>
+          <div class="calc-row tot"><span class="label">Net Aziz</span><span class="val green" id="aziz-net-display">—</span></div>
         </div>
       </div>
-
       <div class="sec">
-        <div class="sec-head">
-          <div class="sec-title">Ce qu'il me doit / je lui dois</div>
-        </div>
+        <div class="sec-head"><div class="sec-title">Ce qu'il me doit / je lui dois</div></div>
         <div class="tbl">
-          <div class="tbl-head h3">
-            <span class="th">Description</span>
-            <span class="th">Statut</span>
-            <span class="th r">Montant</span>
-          </div>
+          <div class="tbl-head h3"><span class="th">Description</span><span class="th">Statut</span><span class="th r">Montant</span></div>
           <div id="aziz-entries"></div>
         </div>
         <button class="add-row-btn" onclick="toggleForm('form-aziz')">+ Ajouter une ligne</button>
         <div id="form-aziz" class="add-form">
-          <label>Description</label>
-          <input type="text" id="aziz-desc" placeholder="Ex: Pizza, courses…">
+          <label>Description</label><input type="text" id="aziz-desc" placeholder="Ex: Pizza, courses…">
           <div class="form-row">
-            <div>
-              <label>Montant (€)</label>
-              <input type="number" id="aziz-amt" placeholder="0">
-            </div>
-            <div>
-              <label>Type</label>
-              <select id="aziz-type">
-                <option value="credit">Il me doit (+)</option>
-                <option value="debit">Je lui dois (−)</option>
-              </select>
+            <div><label>Montant (€)</label><input type="number" id="aziz-amt" placeholder="0"></div>
+            <div><label>Type</label>
+              <select id="aziz-type"><option value="credit">Il me doit (+)</option><option value="debit">Je lui dois (−)</option></select>
             </div>
           </div>
           <label>Statut</label>
-          <select id="aziz-status">
-            <option value="pending">En attente</option>
-            <option value="done">Réglé</option>
-          </select>
+          <select id="aziz-status"><option value="pending">En attente</option><option value="done">Réglé</option></select>
           <button class="btn-primary" onclick="addAzizEntry()">Enregistrer</button>
         </div>
       </div>
     </div>
 
-    <!-- ── AIRBNB ── -->
+    <!-- AIRBNB -->
     <div id="pan-airbnb" class="panel">
       <div class="sec">
-        <div class="sec-head">
-          <div class="sec-title">Airbnb — par mois</div>
-          <div class="sec-total green" id="airbnb-total">1 585 €</div>
-        </div>
-
+        <div class="sec-head"><div class="sec-title">Airbnb — par mois</div><div class="sec-total green" id="airbnb-total">—</div></div>
         <div class="month-label">Janvier</div>
         <div class="tbl">
           <div class="tbl-head h3"><span class="th">Élément</span><span class="th">Détail</span><span class="th r">Montant</span></div>
-          <div class="tbl-row entry-row">
-            <span class="td">Revenus bruts</span><span class="td"></span>
-            <span class="td r green">+ 1 600 €</span>
-          </div>
-          <div class="tbl-row entry-row">
-            <span class="td">Billets avion (1)</span><span class="td muted">Déduction</span>
-            <span class="td r red">− 370 €</span>
-          </div>
-          <div class="tbl-row entry-row">
-            <span class="td">Billets avion (2)</span><span class="td muted">Déduction</span>
-            <span class="td r red">− 420 €</span>
-          </div>
+          <div class="tbl-row entry-row"><span class="td">Revenus bruts</span><span class="td"></span><span class="td r green">+ 1 600 €</span></div>
+          <div class="tbl-row entry-row"><span class="td">Billets avion (1)</span><span class="td muted">Déduction</span><span class="td r red">− 370 €</span></div>
+          <div class="tbl-row entry-row"><span class="td">Billets avion (2)</span><span class="td muted">Déduction</span><span class="td r red">− 420 €</span></div>
           <div class="tbl-tot t2"><span class="td">Net Janvier</span><span class="td r green">1 180 €</span></div>
         </div>
-
         <div class="month-label">Mai</div>
         <div class="tbl">
           <div class="tbl-head h3"><span class="th">Élément</span><span class="th">Détail</span><span class="th r">Montant</span></div>
           <div id="airbnb-may"></div>
-          <div class="tbl-tot t2"><span class="td">Net Mai</span><span class="td r green" id="airbnb-may-total">405 €</span></div>
+          <div class="tbl-tot t2"><span class="td">Net Mai</span><span class="td r green" id="airbnb-may-total">—</span></div>
         </div>
-
-        <div id="airbnb-other-months"></div>
-
         <button class="add-row-btn" onclick="toggleForm('form-airbnb')">+ Ajouter un mouvement</button>
         <div id="form-airbnb" class="add-form">
-          <label>Mois</label>
-          <input type="text" id="ab-month" placeholder="Ex: Juin 2025">
-          <label>Description</label>
-          <input type="text" id="ab-desc" placeholder="Ex: Réservation 4">
+          <label>Mois</label><input type="text" id="ab-month" placeholder="Ex: Juin 2025">
+          <label>Description</label><input type="text" id="ab-desc" placeholder="Ex: Réservation 4">
           <div class="form-row">
-            <div>
-              <label>Montant (€)</label>
-              <input type="number" id="ab-amt" placeholder="0">
-            </div>
-            <div>
-              <label>Type</label>
-              <select id="ab-type">
-                <option value="credit">Encaissement</option>
-                <option value="debit">Déduction</option>
-              </select>
-            </div>
+            <div><label>Montant (€)</label><input type="number" id="ab-amt" placeholder="0"></div>
+            <div><label>Type</label><select id="ab-type"><option value="credit">Encaissement</option><option value="debit">Déduction</option></select></div>
           </div>
           <button class="btn-primary" onclick="addAirbnbEntry()">Enregistrer</button>
         </div>
       </div>
     </div>
 
-    <!-- ── APPART ── -->
+    <!-- APPART -->
     <div id="pan-appart" class="panel">
-      <div class="coloc-banner">
-        <strong>Dépenses partagées</strong> — les achats ÷ 2 sont automatiquement déduits du solde Aziz.
-      </div>
+      <div class="coloc-banner"><strong>Dépenses partagées</strong> — les achats ÷ 2 sont déduits du solde Aziz.</div>
       <div class="sec">
-        <div class="sec-head">
-          <div class="sec-title">Dépenses Appart</div>
-          <div class="sec-total red" id="appart-total">2 884 €</div>
-        </div>
+        <div class="sec-head"><div class="sec-title">Dépenses Appart</div><div class="sec-total red" id="appart-total">—</div></div>
         <div class="tbl">
-          <div class="tbl-head h4">
-            <span class="th">Poste</span>
-            <span class="th">Cat.</span>
-            <span class="th r">Montant</span>
-            <span class="th r">Actions</span>
-          </div>
+          <div class="tbl-head h4"><span class="th">Poste</span><span class="th">Cat.</span><span class="th r">Montant</span><span class="th r">✏️</span></div>
           <div id="appart-entries"></div>
-          <div class="tbl-tot t2">
-            <span class="td">Total dépenses appart</span>
-            <span class="td r red" id="appart-total-row">2 884 €</span>
-          </div>
+          <div class="tbl-tot t2"><span class="td">Total appart</span><span class="td r red" id="appart-total-row">—</span></div>
         </div>
         <button class="add-row-btn" onclick="toggleForm('form-appart')">+ Ajouter une dépense</button>
         <div id="form-appart" class="add-form">
-          <label>Description</label>
-          <input type="text" id="ap-desc" placeholder="Ex: Canapé, Machine à laver…">
+          <label>Description</label><input type="text" id="ap-desc" placeholder="Ex: Canapé…">
           <div class="form-row">
-            <div>
-              <label>Montant (€)</label>
-              <input type="number" id="ap-amt" placeholder="0">
-            </div>
-            <div>
-              <label>Catégorie</label>
-              <select id="ap-cat">
-                <option value="Mobilier">Mobilier</option>
-                <option value="Équipement">Équipement</option>
-                <option value="Travaux">Travaux</option>
-                <option value="Courses">Courses ÷ 2</option>
-                <option value="Divers">Divers</option>
-              </select>
+            <div><label>Montant (€)</label><input type="number" id="ap-amt" placeholder="0"></div>
+            <div><label>Catégorie</label>
+              <select id="ap-cat"><option>Mobilier</option><option>Équipement</option><option>Travaux</option><option>Courses</option><option>Divers</option></select>
             </div>
           </div>
-          <label><input type="checkbox" id="ap-shared"> Partagé ÷ 2 (déduit du solde Aziz)</label>
-          <br><br>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;text-transform:none;letter-spacing:0">
+            <input type="checkbox" id="ap-shared"> Partagé ÷ 2
+          </label><br>
           <button class="btn-primary" onclick="addAppartEntry()">Enregistrer</button>
         </div>
       </div>
     </div>
 
-    <!-- ── AVOIRS ── -->
+    <!-- AVOIRS -->
     <div id="pan-avoirs" class="panel">
       <div class="sec">
         <div class="sec-head"><div class="sec-title">Avoirs — dettes à recevoir</div></div>
@@ -611,93 +280,54 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </div>
         <button class="add-row-btn" onclick="toggleForm('form-avoir')">+ Ajouter un avoir</button>
         <div id="form-avoir" class="add-form">
-          <label>Personne</label>
-          <input type="text" id="av-pers" placeholder="Ex: Pa, Mamie Ghaith…">
-          <label>Détail</label>
-          <input type="text" id="av-detail" placeholder="Ex: Principal, Bolt…">
+          <label>Personne</label><input type="text" id="av-pers" placeholder="Ex: Pa…">
+          <label>Détail</label><input type="text" id="av-detail" placeholder="Ex: Principal…">
           <div class="form-row">
-            <div>
-              <label>Montant</label>
-              <input type="number" id="av-amt" placeholder="0">
-            </div>
-            <div>
-              <label>Devise</label>
-              <select id="av-currency">
-                <option value="EUR">€ Euros</option>
-                <option value="DT">DT Dinars</option>
-              </select>
-            </div>
+            <div><label>Montant</label><input type="number" id="av-amt" placeholder="0"></div>
+            <div><label>Devise</label><select id="av-currency"><option value="EUR">€ Euros</option><option value="DT">DT Dinars</option></select></div>
           </div>
           <label>Statut</label>
-          <select id="av-status">
-            <option value="pending">En attente</option>
-            <option value="received">Reçu</option>
-            <option value="deducted">Déduit</option>
-          </select>
+          <select id="av-status"><option value="pending">En attente</option><option value="received">Reçu</option><option value="deducted">Déduit</option></select>
           <button class="btn-primary" onclick="addAvoir()">Enregistrer</button>
         </div>
       </div>
     </div>
 
-    <!-- ── CHARGES ── -->
+    <!-- CHARGES -->
     <div id="pan-charges" class="panel">
       <div class="sec">
-        <div class="sec-head">
-          <div class="sec-title">Charges fixes mensuelles</div>
-          <div class="sec-total red" id="charges-total">95 €</div>
-        </div>
+        <div class="sec-head"><div class="sec-title">Charges fixes mensuelles</div><div class="sec-total red" id="charges-total">—</div></div>
         <div class="tbl">
           <div class="tbl-head h3"><span class="th">Poste</span><span class="th">Fréq.</span><span class="th r">Montant</span></div>
           <div id="charges-entries"></div>
-          <div class="tbl-tot t2">
-            <span class="td">Total mensuel</span>
-            <span class="td r red" id="charges-total-row">95 €</span>
-          </div>
+          <div class="tbl-tot t2"><span class="td">Total mensuel</span><span class="td r red" id="charges-total-row">—</span></div>
         </div>
         <button class="add-row-btn" onclick="toggleForm('form-charge')">+ Ajouter une charge</button>
         <div id="form-charge" class="add-form">
-          <label>Poste</label>
-          <input type="text" id="ch-desc" placeholder="Ex: Netflix, Assurance…">
+          <label>Poste</label><input type="text" id="ch-desc" placeholder="Ex: Netflix…">
           <div class="form-row">
-            <div>
-              <label>Montant (€)</label>
-              <input type="number" id="ch-amt" placeholder="0">
-            </div>
-            <div>
-              <label>Fréquence</label>
-              <select id="ch-freq">
-                <option value="Mensuel">Mensuel</option>
-                <option value="Annuel">Annuel</option>
-              </select>
-            </div>
+            <div><label>Montant (€)</label><input type="number" id="ch-amt" placeholder="0"></div>
+            <div><label>Fréquence</label><select id="ch-freq"><option>Mensuel</option><option>Annuel</option></select></div>
           </div>
           <button class="btn-primary" onclick="addCharge()">Enregistrer</button>
         </div>
       </div>
     </div>
 
-  </div><!-- /panels -->
+  </div>
   <div class="bottom-safe"></div>
-</div><!-- /app -->
+</div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- ══ SCRIPTS ══ -->
-
-<!-- Google Identity Services — redirect flow (fix mobile) -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <script>
-// ─── CONFIG ────────────────────────────────────────────────────
-const CLIENT_ID = '1080899511515-sm2u3tuf69tc7b60cv1o7b8nko7ukhn6.apps.googleusercontent.com'; // ← remplace ici
-const REDIRECT_URI = window.location.origin + window.location.pathname;
-const SCOPES = 'https://www.googleapis.com/auth/drive.file openid profile email';
-const FILE_NAME = 'dashboard-amine-data.json';
+const CLIENT_ID='1080899511515-sm2u3tuf69tc7b60cv1o7b8nko7ukhn6.apps.googleusercontent.com';
+const REDIRECT_URI=window.location.origin+window.location.pathname;
+const SCOPES='https://www.googleapis.com/auth/drive.file openid profile email';
+const FILE_NAME='dashboard-amine-data.json';
 
-// ─── DATA MODEL ────────────────────────────────────────────────
-let DATA = {
-  phcEntries: [
+let DATA={
+  phcEntries:[
     {id:'p1',desc:'2 820 €',amt:2820,from:'',origin:'PHC'},
     {id:'p2',desc:'BC',amt:462,from:'',origin:'PHC'},
     {id:'p3',desc:'CJM',amt:425,from:'',origin:'PHC'},
@@ -714,762 +344,346 @@ let DATA = {
     {id:'p14',desc:'Nomis PROD',amt:351,from:'B',origin:'PHC'},
     {id:'p15',desc:'Novedad',amt:390,from:'S',origin:'PHC'},
   ],
-  azizEntries: [],
-  airbnbMay: [
+  azizEntries:[],
+  airbnbMay:[
     {id:'a1',desc:'Réservation 1',amt:142,type:'credit'},
     {id:'a2',desc:'Réservation 2',amt:103,type:'credit'},
     {id:'a3',desc:'Réservation 3',amt:160,type:'credit'},
   ],
-  airbnbExtra: [],
-  appartEntries: [
+  airbnbExtra:[],
+  appartEntries:[
     {id:'ap1',desc:'Télévision',cat:'Équipement',amt:366,shared:false},
     {id:'ap2',desc:'IKEA',cat:'Mobilier',amt:1800,shared:false},
     {id:'ap3',desc:'Temu',cat:'Divers',amt:208,shared:false},
     {id:'ap4',desc:'Leroy Merlin',cat:'Travaux',amt:80,shared:false},
     {id:'ap5',desc:'Canapé',cat:'Mobilier',amt:430,shared:true},
   ],
-  avoirEntries: [
+  avoirEntries:[
     {id:'av1',pers:'Pa',detail:'Principal',amt:3000,currency:'DT',status:'pending'},
     {id:'av2',pers:'Pa',detail:'Complément',amt:1600,currency:'DT',status:'pending'},
     {id:'av3',pers:'Pa',detail:'Tabac (déduit)',amt:-400,currency:'DT',status:'deducted'},
     {id:'av4',pers:'Stock tshirts PHC',detail:'Stock',amt:7000,currency:'DT',status:'pending'},
   ],
-  chargesEntries: [
+  chargesEntries:[
     {id:'c1',desc:'ChatGPT',amt:20,freq:'Mensuel'},
     {id:'c2',desc:'SIM',amt:15,freq:'Mensuel'},
     {id:'c3',desc:'Coiffeur',amt:15,freq:'Mensuel'},
     {id:'c4',desc:'Revolut',amt:10,freq:'Mensuel'},
     {id:'c5',desc:'Salle de sport',amt:35,freq:'Mensuel'},
   ],
-  driveFileId: null,
 };
 
-// ─── AUTH ───────────────────────────────────────────────────────
-let accessToken = null;
-let userInfo = null;
+let accessToken=null,userInfo=null,driveFileId=null;
 
-function signInWithGoogle() {
-  // Redirect flow — works on all mobile browsers (no popup)
-  const params = new URLSearchParams({
-    client_id: CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
-    response_type: 'token',
-    scope: SCOPES,
-    include_granted_scopes: 'true',
-  });
-  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
+function signInWithGoogle(){
+  const p=new URLSearchParams({client_id:CLIENT_ID,redirect_uri:REDIRECT_URI,response_type:'token',scope:SCOPES,include_granted_scopes:'true'});
+  window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+p;
 }
-
-function signOut() {
-  if(!confirm('Déconnexion ?')) return;
-  accessToken = null;
-  userInfo = null;
-  localStorage.removeItem('gat');
-  localStorage.removeItem('gat_exp');
+function signOut(){
+  if(!confirm('Déconnexion ?'))return;
+  accessToken=null;localStorage.removeItem('gat');localStorage.removeItem('gat_exp');
   document.getElementById('app').classList.remove('visible');
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
   document.getElementById('user-badge').classList.remove('visible');
 }
-
-function handleRedirectToken() {
-  const hash = window.location.hash;
-  if (!hash) return false;
-  const params = new URLSearchParams(hash.substring(1));
-  const token = params.get('access_token');
-  const expiresIn = params.get('expires_in');
-  if (!token) return false;
-
-  accessToken = token;
-  const expiry = Date.now() + parseInt(expiresIn) * 1000;
-  localStorage.setItem('gat', token);
-  localStorage.setItem('gat_exp', expiry);
-
-  // Clean URL
-  history.replaceState(null, '', window.location.pathname);
+function handleRedirectToken(){
+  const h=window.location.hash;if(!h)return false;
+  const p=new URLSearchParams(h.substring(1));
+  const t=p.get('access_token'),e=p.get('expires_in');
+  if(!t)return false;
+  accessToken=t;
+  localStorage.setItem('gat',t);
+  localStorage.setItem('gat_exp',Date.now()+parseInt(e)*1000);
+  history.replaceState(null,'',window.location.pathname);
   return true;
 }
-
-function loadStoredToken() {
-  const token = localStorage.getItem('gat');
-  const exp = localStorage.getItem('gat_exp');
-  if (token && exp && Date.now() < parseInt(exp)) {
-    accessToken = token;
-    return true;
-  }
-  localStorage.removeItem('gat');
-  localStorage.removeItem('gat_exp');
-  return false;
+function loadStoredToken(){
+  const t=localStorage.getItem('gat'),e=localStorage.getItem('gat_exp');
+  if(t&&e&&Date.now()<parseInt(e)){accessToken=t;return true;}
+  localStorage.removeItem('gat');localStorage.removeItem('gat_exp');return false;
 }
-
-async function fetchUserInfo() {
-  try {
-    const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: {Authorization: 'Bearer ' + accessToken}
-    });
-    userInfo = await r.json();
-    document.getElementById('user-name').textContent = userInfo.given_name || 'Moi';
-    document.getElementById('user-photo').src = userInfo.picture || '';
+async function fetchUserInfo(){
+  try{
+    const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+accessToken}});
+    userInfo=await r.json();
+    document.getElementById('user-name').textContent=userInfo.given_name||'Moi';
+    document.getElementById('user-photo').src=userInfo.picture||'';
     document.getElementById('user-badge').classList.add('visible');
-  } catch(e) { console.warn('userinfo failed', e); }
+  }catch(e){}
 }
-
-// ─── DRIVE SYNC ─────────────────────────────────────────────────
-let driveFileId = null;
-
-async function findOrCreateDriveFile() {
-  if (!accessToken) return;
-  try {
-    const r = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}'+and+trashed=false&fields=files(id,name)`,
-      {headers:{Authorization:'Bearer '+accessToken}}
-    );
-    const json = await r.json();
-    if (json.files && json.files.length > 0) {
-      driveFileId = json.files[0].id;
-      await loadFromDrive();
-    } else {
-      await saveToDrive();
-    }
-  } catch(e) { console.warn('Drive search failed', e); }
+async function findOrCreateDriveFile(){
+  if(!accessToken)return;
+  try{
+    const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}'+and+trashed=false&fields=files(id,name)`,{headers:{Authorization:'Bearer '+accessToken}});
+    const j=await r.json();
+    if(j.files&&j.files.length>0){driveFileId=j.files[0].id;await loadFromDrive();}
+    else await saveToDrive();
+  }catch(e){}
 }
-
-async function saveToDrive() {
-  if (!accessToken) { saveLocal(); return; }
-  const content = JSON.stringify(DATA, null, 2);
-  const boundary = '-------314159265358979323846';
-  const metadata = JSON.stringify({name: FILE_NAME, mimeType: 'application/json'});
-  const body = `--${boundary}\r\nContent-Type: application/json\r\n\r\n${metadata}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${content}\r\n--${boundary}--`;
-
-  const url = driveFileId
-    ? `https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`
-    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-  const method = driveFileId ? 'PATCH' : 'POST';
-
-  try {
-    const r = await fetch(url, {
-      method, headers: {
-        Authorization: 'Bearer ' + accessToken,
-        'Content-Type': `multipart/related; boundary="${boundary}"`,
-      },
-      body
-    });
-    const json = await r.json();
-    if (json.id) driveFileId = json.id;
-    updateSyncDot(true);
-    saveLocal();
-  } catch(e) {
-    console.warn('Drive save failed', e);
-    saveLocal();
-    updateSyncDot(false);
-  }
+async function saveToDrive(){
+  if(!accessToken){saveLocal();return;}
+  const content=JSON.stringify(DATA,null,2);
+  const b='-------314159265358979323846';
+  const meta=JSON.stringify({name:FILE_NAME,mimeType:'application/json'});
+  const body=`--${b}\r\nContent-Type: application/json\r\n\r\n${meta}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${content}\r\n--${b}--`;
+  const url=driveFileId?`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+  try{
+    const r=await fetch(url,{method:driveFileId?'PATCH':'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':`multipart/related; boundary="${b}"`},body});
+    const j=await r.json();if(j.id)driveFileId=j.id;
+    updateSyncDot(true);saveLocal();
+  }catch(e){saveLocal();updateSyncDot(false);}
 }
-
-async function loadFromDrive() {
-  if (!accessToken || !driveFileId) { loadLocal(); return; }
-  try {
-    const r = await fetch(
-      `https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,
-      {headers:{Authorization:'Bearer '+accessToken}}
-    );
-    const json = await r.json();
-    if (json.phcEntries) {
-      DATA = {...DATA, ...json};
-    }
-    renderAll();
-    updateSyncDot(true);
-  } catch(e) {
-    loadLocal();
-    updateSyncDot(false);
-  }
+async function loadFromDrive(){
+  if(!accessToken||!driveFileId){loadLocal();return;}
+  try{
+    const r=await fetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,{headers:{Authorization:'Bearer '+accessToken}});
+    const j=await r.json();if(j.phcEntries)DATA={...DATA,...j};
+    renderAll();updateSyncDot(true);
+  }catch(e){loadLocal();updateSyncDot(false);}
 }
-
-function saveLocal() {
-  try { localStorage.setItem('dashboard-data', JSON.stringify(DATA)); } catch(e){}
-}
-
-function loadLocal() {
-  try {
-    const d = localStorage.getItem('dashboard-data');
-    if (d) DATA = {...DATA, ...JSON.parse(d)};
-  } catch(e) {}
-  renderAll();
-}
-
-async function syncData() {
-  document.getElementById('sync-label').textContent = '…';
+function saveLocal(){try{localStorage.setItem('dashboard-data',JSON.stringify(DATA));}catch(e){}}
+function loadLocal(){try{const d=localStorage.getItem('dashboard-data');if(d)DATA={...DATA,...JSON.parse(d)};}catch(e){}renderAll();}
+async function syncData(){
+  document.getElementById('sync-label').textContent='…';
   await saveToDrive();
-  document.getElementById('sync-label').textContent = 'Sync';
+  document.getElementById('sync-label').textContent='Sync';
   showToast('Sauvegardé ✓');
 }
-
-function updateSyncDot(ok) {
-  document.getElementById('sync-dot').className = 'sync-dot' + (ok ? '' : ' off');
+function updateSyncDot(ok){document.getElementById('sync-dot').className='sync-dot'+(ok?'':' off');}
+function fmt(n){return new Intl.NumberFormat('fr-FR').format(Math.abs(n))+' €';}
+function uid(){return Math.random().toString(36).substr(2,9);}
+function badgeHTML(o){
+  if(o==='PHC')return '<span class="badge b-phc">PHC</span>';
+  if(o==='Famille')return '<span class="badge b-fam">Famille</span>';
+  return '<span class="badge b-log">'+o+'</span>';
 }
-
-// ─── RENDER HELPERS ────────────────────────────────────────────
-function fmt(n) {
-  return new Intl.NumberFormat('fr-FR').format(Math.abs(n)) + ' €';
+function tagHTML(f){
+  if(f==='S')return ' <span class="tag tag-s">S</span>';
+  if(f==='B')return ' <span class="tag tag-b">B</span>';
+  return '';
 }
-
-function uid() {
-  return Math.random().toString(36).substr(2,9);
-}
-
-function badgeHTML(origin) {
-  if (origin === 'PHC') return '<span class="badge b-phc">PHC</span>';
-  if (origin === 'Famille') return '<span class="badge b-fam">Famille</span>';
-  return '<span class="badge b-log">'+origin+'</span>';
-}
-
-function tagHTML(from) {
-  if (from === 'S') return ' <span class="tag tag-s">S</span>';
-  if (from === 'B') return ' <span class="tag tag-b">B</span>';
+function statusBadge(s){
+  if(s==='done')return '<span class="badge b-ok">✓ Réglé</span>';
+  if(s==='pending')return '<span class="badge b-wait">En attente</span>';
+  if(s==='received')return '<span class="badge b-ok">Reçu</span>';
+  if(s==='deducted')return '<span class="badge b-neg">Déduit</span>';
   return '';
 }
 
-function statusBadge(s) {
-  if (s === 'done') return '<span class="badge b-ok">✓ Réglé</span>';
-  if (s === 'pending') return '<span class="badge b-wait">En attente</span>';
-  if (s === 'received') return '<span class="badge b-ok">Reçu</span>';
-  if (s === 'deducted') return '<span class="badge b-neg">Déduit</span>';
-  return '';
-}
-
-// ─── PHC RENDER ────────────────────────────────────────────────
-function renderPHC() {
-  const el = document.getElementById('phc-entries');
-  let brut = 0;
-  el.innerHTML = DATA.phcEntries.map(e => {
-    brut += e.amt;
-    return `
-    <div class="tbl-row entry-row" id="row-${e.id}">
-      <span class="td">${e.desc}${tagHTML(e.from)}</span>
-      <span class="td">${badgeHTML(e.origin)}</span>
-      <span class="td r green">+ ${fmt(e.amt)}</span>
-    </div>
+function renderPHC(){
+  const el=document.getElementById('phc-entries');
+  let brut=0;
+  el.innerHTML=DATA.phcEntries.map(e=>{
+    brut+=e.amt;
+    return `<div class="tbl-row entry-row" id="row-${e.id}"><span class="td">${e.desc}${tagHTML(e.from)}</span><span class="td">${badgeHTML(e.origin)}</span><span class="td r green">+ ${fmt(e.amt)}</span></div>
     <div class="inline-edit" id="ie-${e.id}">
       <input type="text" id="ie-desc-${e.id}" value="${e.desc}" placeholder="Description">
-      <div class="ie-row">
-        <input type="number" id="ie-amt-${e.id}" value="${e.amt}" placeholder="Montant">
-        <select id="ie-from-${e.id}" style="width:100px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
-          <option value="" ${!e.from?'selected':''}>—</option>
-          <option value="S" ${e.from==='S'?'selected':''}>Souhail (S)</option>
-          <option value="B" ${e.from==='B'?'selected':''}>Baganda (B)</option>
-        </select>
-      </div>
-      <div class="ie-btns">
-        <button class="btn-save" onclick="savePHC('${e.id}')">Sauvegarder</button>
-        <button class="btn-cancel" onclick="closeEdit('ie-${e.id}')">Annuler</button>
-        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deletePHC('${e.id}')">Supprimer</button>
-      </div>
+      <div class="ie-row"><input type="number" id="ie-amt-${e.id}" value="${e.amt}" placeholder="Montant">
+      <select id="ie-from-${e.id}" class="ie-sel"><option value="" ${!e.from?'selected':''}>—</option><option value="S" ${e.from==='S'?'selected':''}>Souhail (S)</option><option value="B" ${e.from==='B'?'selected':''}>Baganda (B)</option></select></div>
+      <div class="ie-btns"><button class="btn-save" onclick="savePHC('${e.id}')">Sauvegarder</button><button class="btn-cancel" onclick="closeEdit('ie-${e.id}')">Annuler</button><button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deletePHC('${e.id}')">Supprimer</button></div>
     </div>`;
   }).join('');
-
-  // Add edit buttons overlay — tap description to edit
-  DATA.phcEntries.forEach(e => {
-    const row = document.getElementById('row-'+e.id);
-    if (row) row.addEventListener('click', () => toggleEdit('ie-'+e.id));
-  });
-
-  const net = brut - 3574;
-  document.getElementById('phc-brut').textContent = fmt(brut);
-  document.getElementById('phc-net-display').textContent = fmt(net);
-  document.getElementById('kpi-phc').textContent = fmt(net);
+  DATA.phcEntries.forEach(e=>{const r=document.getElementById('row-'+e.id);if(r)r.onclick=()=>toggleEdit('ie-'+e.id);});
+  const net=brut-3574;
+  document.getElementById('phc-brut').textContent=fmt(brut);
+  document.getElementById('phc-net-display').textContent=fmt(net);
+  document.getElementById('kpi-phc').textContent=fmt(net);
+}
+function addPHCEntry(){
+  const desc=document.getElementById('phc-desc').value.trim(),amt=parseFloat(document.getElementById('phc-amt').value)||0,from=document.getElementById('phc-from').value;
+  if(!desc||!amt){showToast('Remplis la description et le montant');return;}
+  DATA.phcEntries.push({id:uid(),desc,amt,from,origin:'PHC'});
+  document.getElementById('phc-desc').value='';document.getElementById('phc-amt').value='';
+  toggleForm('form-phc');renderPHC();calcAziz();autoSave();showToast('Ajouté ✓');
+}
+function savePHC(id){
+  const e=DATA.phcEntries.find(x=>x.id===id);if(!e)return;
+  e.desc=document.getElementById('ie-desc-'+id).value;
+  e.amt=parseFloat(document.getElementById('ie-amt-'+id).value)||0;
+  e.from=document.getElementById('ie-from-'+id).value;
+  closeEdit('ie-'+id);renderPHC();calcAziz();autoSave();showToast('Modifié ✓');
+}
+function deletePHC(id){
+  if(!confirm('Supprimer ?'))return;
+  DATA.phcEntries=DATA.phcEntries.filter(x=>x.id!==id);
+  renderPHC();calcAziz();autoSave();showToast('Supprimé');
 }
 
-function addPHCEntry() {
-  const desc = document.getElementById('phc-desc').value.trim();
-  const amt = parseFloat(document.getElementById('phc-amt').value) || 0;
-  const from = document.getElementById('phc-from').value;
-  if (!desc || !amt) { showToast('Remplis la description et le montant'); return; }
-  DATA.phcEntries.push({id:uid(), desc, amt, from, origin:'PHC'});
-  document.getElementById('phc-desc').value = '';
-  document.getElementById('phc-amt').value = '';
-  document.getElementById('phc-from').value = '';
-  toggleForm('form-phc');
-  renderPHC();
-  calcAziz();
-  autoSave();
-  showToast('Entrée PHC ajoutée ✓');
+function calcAziz(){
+  const brut=DATA.phcEntries.reduce((s,e)=>s+e.amt,0);
+  const net=brut-3574-692-819-215;
+  document.getElementById('aziz-net-display').textContent=fmt(net);
+  document.getElementById('kpi-aziz').textContent=fmt(net);
+  document.getElementById('az-phc-net').textContent='+ '+fmt(brut-3574);
 }
-
-function savePHC(id) {
-  const e = DATA.phcEntries.find(x => x.id === id);
-  if (!e) return;
-  e.desc = document.getElementById('ie-desc-'+id).value;
-  e.amt = parseFloat(document.getElementById('ie-amt-'+id).value) || 0;
-  e.from = document.getElementById('ie-from-'+id).value;
-  closeEdit('ie-'+id);
-  renderPHC(); calcAziz(); autoSave();
-  showToast('Modifié ✓');
-}
-
-function deletePHC(id) {
-  if (!confirm('Supprimer cette entrée ?')) return;
-  DATA.phcEntries = DATA.phcEntries.filter(x => x.id !== id);
-  renderPHC(); calcAziz(); autoSave();
-  showToast('Supprimé');
-}
-
-// ─── AZIZ RENDER ───────────────────────────────────────────────
-function calcAziz() {
-  const phcBrut = DATA.phcEntries.reduce((s,e) => s + e.amt, 0);
-  const phcNet = phcBrut - 3574;
-  const depReg = 692;
-  const dedAnt = 819;
-  const canape = 215;
-  const net = phcNet - depReg - dedAnt - canape;
-  document.getElementById('aziz-net-display').textContent = fmt(net);
-  document.getElementById('kpi-aziz').textContent = fmt(net);
-}
-
-function renderAziz() {
-  const el = document.getElementById('aziz-entries');
-  if (!DATA.azizEntries.length) {
-    el.innerHTML = '<div class="tbl-row entry-row"><span class="td muted" style="grid-column:1/-1">Aucune ligne</span></div>';
-    return;
-  }
-  el.innerHTML = DATA.azizEntries.map(e => {
-    const sign = e.type === 'credit' ? '+' : '−';
-    const cls = e.type === 'credit' ? 'green' : 'red';
-    return `
-    <div class="tbl-row entry-row" id="row-az-${e.id}">
-      <span class="td">${e.desc}</span>
-      <span class="td">${statusBadge(e.status)}</span>
-      <span class="td r ${cls}">${sign} ${fmt(e.amt)}</span>
-    </div>
+function renderAziz(){
+  const el=document.getElementById('aziz-entries');
+  if(!DATA.azizEntries.length){el.innerHTML='<div class="tbl-row entry-row"><span class="td muted" style="grid-column:1/-1">Aucune ligne — tape + pour ajouter</span></div>';return;}
+  el.innerHTML=DATA.azizEntries.map(e=>{
+    const sign=e.type==='credit'?'+':'−',cls=e.type==='credit'?'green':'red';
+    return `<div class="tbl-row entry-row" id="row-az-${e.id}"><span class="td">${e.desc}</span><span class="td">${statusBadge(e.status)}</span><span class="td r ${cls}">${sign} ${fmt(e.amt)}</span></div>
     <div class="inline-edit" id="ie-az-${e.id}">
-      <input type="text" id="ie-az-desc-${e.id}" value="${e.desc}" placeholder="Description">
-      <div class="ie-row">
-        <input type="number" id="ie-az-amt-${e.id}" value="${e.amt}" placeholder="Montant">
-      </div>
-      <select id="ie-az-type-${e.id}" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
-        <option value="credit" ${e.type==='credit'?'selected':''}>Il me doit (+)</option>
-        <option value="debit" ${e.type==='debit'?'selected':''}>Je lui dois (−)</option>
-      </select>
-      <select id="ie-az-status-${e.id}" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
-        <option value="pending" ${e.status==='pending'?'selected':''}>En attente</option>
-        <option value="done" ${e.status==='done'?'selected':''}>Réglé</option>
-      </select>
-      <div class="ie-btns">
-        <button class="btn-save" onclick="saveAziz('${e.id}')">Sauvegarder</button>
-        <button class="btn-cancel" onclick="closeEdit('ie-az-${e.id}')">Annuler</button>
-        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAziz('${e.id}')">Supprimer</button>
-      </div>
+      <input type="text" id="ie-az-desc-${e.id}" value="${e.desc}">
+      <input type="number" id="ie-az-amt-${e.id}" value="${e.amt}">
+      <select id="ie-az-type-${e.id}" class="ie-sel"><option value="credit" ${e.type==='credit'?'selected':''}>Il me doit (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Je lui dois (−)</option></select>
+      <select id="ie-az-status-${e.id}" class="ie-sel"><option value="pending" ${e.status==='pending'?'selected':''}>En attente</option><option value="done" ${e.status==='done'?'selected':''}>Réglé</option></select>
+      <div class="ie-btns"><button class="btn-save" onclick="saveAziz('${e.id}')">Sauvegarder</button><button class="btn-cancel" onclick="closeEdit('ie-az-${e.id}')">Annuler</button><button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAziz('${e.id}')">Supprimer</button></div>
     </div>`;
   }).join('');
-
-  DATA.azizEntries.forEach(e => {
-    const row = document.getElementById('row-az-'+e.id);
-    if (row) row.addEventListener('click', () => toggleEdit('ie-az-'+e.id));
-  });
+  DATA.azizEntries.forEach(e=>{const r=document.getElementById('row-az-'+e.id);if(r)r.onclick=()=>toggleEdit('ie-az-'+e.id);});
 }
-
-function addAzizEntry() {
-  const desc = document.getElementById('aziz-desc').value.trim();
-  const amt = parseFloat(document.getElementById('aziz-amt').value) || 0;
-  const type = document.getElementById('aziz-type').value;
-  const status = document.getElementById('aziz-status').value;
-  if (!desc || !amt) { showToast('Remplis la description et le montant'); return; }
-  DATA.azizEntries.push({id:uid(), desc, amt, type, status});
-  document.getElementById('aziz-desc').value = '';
-  document.getElementById('aziz-amt').value = '';
-  toggleForm('form-aziz');
-  renderAziz(); autoSave();
-  showToast('Ligne ajoutée ✓');
+function addAzizEntry(){
+  const desc=document.getElementById('aziz-desc').value.trim(),amt=parseFloat(document.getElementById('aziz-amt').value)||0,type=document.getElementById('aziz-type').value,status=document.getElementById('aziz-status').value;
+  if(!desc||!amt){showToast('Remplis la description et le montant');return;}
+  DATA.azizEntries.push({id:uid(),desc,amt,type,status});
+  document.getElementById('aziz-desc').value='';document.getElementById('aziz-amt').value='';
+  toggleForm('form-aziz');renderAziz();autoSave();showToast('Ajouté ✓');
 }
-
-function saveAziz(id) {
-  const e = DATA.azizEntries.find(x => x.id === id);
-  if (!e) return;
-  e.desc = document.getElementById('ie-az-desc-'+id).value;
-  e.amt = parseFloat(document.getElementById('ie-az-amt-'+id).value) || 0;
-  e.type = document.getElementById('ie-az-type-'+id).value;
-  e.status = document.getElementById('ie-az-status-'+id).value;
-  closeEdit('ie-az-'+id);
-  renderAziz(); autoSave();
-  showToast('Modifié ✓');
+function saveAziz(id){
+  const e=DATA.azizEntries.find(x=>x.id===id);if(!e)return;
+  e.desc=document.getElementById('ie-az-desc-'+id).value;
+  e.amt=parseFloat(document.getElementById('ie-az-amt-'+id).value)||0;
+  e.type=document.getElementById('ie-az-type-'+id).value;
+  e.status=document.getElementById('ie-az-status-'+id).value;
+  closeEdit('ie-az-'+id);renderAziz();autoSave();showToast('Modifié ✓');
 }
+function deleteAziz(id){if(!confirm('Supprimer ?'))return;DATA.azizEntries=DATA.azizEntries.filter(x=>x.id!==id);renderAziz();autoSave();showToast('Supprimé');}
 
-function deleteAziz(id) {
-  if (!confirm('Supprimer ?')) return;
-  DATA.azizEntries = DATA.azizEntries.filter(x => x.id !== id);
-  renderAziz(); autoSave();
-  showToast('Supprimé');
-}
-
-// ─── AIRBNB RENDER ─────────────────────────────────────────────
-function renderAirbnb() {
-  const may = document.getElementById('airbnb-may');
-  may.innerHTML = DATA.airbnbMay.map(e => `
-    <div class="tbl-row entry-row" id="row-ab-${e.id}">
-      <span class="td">${e.desc}</span>
-      <span class="td muted">Paiement reçu</span>
-      <span class="td r green">+ ${fmt(e.amt)}</span>
-    </div>
+function renderAirbnb(){
+  const may=document.getElementById('airbnb-may');
+  may.innerHTML=DATA.airbnbMay.map(e=>`<div class="tbl-row entry-row" id="row-ab-${e.id}"><span class="td">${e.desc}</span><span class="td muted">Paiement reçu</span><span class="td r green">+ ${fmt(e.amt)}</span></div>
     <div class="inline-edit" id="ie-ab-${e.id}">
-      <input type="text" id="ie-ab-desc-${e.id}" value="${e.desc}" placeholder="Description">
-      <input type="number" id="ie-ab-amt-${e.id}" value="${e.amt}" placeholder="Montant">
-      <div class="ie-btns">
-        <button class="btn-save" onclick="saveAirbnbMay('${e.id}')">Sauvegarder</button>
-        <button class="btn-cancel" onclick="closeEdit('ie-ab-${e.id}')">Annuler</button>
-        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAirbnbMay('${e.id}')">Supprimer</button>
-      </div>
+      <input type="text" id="ie-ab-desc-${e.id}" value="${e.desc}">
+      <input type="number" id="ie-ab-amt-${e.id}" value="${e.amt}">
+      <div class="ie-btns"><button class="btn-save" onclick="saveAirbnbMay('${e.id}')">Sauvegarder</button><button class="btn-cancel" onclick="closeEdit('ie-ab-${e.id}')">Annuler</button><button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAirbnbMay('${e.id}')">Supprimer</button></div>
     </div>`).join('');
-
-  DATA.airbnbMay.forEach(e => {
-    const row = document.getElementById('row-ab-'+e.id);
-    if (row) row.addEventListener('click', () => toggleEdit('ie-ab-'+e.id));
-  });
-
-  const mayTotal = DATA.airbnbMay.reduce((s,e) => s + e.amt, 0);
-  document.getElementById('airbnb-may-total').textContent = fmt(mayTotal);
-
-  const grandTotal = 1180 + mayTotal;
-  document.getElementById('airbnb-total').textContent = fmt(grandTotal);
-  document.getElementById('kpi-airbnb').textContent = fmt(grandTotal);
+  DATA.airbnbMay.forEach(e=>{const r=document.getElementById('row-ab-'+e.id);if(r)r.onclick=()=>toggleEdit('ie-ab-'+e.id);});
+  const mayT=DATA.airbnbMay.reduce((s,e)=>s+e.amt,0);
+  document.getElementById('airbnb-may-total').textContent=fmt(mayT);
+  document.getElementById('airbnb-total').textContent=fmt(1180+mayT);
+  document.getElementById('kpi-airbnb').textContent=fmt(1180+mayT);
+}
+function saveAirbnbMay(id){const e=DATA.airbnbMay.find(x=>x.id===id);if(!e)return;e.desc=document.getElementById('ie-ab-desc-'+id).value;e.amt=parseFloat(document.getElementById('ie-ab-amt-'+id).value)||0;closeEdit('ie-ab-'+id);renderAirbnb();autoSave();showToast('Modifié ✓');}
+function deleteAirbnbMay(id){if(!confirm('Supprimer ?'))return;DATA.airbnbMay=DATA.airbnbMay.filter(x=>x.id!==id);renderAirbnb();autoSave();showToast('Supprimé');}
+function addAirbnbEntry(){
+  const month=document.getElementById('ab-month').value.trim(),desc=document.getElementById('ab-desc').value.trim(),amt=parseFloat(document.getElementById('ab-amt').value)||0;
+  if(!desc||!amt){showToast('Remplis la description et le montant');return;}
+  DATA.airbnbMay.push({id:uid(),desc,amt,type:'credit'});
+  document.getElementById('ab-desc').value='';document.getElementById('ab-amt').value='';document.getElementById('ab-month').value='';
+  toggleForm('form-airbnb');renderAirbnb();autoSave();showToast('Ajouté ✓');
 }
 
-function saveAirbnbMay(id) {
-  const e = DATA.airbnbMay.find(x => x.id === id);
-  if (!e) return;
-  e.desc = document.getElementById('ie-ab-desc-'+id).value;
-  e.amt = parseFloat(document.getElementById('ie-ab-amt-'+id).value) || 0;
-  closeEdit('ie-ab-'+id);
-  renderAirbnb(); autoSave();
-  showToast('Modifié ✓');
-}
-
-function deleteAirbnbMay(id) {
-  if (!confirm('Supprimer ?')) return;
-  DATA.airbnbMay = DATA.airbnbMay.filter(x => x.id !== id);
-  renderAirbnb(); autoSave();
-  showToast('Supprimé');
-}
-
-function addAirbnbEntry() {
-  const month = document.getElementById('ab-month').value.trim();
-  const desc = document.getElementById('ab-desc').value.trim();
-  const amt = parseFloat(document.getElementById('ab-amt').value) || 0;
-  const type = document.getElementById('ab-type').value;
-  if (!desc || !amt) { showToast('Remplis la description et le montant'); return; }
-  const entry = {id:uid(), month, desc, amt, type};
-  if (!month || month.toLowerCase().includes('mai')) {
-    DATA.airbnbMay.push(entry);
-  } else {
-    DATA.airbnbExtra.push(entry);
-  }
-  document.getElementById('ab-desc').value = '';
-  document.getElementById('ab-amt').value = '';
-  document.getElementById('ab-month').value = '';
-  toggleForm('form-airbnb');
-  renderAirbnb(); autoSave();
-  showToast('Mouvement Airbnb ajouté ✓');
-}
-
-// ─── APPART RENDER ─────────────────────────────────────────────
-function renderAppart() {
-  const el = document.getElementById('appart-entries');
-  el.innerHTML = DATA.appartEntries.map(e => `
-    <div class="tbl-row entry-row-4" id="row-ap-${e.id}">
-      <span class="td">${e.desc}${e.shared?' <span style="font-size:10px;color:var(--blue)">÷2</span>':''}</span>
-      <span class="td"><span class="badge b-appt">${e.cat}</span></span>
-      <span class="td r red">− ${fmt(e.amt)}</span>
-      <span class="row-actions">
-        <button class="btn-edit" onclick="event.stopPropagation();toggleEdit('ie-ap-${e.id}')">✏️</button>
-        <button class="btn-del" onclick="event.stopPropagation();deleteAppart('${e.id}')">🗑</button>
-      </span>
-    </div>
+function renderAppart(){
+  const el=document.getElementById('appart-entries');
+  el.innerHTML=DATA.appartEntries.map(e=>`<div class="tbl-row entry-row-4" id="row-ap-${e.id}"><span class="td">${e.desc}${e.shared?' <span style="font-size:10px;color:var(--blue)">÷2</span>':''}</span><span class="td"><span class="badge b-appt">${e.cat}</span></span><span class="td r red">− ${fmt(e.amt)}</span><span class="row-actions"><button class="btn-edit" onclick="event.stopPropagation();toggleEdit('ie-ap-${e.id}')">✏️</button><button class="btn-del" onclick="event.stopPropagation();deleteAppart('${e.id}')">🗑</button></span></div>
     <div class="inline-edit" id="ie-ap-${e.id}">
-      <input type="text" id="ie-ap-desc-${e.id}" value="${e.desc}" placeholder="Description">
-      <div class="ie-row">
-        <input type="number" id="ie-ap-amt-${e.id}" value="${e.amt}" placeholder="Montant">
-        <select id="ie-ap-cat-${e.id}" style="width:120px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
-          <option ${e.cat==='Mobilier'?'selected':''}>Mobilier</option>
-          <option ${e.cat==='Équipement'?'selected':''}>Équipement</option>
-          <option ${e.cat==='Travaux'?'selected':''}>Travaux</option>
-          <option ${e.cat==='Courses'?'selected':''}>Courses ÷ 2</option>
-          <option ${e.cat==='Divers'?'selected':''}>Divers</option>
-        </select>
-      </div>
-      <label style="font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <input type="checkbox" id="ie-ap-shared-${e.id}" ${e.shared?'checked':''}> Partagé ÷ 2
-      </label>
-      <div class="ie-btns">
-        <button class="btn-save" onclick="saveAppart('${e.id}')">Sauvegarder</button>
-        <button class="btn-cancel" onclick="closeEdit('ie-ap-${e.id}')">Annuler</button>
-      </div>
+      <input type="text" id="ie-ap-desc-${e.id}" value="${e.desc}">
+      <div class="ie-row"><input type="number" id="ie-ap-amt-${e.id}" value="${e.amt}">
+      <select id="ie-ap-cat-${e.id}" class="ie-sel" style="width:120px"><option ${e.cat==='Mobilier'?'selected':''}>Mobilier</option><option ${e.cat==='Équipement'?'selected':''}>Équipement</option><option ${e.cat==='Travaux'?'selected':''}>Travaux</option><option ${e.cat==='Courses'?'selected':''}>Courses</option><option ${e.cat==='Divers'?'selected':''}>Divers</option></select></div>
+      <label style="font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" id="ie-ap-shared-${e.id}" ${e.shared?'checked':''}> Partagé ÷ 2</label>
+      <div class="ie-btns"><button class="btn-save" onclick="saveAppart('${e.id}')">Sauvegarder</button><button class="btn-cancel" onclick="closeEdit('ie-ap-${e.id}')">Annuler</button></div>
     </div>`).join('');
-
-  const total = DATA.appartEntries.reduce((s,e) => s + e.amt, 0);
-  document.getElementById('appart-total').textContent = fmt(total);
-  document.getElementById('appart-total-row').textContent = fmt(total);
-  document.getElementById('kpi-appart').textContent = fmt(total);
+  const total=DATA.appartEntries.reduce((s,e)=>s+e.amt,0);
+  document.getElementById('appart-total').textContent=fmt(total);
+  document.getElementById('appart-total-row').textContent=fmt(total);
+  document.getElementById('kpi-appart').textContent=fmt(total);
 }
-
-function addAppartEntry() {
-  const desc = document.getElementById('ap-desc').value.trim();
-  const amt = parseFloat(document.getElementById('ap-amt').value) || 0;
-  const cat = document.getElementById('ap-cat').value;
-  const shared = document.getElementById('ap-shared').checked;
-  if (!desc || !amt) { showToast('Remplis la description et le montant'); return; }
-  DATA.appartEntries.push({id:uid(), desc, cat, amt, shared});
-  document.getElementById('ap-desc').value = '';
-  document.getElementById('ap-amt').value = '';
-  document.getElementById('ap-shared').checked = false;
-  toggleForm('form-appart');
-  renderAppart(); autoSave();
-  showToast('Dépense appart ajoutée ✓');
+function addAppartEntry(){
+  const desc=document.getElementById('ap-desc').value.trim(),amt=parseFloat(document.getElementById('ap-amt').value)||0,cat=document.getElementById('ap-cat').value,shared=document.getElementById('ap-shared').checked;
+  if(!desc||!amt){showToast('Remplis la description et le montant');return;}
+  DATA.appartEntries.push({id:uid(),desc,cat,amt,shared});
+  document.getElementById('ap-desc').value='';document.getElementById('ap-amt').value='';document.getElementById('ap-shared').checked=false;
+  toggleForm('form-appart');renderAppart();autoSave();showToast('Ajouté ✓');
 }
+function saveAppart(id){const e=DATA.appartEntries.find(x=>x.id===id);if(!e)return;e.desc=document.getElementById('ie-ap-desc-'+id).value;e.amt=parseFloat(document.getElementById('ie-ap-amt-'+id).value)||0;e.cat=document.getElementById('ie-ap-cat-'+id).value;e.shared=document.getElementById('ie-ap-shared-'+id).checked;closeEdit('ie-ap-'+id);renderAppart();autoSave();showToast('Modifié ✓');}
+function deleteAppart(id){if(!confirm('Supprimer ?'))return;DATA.appartEntries=DATA.appartEntries.filter(x=>x.id!==id);renderAppart();autoSave();showToast('Supprimé');}
 
-function saveAppart(id) {
-  const e = DATA.appartEntries.find(x => x.id === id);
-  if (!e) return;
-  e.desc = document.getElementById('ie-ap-desc-'+id).value;
-  e.amt = parseFloat(document.getElementById('ie-ap-amt-'+id).value) || 0;
-  e.cat = document.getElementById('ie-ap-cat-'+id).value;
-  e.shared = document.getElementById('ie-ap-shared-'+id).checked;
-  closeEdit('ie-ap-'+id);
-  renderAppart(); autoSave();
-  showToast('Modifié ✓');
-}
-
-function deleteAppart(id) {
-  if (!confirm('Supprimer ?')) return;
-  DATA.appartEntries = DATA.appartEntries.filter(x => x.id !== id);
-  renderAppart(); autoSave();
-  showToast('Supprimé');
-}
-
-// ─── AVOIRS RENDER ─────────────────────────────────────────────
-function renderAvoirs() {
-  const el = document.getElementById('avoir-entries');
-  let totalEur = 0, totalDT = 0;
-  el.innerHTML = DATA.avoirEntries.map(e => {
-    if (e.currency === 'DT') totalDT += e.amt;
-    else totalEur += e.amt;
-    const valStr = (e.amt < 0 ? '− ' : '+ ') + Math.abs(e.amt).toLocaleString('fr-FR') + ' ' + e.currency;
-    const cls = e.amt < 0 ? 'red' : 'green';
-    return `
-    <div class="tbl-row entry-row" id="row-av-${e.id}">
-      <span class="td">${e.pers}<br><span class="td sub">${e.detail}</span></span>
-      <span class="td">${statusBadge(e.status)}</span>
-      <span class="td r ${cls}">${valStr}</span>
-    </div>
+function renderAvoirs(){
+  const el=document.getElementById('avoir-entries');
+  let tEur=0,tDT=0;
+  el.innerHTML=DATA.avoirEntries.map(e=>{
+    if(e.currency==='DT')tDT+=e.amt;else tEur+=e.amt;
+    const v=(e.amt<0?'− ':'+ ')+Math.abs(e.amt).toLocaleString('fr-FR')+' '+e.currency,cls=e.amt<0?'red':'green';
+    return `<div class="tbl-row entry-row" id="row-av-${e.id}"><span class="td">${e.pers}<br><span class="td sub">${e.detail}</span></span><span class="td">${statusBadge(e.status)}</span><span class="td r ${cls}">${v}</span></div>
     <div class="inline-edit" id="ie-av-${e.id}">
-      <input type="text" id="ie-av-pers-${e.id}" value="${e.pers}" placeholder="Personne">
-      <input type="text" id="ie-av-detail-${e.id}" value="${e.detail}" placeholder="Détail">
-      <div class="ie-row">
-        <input type="number" id="ie-av-amt-${e.id}" value="${e.amt}" placeholder="Montant">
-        <select id="ie-av-curr-${e.id}" style="width:80px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
-          <option value="EUR" ${e.currency==='EUR'?'selected':''}>€</option>
-          <option value="DT" ${e.currency==='DT'?'selected':''}>DT</option>
-        </select>
-      </div>
-      <select id="ie-av-status-${e.id}" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
-        <option value="pending" ${e.status==='pending'?'selected':''}>En attente</option>
-        <option value="received" ${e.status==='received'?'selected':''}>Reçu</option>
-        <option value="deducted" ${e.status==='deducted'?'selected':''}>Déduit</option>
-      </select>
-      <div class="ie-btns">
-        <button class="btn-save" onclick="saveAvoir('${e.id}')">Sauvegarder</button>
-        <button class="btn-cancel" onclick="closeEdit('ie-av-${e.id}')">Annuler</button>
-        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAvoir('${e.id}')">Supprimer</button>
-      </div>
+      <input type="text" id="ie-av-pers-${e.id}" value="${e.pers}">
+      <input type="text" id="ie-av-detail-${e.id}" value="${e.detail}">
+      <div class="ie-row"><input type="number" id="ie-av-amt-${e.id}" value="${e.amt}">
+      <select id="ie-av-curr-${e.id}" class="ie-sel" style="width:80px"><option value="EUR" ${e.currency==='EUR'?'selected':''}>€</option><option value="DT" ${e.currency==='DT'?'selected':''}>DT</option></select></div>
+      <select id="ie-av-status-${e.id}" class="ie-sel"><option value="pending" ${e.status==='pending'?'selected':''}>En attente</option><option value="received" ${e.status==='received'?'selected':''}>Reçu</option><option value="deducted" ${e.status==='deducted'?'selected':''}>Déduit</option></select>
+      <div class="ie-btns"><button class="btn-save" onclick="saveAvoir('${e.id}')">Sauvegarder</button><button class="btn-cancel" onclick="closeEdit('ie-av-${e.id}')">Annuler</button><button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteAvoir('${e.id}')">Supprimer</button></div>
     </div>`;
   }).join('');
-
-  DATA.avoirEntries.forEach(e => {
-    const row = document.getElementById('row-av-'+e.id);
-    if (row) row.addEventListener('click', () => toggleEdit('ie-av-'+e.id));
-  });
-
-  document.getElementById('kpi-avoirs').textContent = totalDT.toLocaleString('fr-FR') + ' DT' + (totalEur ? ' + ' + fmt(totalEur) : '');
+  DATA.avoirEntries.forEach(e=>{const r=document.getElementById('row-av-'+e.id);if(r)r.onclick=()=>toggleEdit('ie-av-'+e.id);});
+  document.getElementById('kpi-avoirs').textContent=tDT.toLocaleString('fr-FR')+' DT'+(tEur?' + '+fmt(tEur):'');
 }
-
-function addAvoir() {
-  const pers = document.getElementById('av-pers').value.trim();
-  const detail = document.getElementById('av-detail').value.trim();
-  const amt = parseFloat(document.getElementById('av-amt').value) || 0;
-  const currency = document.getElementById('av-currency').value;
-  const status = document.getElementById('av-status').value;
-  if (!pers || !amt) { showToast('Remplis la personne et le montant'); return; }
-  DATA.avoirEntries.push({id:uid(), pers, detail, amt, currency, status});
-  document.getElementById('av-pers').value = '';
-  document.getElementById('av-detail').value = '';
-  document.getElementById('av-amt').value = '';
-  toggleForm('form-avoir');
-  renderAvoirs(); autoSave();
-  showToast('Avoir ajouté ✓');
+function addAvoir(){
+  const pers=document.getElementById('av-pers').value.trim(),detail=document.getElementById('av-detail').value.trim(),amt=parseFloat(document.getElementById('av-amt').value)||0,currency=document.getElementById('av-currency').value,status=document.getElementById('av-status').value;
+  if(!pers||!amt){showToast('Remplis la personne et le montant');return;}
+  DATA.avoirEntries.push({id:uid(),pers,detail,amt,currency,status});
+  document.getElementById('av-pers').value='';document.getElementById('av-detail').value='';document.getElementById('av-amt').value='';
+  toggleForm('form-avoir');renderAvoirs();autoSave();showToast('Ajouté ✓');
 }
+function saveAvoir(id){const e=DATA.avoirEntries.find(x=>x.id===id);if(!e)return;e.pers=document.getElementById('ie-av-pers-'+id).value;e.detail=document.getElementById('ie-av-detail-'+id).value;e.amt=parseFloat(document.getElementById('ie-av-amt-'+id).value)||0;e.currency=document.getElementById('ie-av-curr-'+id).value;e.status=document.getElementById('ie-av-status-'+id).value;closeEdit('ie-av-'+id);renderAvoirs();autoSave();showToast('Modifié ✓');}
+function deleteAvoir(id){if(!confirm('Supprimer ?'))return;DATA.avoirEntries=DATA.avoirEntries.filter(x=>x.id!==id);renderAvoirs();autoSave();showToast('Supprimé');}
 
-function saveAvoir(id) {
-  const e = DATA.avoirEntries.find(x => x.id === id);
-  if (!e) return;
-  e.pers = document.getElementById('ie-av-pers-'+id).value;
-  e.detail = document.getElementById('ie-av-detail-'+id).value;
-  e.amt = parseFloat(document.getElementById('ie-av-amt-'+id).value) || 0;
-  e.currency = document.getElementById('ie-av-curr-'+id).value;
-  e.status = document.getElementById('ie-av-status-'+id).value;
-  closeEdit('ie-av-'+id);
-  renderAvoirs(); autoSave();
-  showToast('Modifié ✓');
-}
-
-function deleteAvoir(id) {
-  if (!confirm('Supprimer ?')) return;
-  DATA.avoirEntries = DATA.avoirEntries.filter(x => x.id !== id);
-  renderAvoirs(); autoSave();
-  showToast('Supprimé');
-}
-
-// ─── CHARGES RENDER ────────────────────────────────────────────
-function renderCharges() {
-  const el = document.getElementById('charges-entries');
-  let total = 0;
-  el.innerHTML = DATA.chargesEntries.map(e => {
-    total += e.amt;
-    return `
-    <div class="tbl-row entry-row" id="row-ch-${e.id}">
-      <span class="td">${e.desc}</span>
-      <span class="td muted">${e.freq}</span>
-      <span class="td r red">− ${fmt(e.amt)}</span>
-    </div>
+function renderCharges(){
+  const el=document.getElementById('charges-entries');
+  let total=0;
+  el.innerHTML=DATA.chargesEntries.map(e=>{
+    total+=e.amt;
+    return `<div class="tbl-row entry-row" id="row-ch-${e.id}"><span class="td">${e.desc}</span><span class="td muted">${e.freq}</span><span class="td r red">− ${fmt(e.amt)}</span></div>
     <div class="inline-edit" id="ie-ch-${e.id}">
-      <input type="text" id="ie-ch-desc-${e.id}" value="${e.desc}" placeholder="Poste">
-      <div class="ie-row">
-        <input type="number" id="ie-ch-amt-${e.id}" value="${e.amt}" placeholder="Montant">
-        <select id="ie-ch-freq-${e.id}" style="width:110px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);padding:10px;margin-bottom:8px;font-family:var(--font);font-size:13px">
-          <option ${e.freq==='Mensuel'?'selected':''}>Mensuel</option>
-          <option ${e.freq==='Annuel'?'selected':''}>Annuel</option>
-        </select>
-      </div>
-      <div class="ie-btns">
-        <button class="btn-save" onclick="saveCharge('${e.id}')">Sauvegarder</button>
-        <button class="btn-cancel" onclick="closeEdit('ie-ch-${e.id}')">Annuler</button>
-        <button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteCharge('${e.id}')">Supprimer</button>
-      </div>
+      <input type="text" id="ie-ch-desc-${e.id}" value="${e.desc}">
+      <div class="ie-row"><input type="number" id="ie-ch-amt-${e.id}" value="${e.amt}">
+      <select id="ie-ch-freq-${e.id}" class="ie-sel" style="width:110px"><option ${e.freq==='Mensuel'?'selected':''}>Mensuel</option><option ${e.freq==='Annuel'?'selected':''}>Annuel</option></select></div>
+      <div class="ie-btns"><button class="btn-save" onclick="saveCharge('${e.id}')">Sauvegarder</button><button class="btn-cancel" onclick="closeEdit('ie-ch-${e.id}')">Annuler</button><button class="btn-cancel" style="background:var(--red-dim);color:var(--red);border:none" onclick="deleteCharge('${e.id}')">Supprimer</button></div>
     </div>`;
   }).join('');
-
-  DATA.chargesEntries.forEach(e => {
-    const row = document.getElementById('row-ch-'+e.id);
-    if (row) row.addEventListener('click', () => toggleEdit('ie-ch-'+e.id));
-  });
-
-  document.getElementById('charges-total').textContent = fmt(total);
-  document.getElementById('charges-total-row').textContent = fmt(total);
+  DATA.chargesEntries.forEach(e=>{const r=document.getElementById('row-ch-'+e.id);if(r)r.onclick=()=>toggleEdit('ie-ch-'+e.id);});
+  document.getElementById('charges-total').textContent=fmt(total);
+  document.getElementById('charges-total-row').textContent=fmt(total);
 }
-
-function addCharge() {
-  const desc = document.getElementById('ch-desc').value.trim();
-  const amt = parseFloat(document.getElementById('ch-amt').value) || 0;
-  const freq = document.getElementById('ch-freq').value;
-  if (!desc || !amt) { showToast('Remplis le poste et le montant'); return; }
-  DATA.chargesEntries.push({id:uid(), desc, amt, freq});
-  document.getElementById('ch-desc').value = '';
-  document.getElementById('ch-amt').value = '';
-  toggleForm('form-charge');
-  renderCharges(); autoSave();
-  showToast('Charge ajoutée ✓');
+function addCharge(){
+  const desc=document.getElementById('ch-desc').value.trim(),amt=parseFloat(document.getElementById('ch-amt').value)||0,freq=document.getElementById('ch-freq').value;
+  if(!desc||!amt){showToast('Remplis le poste et le montant');return;}
+  DATA.chargesEntries.push({id:uid(),desc,amt,freq});
+  document.getElementById('ch-desc').value='';document.getElementById('ch-amt').value='';
+  toggleForm('form-charge');renderCharges();autoSave();showToast('Ajouté ✓');
 }
+function saveCharge(id){const e=DATA.chargesEntries.find(x=>x.id===id);if(!e)return;e.desc=document.getElementById('ie-ch-desc-'+id).value;e.amt=parseFloat(document.getElementById('ie-ch-amt-'+id).value)||0;e.freq=document.getElementById('ie-ch-freq-'+id).value;closeEdit('ie-ch-'+id);renderCharges();autoSave();showToast('Modifié ✓');}
+function deleteCharge(id){if(!confirm('Supprimer ?'))return;DATA.chargesEntries=DATA.chargesEntries.filter(x=>x.id!==id);renderCharges();autoSave();showToast('Supprimé');}
 
-function saveCharge(id) {
-  const e = DATA.chargesEntries.find(x => x.id === id);
-  if (!e) return;
-  e.desc = document.getElementById('ie-ch-desc-'+id).value;
-  e.amt = parseFloat(document.getElementById('ie-ch-amt-'+id).value) || 0;
-  e.freq = document.getElementById('ie-ch-freq-'+id).value;
-  closeEdit('ie-ch-'+id);
-  renderCharges(); autoSave();
-  showToast('Modifié ✓');
+function sw(name,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pan-'+name).classList.add('on');btn.classList.add('on');
 }
-
-function deleteCharge(id) {
-  if (!confirm('Supprimer ?')) return;
-  DATA.chargesEntries = DATA.chargesEntries.filter(x => x.id !== id);
-  renderCharges(); autoSave();
-  showToast('Supprimé');
+function toggleForm(id){const el=document.getElementById(id);el.classList.toggle('open');if(el.classList.contains('open'))el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function toggleEdit(id){
+  document.querySelectorAll('.inline-edit').forEach(el=>{if(el.id!==id)el.classList.remove('open');});
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.toggle('open');if(el.classList.contains('open'))el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-
-// ─── UI HELPERS ────────────────────────────────────────────────
-function sw(name, btn) {
-  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
-  document.getElementById('pan-'+name).classList.add('on');
-  btn.classList.add('on');
-}
-
-function toggleForm(id) {
-  const el = document.getElementById(id);
-  el.classList.toggle('open');
-  if (el.classList.contains('open')) {
-    el.scrollIntoView({behavior:'smooth', block:'nearest'});
-  }
-}
-
-function toggleEdit(id) {
-  const all = document.querySelectorAll('.inline-edit');
-  all.forEach(el => { if (el.id !== id) el.classList.remove('open'); });
-  const el = document.getElementById(id);
-  if (el) {
-    el.classList.toggle('open');
-    if (el.classList.contains('open')) {
-      el.scrollIntoView({behavior:'smooth', block:'nearest'});
-    }
-  }
-}
-
-function closeEdit(id) {
-  const el = document.getElementById(id);
-  if (el) el.classList.remove('open');
-}
-
+function closeEdit(id){const el=document.getElementById(id);if(el)el.classList.remove('open');}
 let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
-}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+function renderAll(){renderPHC();renderAziz();renderAirbnb();renderAppart();renderAvoirs();renderCharges();calcAziz();}
+function autoSave(){saveLocal();clearTimeout(autoSave._t);autoSave._t=setTimeout(()=>saveToDrive(),3000);}
 
-function renderAll() {
-  renderPHC();
-  renderAziz();
-  renderAirbnb();
-  renderAppart();
-  renderAvoirs();
-  renderCharges();
-  calcAziz();
-}
-
-function autoSave() {
-  saveLocal();
-  // Debounced Drive save
-  clearTimeout(autoSave._t);
-  autoSave._t = setTimeout(() => saveToDrive(), 3000);
-}
-
-// ─── BOOT ──────────────────────────────────────────────────────
-async function boot() {
-  const hadRedirect = handleRedirectToken();
-  const hasStored = loadStoredToken();
-
-  if (accessToken) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
+async function boot(){
+  handleRedirectToken();loadStoredToken();
+  if(accessToken){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
     document.getElementById('app').classList.add('visible');
-    await fetchUserInfo();
-    loadLocal(); // render immediately from local
-    await findOrCreateDriveFile(); // then sync from Drive
-  } else {
-    document.getElementById('login-screen').style.display = 'flex';
+    await fetchUserInfo();loadLocal();await findOrCreateDriveFile();
+  }else{
+    document.getElementById('login-screen').style.display='flex';
   }
 }
-
-window.addEventListener('load', boot);
+window.addEventListener('load',boot);
 </script>
 </body>
 </html>
