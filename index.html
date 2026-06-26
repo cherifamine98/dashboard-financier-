@@ -271,8 +271,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <div class="block-right"><span class="block-val g" id="aziz-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
-          <div class="sum-row sub"><span class="sum-lbl">Solde initial</span><span class="sum-val g">+ 5 030 €</span></div>
-          <div id="aziz-phc-auto"></div>
+          <div id="aziz-solde-rows"></div>
           <div class="sum-row tot"><span class="sum-lbl">Solde total</span><span class="sum-val g" id="aziz-grand-total">—</span></div>
         </div>
       </div>
@@ -362,7 +361,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <div class="block-right"><span class="block-val gd" id="hatem-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
-          <div class="sum-row sub"><span class="sum-lbl">Solde initial (Juin 2026)</span><span class="sum-val gd">+ 300 €</span></div>
+          <div id="hatem-solde-row"></div>
           <div class="tbl-hdr"><span class="col-hdr dt">Date</span><span class="col-hdr">Description</span><span class="col-hdr r">Montant</span></div>
           <div id="hatem-list"></div>
           <div class="sum-row tot"><span class="sum-lbl">Solde Hatem</span><span class="sum-val gd" id="hatem-total">—</span></div>
@@ -388,10 +387,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="block open" id="blk-amine-aziz">
         <div class="block-hdr" onclick="toggleBlock('blk-amine-aziz')">
           <div class="block-left"><span class="block-title">Aziz me doit (DT)</span></div>
-          <div class="block-right"><span class="block-val gd">6 000 DT</span><span class="block-chevron">▾</span></div>
+          <div class="block-right"><span class="block-val gd" id="aziz-dette-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
-          <div class="sum-row sub"><span class="sum-lbl">Dette initiale Aziz</span><span class="sum-val gd">8 000 DT</span></div>
+          <div id="amine-dette-aziz-row"></div>
           <div id="amine-aziz-remb"></div>
           <div class="sum-row tot"><span class="sum-lbl">Reste dû par Aziz</span><span class="sum-val gd" id="aziz-dette-reste">6 000 DT</span></div>
         </div>
@@ -400,10 +399,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="block open" id="blk-amine-hatem">
         <div class="block-hdr" onclick="toggleBlock('blk-amine-hatem')">
           <div class="block-left"><span class="block-title">Hatem me doit (DT)</span></div>
-          <div class="block-right"><span class="block-val gd">4 200 DT</span><span class="block-chevron">▾</span></div>
+          <div class="block-right"><span class="block-val gd" id="hatem-dette-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
-          <div class="sum-row sub"><span class="sum-lbl">Dette initiale Hatem</span><span class="sum-val gd">4 600 DT</span></div>
+          <div id="amine-dette-hatem-row"></div>
           <div id="hatem-deductions"></div>
           <div class="sum-row tot"><span class="sum-lbl">Reste dû par Hatem</span><span class="sum-val gd" id="hatem-dette-reste">4 200 DT</span></div>
         </div>
@@ -547,6 +546,12 @@ const DEF={
     {id:'c5',desc:'Salle de sport',amt:35,freq:'Mensuel'},
   ],
   _hidden:{},
+  cfg:{
+    azizSolde:5030,
+    hatemSolde:300,
+    azizDette:8000,
+    hatemDette:4600,
+  },
 };
 let D=JSON.parse(JSON.stringify(DEF));
 
@@ -618,6 +623,36 @@ function closeEdit(id){document.getElementById('re-'+id)?.classList.remove('on')
 // ═══ ADD FORMS ════════════════════════════════════════════════
 function toggleAddForm(id){document.getElementById(id).classList.toggle('on');document.getElementById(id).scrollIntoView({behavior:'smooth',block:'nearest'});}
 
+
+// ─── CONFIG ROW RENDERER ─────────────────────────────────────
+function cfgRow(id, label, val, currency, onSave){
+  const hidden=D._hidden?.['cfg-'+id];
+  return`<div class="swipe-wrap">
+    <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('cfg-${id}')">
+      <span class="col-main"><span class="col-name">${label}</span></span>
+      <span class="col-val gd">${val>=0?'+':'−'} ${f(Math.abs(val),currency)}</span>
+    </div>
+    <div class="swipe-actions">
+      <button class="sa-btn sa-eye" onclick="toggleHide('cfg-${id}')">●</button>
+    </div>
+  </div>
+  <div class="row-edit" id="re-cfg-${id}">
+    <span class="re-lbl">${label}</span>
+    <div class="re-row">
+      <input class="re-inp" type="number" id="red-cfg-val-${id}" value="${val}" placeholder="Montant">
+      <span class="re-inp" style="background:transparent;border:none;padding:10px 4px;color:var(--text3);flex:0 0 30px">${currency}</span>
+    </div>
+    <div class="re-btns">
+      <button class="re-save" onclick="${onSave}">Sauvegarder</button>
+      <button class="re-cancel" onclick="closeEdit('cfg-${id}')">Annuler</button>
+    </div>
+  </div>`;
+}
+function saveCfg(id, key){
+  D.cfg[key]=parseFloat(document.getElementById('red-cfg-val-'+id).value)||0;
+  closeEdit('cfg-'+id);
+  renderAll();autosave();toast('Modifié ✓');
+}
 // ═══ PHC ══════════════════════════════════════════════════════
 function renderPHC(){
   const el=document.getElementById('phc-list');
@@ -673,9 +708,9 @@ function renderPHC(){
   document.getElementById('phc-net').textContent=f(net);
   document.getElementById('phc-net-val').textContent=f(net);
   document.getElementById('kpi-phc').textContent=f(net);
-  // Update Aziz auto-line
-  document.getElementById('aziz-phc-auto').innerHTML=`<div class="sum-row sub"><span class="sum-lbl">PHC net (auto)</span><span class="sum-val g">+ ${f(net)}</span></div>`;
-  const azizTotal=5030+net;
+  // Update Aziz total (solde initial comes from D.cfg)
+  const soldeInit=D.cfg?.azizSolde||5030;
+  const azizTotal=soldeInit+net;
   document.getElementById('aziz-grand-total').textContent=f(azizTotal);
   document.getElementById('aziz-total-val').textContent=f(azizTotal);
   document.getElementById('kpi-aziz').textContent=f(azizTotal);
@@ -970,9 +1005,11 @@ function renderHatem(){
         <div class="re-btns"><button class="re-save" onclick="saveHatem('${e.id}')">Sauvegarder</button><button class="re-cancel" onclick="closeEdit('ht-${e.id}')">Annuler</button><button class="re-del" onclick="delHatem('${e.id}')">Suppr</button></div>
       </div>`;
     }).join('');
-    const reste=4600-totalDed;
+    const reste=(D.cfg?.hatemDette||4600)-totalDed;
     const resteEl=document.getElementById('hatem-dette-reste');
     if(resteEl)resteEl.textContent=f(reste,'DT');
+    const valEl=document.getElementById('hatem-dette-val');
+    if(valEl)valEl.textContent=f(reste,'DT');
   }
   setTimeout(initSwipes,10);
 }function addHatem(){
@@ -1024,9 +1061,11 @@ function renderAmine(){
       </div>
     </div>`;
     }).join('');
-    const reste=8000-totalRemb;
+    const reste=(D.cfg?.azizDette||8000)-totalRemb;
     const resteEl=document.getElementById('aziz-dette-reste');
     if(resteEl)resteEl.textContent=f(reste,'DT');
+    const valEl=document.getElementById('aziz-dette-val');
+    if(valEl)valEl.textContent=f(reste,'DT');
   }
   // Main amine movements (non-DT-credit-aziz)
   const mainMvt=D.amine.filter(e=>!(e.cur==='DT'&&e.type==='credit'));
@@ -1192,9 +1231,42 @@ function goTab(name){
 // ═══ TOAST ════════════════════════════════════════════════════
 let _tt;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2200);}
 
+
+function renderAzizSolde(){
+  const el=document.getElementById('aziz-solde-rows');
+  if(!el)return;
+  const solde=D.cfg?.azizSolde||5030;
+  el.innerHTML=cfgRow('azizSolde','Solde initial',solde,'€',"saveCfg('azizSolde','azizSolde')");
+  setTimeout(initSwipes,10);
+}
+
+function renderHatemSolde(){
+  const el=document.getElementById('hatem-solde-row');
+  if(!el)return;
+  const solde=D.cfg?.hatemSolde||300;
+  el.innerHTML=cfgRow('hatemSolde','Solde initial (Juin 2026)',solde,'€',"saveCfg('hatemSolde','hatemSolde')");
+  setTimeout(initSwipes,10);
+}
+
+function renderAmineDettes(){
+  // Aziz dette initiale
+  const el1=document.getElementById('amine-dette-aziz-row');
+  if(el1){
+    const v=D.cfg?.azizDette||8000;
+    el1.innerHTML=cfgRow('azizDette','Dette initiale Aziz',v,'DT',"saveCfg('azizDette','azizDette')");
+  }
+  // Hatem dette initiale
+  const el2=document.getElementById('amine-dette-hatem-row');
+  if(el2){
+    const v=D.cfg?.hatemDette||4600;
+    el2.innerHTML=cfgRow('hatemDette','Dette initiale Hatem',v,'DT',"saveCfg('hatemDette','hatemDette')");
+  }
+  setTimeout(initSwipes,10);
+}
 // ═══ RENDER ALL ═══════════════════════════════════════════════
 function renderAll(){
   renderPHC();renderAziz();renderAirbnb();renderTunrooms();renderHatem();renderAmine();renderAppart();renderCharges();
+  renderAzizSolde();renderHatemSolde();renderAmineDettes();
   // Set default dates
   ['f-phc-date','f-az-date','f-ab-date','f-tr-date','f-ht-date','f-am-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today();});
 }
