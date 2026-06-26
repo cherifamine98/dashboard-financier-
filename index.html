@@ -316,14 +316,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <div class="block-right"><span class="block-val tl" id="airbnb-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
-          <div class="divider"><span class="divider-lbl">Janvier 2025</span></div>
-          <div class="swipe-wrap"><div class="swipe-inner"><span class="col-dt">Jan</span><span class="col-main"><span class="col-name">Revenus bruts</span></span><span class="col-val g">+ 1 600 €</span></div></div>
-          <div class="swipe-wrap"><div class="swipe-inner"><span class="col-dt">Jan</span><span class="col-main"><span class="col-name">Billets avion (1)</span></span><span class="col-val r">− 370 €</span></div></div>
-          <div class="swipe-wrap"><div class="swipe-inner"><span class="col-dt">Jan</span><span class="col-main"><span class="col-name">Billets avion (2)</span></span><span class="col-val r">− 420 €</span></div></div>
-          <div class="sum-row sub"><span class="sum-lbl">Net Janvier</span><span class="sum-val g">1 180 €</span></div>
-          <div class="divider"><span class="divider-lbl">Mai 2025</span></div>
-          <div id="airbnb-may"></div>
-          <div class="sum-row sub"><span class="sum-lbl">Net Mai</span><span class="sum-val g" id="airbnb-may-net">—</span></div>
+          <div id="airbnb-all"></div>
           <div class="sum-row tot"><span class="sum-lbl">Total Airbnb</span><span class="sum-val tl" id="airbnb-total">—</span></div>
           <div class="add-row" onclick="toggleAddForm('af-airbnb')">＋ Ajouter Airbnb</div>
           <div id="af-airbnb" class="add-form-wrap">
@@ -398,10 +391,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <div class="block-right"><span class="block-val gd">6 000 DT</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
-          <div class="sum-row sub"><span class="sum-lbl">Dette initiale</span><span class="sum-val gd">8 000 DT</span></div>
-          <div class="sum-row sub"><span class="sum-lbl">TOTO (remboursé)</span><span class="sum-val r">− 1 000 DT</span></div>
-          <div class="sum-row sub"><span class="sum-lbl">Virement Haïfa</span><span class="sum-val r">− 1 000 DT</span></div>
-          <div class="sum-row tot"><span class="sum-lbl">Reste dû</span><span class="sum-val gd">6 000 DT</span></div>
+          <div class="sum-row sub"><span class="sum-lbl">Dette initiale Aziz</span><span class="sum-val gd">8 000 DT</span></div>
+          <div id="amine-aziz-remb"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Reste dû par Aziz</span><span class="sum-val gd" id="aziz-dette-reste">6 000 DT</span></div>
         </div>
       </div>
       <!-- Dettes bloc Hatem -->
@@ -411,9 +403,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <div class="block-right"><span class="block-val gd">4 200 DT</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
-          <div class="sum-row sub"><span class="sum-lbl">Dette initiale</span><span class="sum-val gd">4 600 DT</span></div>
-          <div class="sum-row sub"><span class="sum-lbl">Cigarettes (déduit)</span><span class="sum-val r">− 400 DT</span></div>
-          <div class="sum-row tot"><span class="sum-lbl">Reste dû</span><span class="sum-val gd">4 200 DT</span></div>
+          <div class="sum-row sub"><span class="sum-lbl">Dette initiale Hatem</span><span class="sum-val gd">4 600 DT</span></div>
+          <div id="hatem-deductions"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Reste dû par Hatem</span><span class="sum-val gd" id="hatem-dette-reste">4 200 DT</span></div>
         </div>
       </div>
       <!-- Mes mouvements -->
@@ -525,13 +517,21 @@ const DEF={
   ],
   aziz:[],
   airbnb:[
+    {id:'jan1',date:'2025-01-01',desc:'Revenus bruts',amt:1600,type:'credit',fixed:true},
+    {id:'jan2',date:'2025-01-01',desc:'Billets avion (1)',amt:370,type:'debit',fixed:true},
+    {id:'jan3',date:'2025-01-01',desc:'Billets avion (2)',amt:420,type:'debit',fixed:true},
     {id:'ab1',date:'2025-05-01',desc:'Réservation 1',amt:142,type:'credit'},
     {id:'ab2',date:'2025-05-08',desc:'Réservation 2',amt:103,type:'credit'},
     {id:'ab3',date:'2025-05-15',desc:'Réservation 3',amt:160,type:'credit'},
   ],
   tunrooms:[],
-  hatem:[],
-  amine:[],
+  hatem:[
+    {id:'ht-cig',date:'2026-06-01',desc:'Cigarettes (déduit)',amt:400,cur:'DT',type:'debit'},
+  ],
+  amine:[
+    {id:'am-toto',date:'2025-01-01',desc:'TOTO — remboursement Aziz',amt:1000,cur:'DT',type:'credit'},
+    {id:'am-haifa',date:'2025-01-01',desc:'Virement Haïfa — remboursement Aziz',amt:1000,cur:'DT',type:'credit'},
+  ],
   appart:[
     {id:'ap1',desc:'Télévision',cat:'Équipement',amt:366,shared:false},
     {id:'ap2',desc:'IKEA',cat:'Mobilier',amt:1800,shared:false},
@@ -782,13 +782,27 @@ function delAziz(id){if(!confirm('Supprimer ?'))return;D.aziz=D.aziz.filter(x=>x
 
 // ═══ AIRBNB ═══════════════════════════════════════════════════
 function renderAirbnb(){
-  const el=document.getElementById('airbnb-may');
-  let mayNet=0;
-  el.innerHTML=D.airbnb.map(e=>{
-    const v=e.type==='credit'?e.amt:-e.amt;mayNet+=v;
-    const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
-    const hidden=D._hidden?.['ab-'+e.id];
-    return`<div class="swipe-wrap">
+  const el=document.getElementById('airbnb-all');
+  let total=0;
+  // Group by month
+  const months={};
+  D.airbnb.forEach(e=>{
+    const d=e.date?e.date.slice(0,7):'';
+    if(!months[d])months[d]=[];
+    months[d].push(e);
+  });
+  let html='';
+  Object.keys(months).sort().forEach(ym=>{
+    const [y,m]=ym.split('-');
+    const mNames=['','Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc'];
+    const label=ym?`${mNames[parseInt(m)||0]} ${y}`:'';
+    html+=`<div class="divider"><span class="divider-lbl">${label}</span></div>`;
+    let mNet=0;
+    months[ym].forEach(e=>{
+      const v=e.type==='credit'?e.amt:-e.amt;mNet+=v;total+=v;
+      const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
+      const hidden=D._hidden?.['ab-'+e.id];
+      html+=`<div class="swipe-wrap">
       <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('ab-${e.id}')">
         <span class="col-dt">${fd(e.date)}</span>
         <span class="col-main"><span class="col-name">${e.desc}</span></span>
@@ -804,7 +818,7 @@ function renderAirbnb(){
       <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-ab-desc-${e.id}" value="${e.desc}">
       <div class="re-row">
         <input class="re-inp" type="number" id="red-ab-amt-${e.id}" value="${e.amt}">
-        <select class="re-sel" id="red-ab-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Encaissement</option><option value="debit" ${e.type==='debit'?'selected':''}>Déduction</option></select>
+        <select class="re-sel" id="red-ab-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Encaissement (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Déduction (−)</option></select>
       </div>
       <div class="re-btns">
         <button class="re-save" onclick="saveAirbnb('${e.id}')">Sauvegarder</button>
@@ -812,9 +826,10 @@ function renderAirbnb(){
         <button class="re-del" onclick="delAirbnb('${e.id}')">Suppr</button>
       </div>
     </div>`;
-  }).join('');
-  const total=1180+mayNet;
-  document.getElementById('airbnb-may-net').textContent=f(mayNet);
+    });
+    html+=`<div class="sum-row sub"><span class="sum-lbl">Net ${label}</span><span class="sum-val ${mNet>=0?'g':'r'}">${mNet>=0?'+':'−'} ${f(mNet)}</span></div>`;
+  });
+  el.innerHTML=html;
   document.getElementById('airbnb-total').textContent=f(total);
   document.getElementById('airbnb-total-val').textContent=f(total);
   document.getElementById('kpi-studio').textContent=f(total);
@@ -931,9 +946,36 @@ function renderHatem(){
   document.getElementById('hatem-total').textContent=f(total);
   document.getElementById('hatem-total-val').textContent=f(total);
   document.getElementById('kpi-hatem').textContent=f(total);
+  // Update hatem deductions panel in Amine tab
+  const htDed=D.hatem.filter(e=>e.type==='debit');
+  const totalDed=htDed.reduce((s,e)=>s+e.amt,0);
+  const htDedEl=document.getElementById('hatem-deductions');
+  if(htDedEl){
+    htDedEl.innerHTML=htDed.map(e=>{
+      const hidden=D._hidden?.['ht-'+e.id];
+      return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('ht-${e.id}')">
+        <span class="col-dt">${fd(e.date)}</span>
+        <span class="col-main"><span class="col-name">${e.desc}</span></span>
+        <span class="col-val r">− ${f(e.amt,e.cur||'DT')}</span>
+      </div>
+      <div class="swipe-actions">
+        <button class="sa-btn sa-eye" onclick="toggleHide('ht-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delHatem('${e.id}')">✕</button>
+      </div></div>
+      <div class="row-edit" id="re-ht-ded-${e.id}">
+        <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-htd-date-${e.id}" value="${e.date}">
+        <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-htd-desc-${e.id}" value="${e.desc}">
+        <div class="re-row"><input class="re-inp" type="number" id="red-htd-amt-${e.id}" value="${e.amt}"><select class="re-sel" id="red-htd-cur-${e.id}"><option value="DT" ${(e.cur||'DT')==='DT'?'selected':''}>DT</option><option value="EUR" ${e.cur==='EUR'?'selected':''}>€</option></select></div>
+        <div class="re-btns"><button class="re-save" onclick="saveHatem('${e.id}')">Sauvegarder</button><button class="re-cancel" onclick="closeEdit('ht-${e.id}')">Annuler</button><button class="re-del" onclick="delHatem('${e.id}')">Suppr</button></div>
+      </div>`;
+    }).join('');
+    const reste=4600-totalDed;
+    const resteEl=document.getElementById('hatem-dette-reste');
+    if(resteEl)resteEl.textContent=f(reste,'DT');
+  }
   setTimeout(initSwipes,10);
-}
-function addHatem(){
+}function addHatem(){
   const date=document.getElementById('f-ht-date').value||today();
   const desc=document.getElementById('f-ht-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-ht-amt').value)||0;
@@ -949,15 +991,55 @@ function delHatem(id){if(!confirm('Supprimer ?'))return;D.hatem=D.hatem.filter(x
 
 // ═══ AMINE ════════════════════════════════════════════════════
 function renderAmine(){
+  // Aziz remboursements (DT credits in amine linked to Aziz)
+  const azizRemb=D.amine.filter(e=>e.cur==='DT'&&e.type==='credit');
+  const totalRemb=azizRemb.reduce((s,e)=>s+e.amt,0);
+  const azizRembEl=document.getElementById('amine-aziz-remb');
+  if(azizRembEl){
+    azizRembEl.innerHTML=azizRemb.map(e=>{
+      const hidden=D._hidden?.['am-'+e.id];
+      return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('am-${e.id}')">
+        <span class="col-dt">${fd(e.date)}</span>
+        <span class="col-main"><span class="col-name">${e.desc}</span></span>
+        <span class="col-val r">− ${f(e.amt,'DT')}</span>
+      </div>
+      <div class="swipe-actions">
+        <button class="sa-btn sa-eye" onclick="toggleHide('am-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delAmine('${e.id}')">✕</button>
+      </div>
+    </div>
+    <div class="row-edit" id="re-am-${e.id}">
+      <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-am-date-${e.id}" value="${e.date}">
+      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-am-desc-${e.id}" value="${e.desc}">
+      <div class="re-row">
+        <input class="re-inp" type="number" id="red-am-amt-${e.id}" value="${e.amt}">
+        <select class="re-sel" id="red-am-cur-${e.id}"><option value="EUR" ${(e.cur||'EUR')==='EUR'?'selected':''}>€</option><option value="DT" ${e.cur==='DT'?'selected':''}>DT</option></select>
+        <select class="re-sel" id="red-am-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Entrée (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Sortie (−)</option></select>
+      </div>
+      <div class="re-btns">
+        <button class="re-save" onclick="saveAmine('${e.id}')">Sauvegarder</button>
+        <button class="re-cancel" onclick="closeEdit('am-${e.id}')">Annuler</button>
+        <button class="re-del" onclick="delAmine('${e.id}')">Suppr</button>
+      </div>
+    </div>`;
+    }).join('');
+    const reste=8000-totalRemb;
+    const resteEl=document.getElementById('aziz-dette-reste');
+    if(resteEl)resteEl.textContent=f(reste,'DT');
+  }
+  // Main amine movements (non-DT-credit-aziz)
+  const mainMvt=D.amine.filter(e=>!(e.cur==='DT'&&e.type==='credit'));
   const el=document.getElementById('amine-list');
-  if(!D.amine.length){el.innerHTML='<div class="empty">Aucun mouvement</div>';document.getElementById('amine-net').textContent='0 €';document.getElementById('amine-total-val').textContent='0 €';document.getElementById('kpi-amine').textContent='0 €';return;}
-  let netEur=0;
-  el.innerHTML=D.amine.map(e=>{
-    const v=e.type==='credit'?e.amt:-e.amt;const cur=e.cur||'EUR';
-    if(cur==='EUR')netEur+=v;
-    const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
-    const hidden=D._hidden?.['am-'+e.id];
-    return`<div class="swipe-wrap">
+  if(!mainMvt.length){el.innerHTML='<div class="empty">Aucun mouvement</div>';document.getElementById('amine-net').textContent='0 €';document.getElementById('amine-total-val').textContent='0 €';document.getElementById('kpi-amine').textContent='0 €';}
+  else{
+    let netEur=0;
+    el.innerHTML=mainMvt.map(e=>{
+      const v=e.type==='credit'?e.amt:-e.amt;const cur=e.cur||'EUR';
+      if(cur==='EUR')netEur+=v;
+      const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
+      const hidden=D._hidden?.['am-'+e.id];
+      return`<div class="swipe-wrap">
       <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('am-${e.id}')">
         <span class="col-dt">${fd(e.date)}</span>
         <span class="col-main"><span class="col-name">${e.desc}</span></span>
@@ -982,10 +1064,11 @@ function renderAmine(){
         <button class="re-del" onclick="delAmine('${e.id}')">Suppr</button>
       </div>
     </div>`;
-  }).join('');
-  document.getElementById('amine-net').textContent=f(netEur);
-  document.getElementById('amine-total-val').textContent=f(netEur);
-  document.getElementById('kpi-amine').textContent=f(netEur);
+    }).join('');
+    document.getElementById('amine-net').textContent=f(netEur);
+    document.getElementById('amine-total-val').textContent=f(netEur);
+    document.getElementById('kpi-amine').textContent=f(netEur);
+  }
   setTimeout(initSwipes,10);
 }
 function addAmine(){
