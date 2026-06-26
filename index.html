@@ -23,7 +23,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 /* ── LOGIN ── */
 #login{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);padding:32px 24px;gap:0}
-.login-icon{font-size:56px;margin-bottom:20px}
+.login-icon{font-size:40px;margin-bottom:20px;color:var(--blue);font-weight:900;letter-spacing:-2px}
 .login-title{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
 .login-sub{font-size:14px;color:var(--text2);text-align:center;max-width:260px;margin-bottom:40px;line-height:1.5}
 .g-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#111;border:none;border-radius:28px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:300px;justify-content:center;box-shadow:0 4px 24px #0009;letter-spacing:-.2px}
@@ -70,9 +70,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
 .block-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;min-height:52px;gap:12px}
 .block-hdr:active{background:var(--bg3)}
-.block-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-.block-icon{font-size:16px;flex-shrink:0}
-.block-title{font-size:13px;font-weight:700;letter-spacing:-.2px;white-space:nowrap}
+.block-left{display:flex;align-items:center;gap:0;flex:1;min-width:0}
+.block-icon{width:3px;height:20px;background:var(--blue);border-radius:2px;flex-shrink:0;display:none}
+.block-title{font-size:13px;font-weight:700;letter-spacing:-.2px}
 .block-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .block-val{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.4px}
 .block-chevron{font-size:11px;color:var(--text3);transition:transform .2s;margin-left:2px}
@@ -87,12 +87,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .col-hdr.dt{flex:0 0 68px}
 
 /* ── SWIPEABLE ROW ── */
-.swipe-wrap{overflow:hidden;border-bottom:1px solid var(--border);position:relative}
+.swipe-wrap{overflow:hidden;border-bottom:1px solid var(--border);position:relative;isolation:isolate}
 .swipe-wrap:last-of-type{border-bottom:none}
-.swipe-inner{display:flex;align-items:center;padding:11px 14px;gap:8px;background:var(--bg2);transition:transform .22s cubic-bezier(.4,0,.2,1);min-height:var(--h-row);cursor:pointer;will-change:transform}
+.swipe-inner{display:flex;align-items:center;padding:11px 14px;gap:8px;background:var(--bg2);transition:transform .22s cubic-bezier(.4,0,.2,1);min-height:var(--h-row);cursor:pointer;will-change:transform;position:relative;z-index:2}
 .swipe-inner:active{background:var(--bg3)}
-.swipe-actions{position:absolute;right:0;top:0;bottom:0;display:flex;pointer-events:none;z-index:1}
-.swipe-actions.vis{pointer-events:auto}
+.swipe-actions{position:absolute;right:0;top:0;bottom:0;display:flex;pointer-events:none;z-index:1;opacity:0;transition:opacity .15s}
+.swipe-actions.vis{pointer-events:auto;opacity:1}
 .sa-btn{width:52px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;font-family:var(--font);letter-spacing:0;transition:opacity .1s;line-height:1}
 .sa-eye{background:var(--blue-bg);color:var(--blue);border-left:1px solid var(--border2)}
 .sa-del{background:var(--red-bg);color:var(--red);border-left:1px solid var(--border2)}
@@ -103,7 +103,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 /* ── ROW COLUMNS ── */
 .col-main{flex:1;min-width:0}
 .col-name{font-size:13px;font-weight:500;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.col-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.col-sub{font-size:11px;color:var(--text3);margin-top:2px;display:block}
 .col-val{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
 .col-dt{font-size:11px;color:var(--text3);flex:0 0 68px;white-space:nowrap}
 .g{color:var(--green)}.r{color:var(--red)}.m{color:var(--text2)}.gd{color:var(--gold)}.tl{color:var(--teal)}
@@ -174,7 +174,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
 <!-- LOGIN -->
 <div id="login">
-  <div class="login-icon">💳</div>
+  <div class="login-icon">◈</div>
   <div class="login-title">Dashboard</div>
   <div class="login-sub">Connecte-toi pour accéder à tes données depuis tous tes appareils.</div>
   <button class="g-btn" onclick="gSignIn()">
@@ -187,7 +187,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 <!-- APP -->
 <div id="app">
   <div class="hdr">
-    <div class="hdr-logo">💳 Dashboard</div>
+    <div class="hdr-logo">Dashboard</div>
     <div class="hdr-right">
       <div class="sync-pill" onclick="doSync()"><div class="sdot" id="sdot"></div><span id="slbl">Sync</span></div>
       <div class="user-pill" id="upill" onclick="gSignOut()"><img id="uphoto" src="" alt=""><span id="uname"></span></div>
@@ -221,7 +221,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <div class="block open" id="blk-phc">
         <div class="block-hdr" onclick="toggleBlock('blk-phc')">
           <div class="block-left">
-            <span class="block-icon">📥</span>
+            
             <span class="block-title">Date · Description · Montant</span>
           </div>
           <div class="block-right">
@@ -267,7 +267,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Block: Solde Aziz -->
       <div class="block open" id="blk-aziz-solde">
         <div class="block-hdr" onclick="toggleBlock('blk-aziz-solde')">
-          <div class="block-left"><span class="block-icon">💰</span><span class="block-title">Solde Aziz</span></div>
+          <div class="block-left"><span class="block-title">Solde Aziz</span></div>
           <div class="block-right"><span class="block-val g" id="aziz-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -279,7 +279,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Block: Mouvements -->
       <div class="block open" id="blk-aziz-mvt">
         <div class="block-hdr" onclick="toggleBlock('blk-aziz-mvt')">
-          <div class="block-left"><span class="block-icon">🔄</span><span class="block-title">Mouvements</span></div>
+          <div class="block-left"><span class="block-title">Mouvements</span></div>
           <div class="block-right"><span class="block-val m" id="aziz-mvt-val">0 €</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -312,7 +312,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Airbnb block -->
       <div class="block open" id="blk-airbnb">
         <div class="block-hdr" onclick="toggleBlock('blk-airbnb')">
-          <div class="block-left"><span class="block-icon">🏠</span><span class="block-title">Airbnb — Entrées €</span></div>
+          <div class="block-left"><span class="block-title">Airbnb — Entrées €</span></div>
           <div class="block-right"><span class="block-val tl" id="airbnb-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -340,7 +340,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Tunrooms block -->
       <div class="block" id="blk-tunrooms">
         <div class="block-hdr" onclick="toggleBlock('blk-tunrooms')">
-          <div class="block-left"><span class="block-icon">🏡</span><span class="block-title">Tunrooms — Entrées DT</span></div>
+          <div class="block-left"><span class="block-title">Tunrooms — Entrées DT</span></div>
           <div class="block-right"><span class="block-val tl" id="tunrooms-total-val">0 DT</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -365,7 +365,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div id="pan-hatem" class="panel">
       <div class="block open" id="blk-hatem">
         <div class="block-hdr" onclick="toggleBlock('blk-hatem')">
-          <div class="block-left"><span class="block-icon">🤝</span><span class="block-title">Hatem · Mouvements</span></div>
+          <div class="block-left"><span class="block-title">Hatem · Mouvements</span></div>
           <div class="block-right"><span class="block-val gd" id="hatem-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -394,7 +394,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Dettes bloc Aziz -->
       <div class="block open" id="blk-amine-aziz">
         <div class="block-hdr" onclick="toggleBlock('blk-amine-aziz')">
-          <div class="block-left"><span class="block-icon">📋</span><span class="block-title">Aziz me doit (DT)</span></div>
+          <div class="block-left"><span class="block-title">Aziz me doit (DT)</span></div>
           <div class="block-right"><span class="block-val gd">6 000 DT</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -407,7 +407,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Dettes bloc Hatem -->
       <div class="block open" id="blk-amine-hatem">
         <div class="block-hdr" onclick="toggleBlock('blk-amine-hatem')">
-          <div class="block-left"><span class="block-icon">📋</span><span class="block-title">Hatem me doit (DT)</span></div>
+          <div class="block-left"><span class="block-title">Hatem me doit (DT)</span></div>
           <div class="block-right"><span class="block-val gd">4 200 DT</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -419,7 +419,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Mes mouvements -->
       <div class="block open" id="blk-amine-mvt">
         <div class="block-hdr" onclick="toggleBlock('blk-amine-mvt')">
-          <div class="block-left"><span class="block-icon">💸</span><span class="block-title">Mes mouvements</span></div>
+          <div class="block-left"><span class="block-title">Mes mouvements</span></div>
           <div class="block-right"><span class="block-val g" id="amine-total-val">0 €</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -446,7 +446,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div id="pan-appart" class="panel">
       <div class="block open" id="blk-appart">
         <div class="block-hdr" onclick="toggleBlock('blk-appart')">
-          <div class="block-left"><span class="block-icon">🛋️</span><span class="block-title">Dépenses Appart</span></div>
+          <div class="block-left"><span class="block-title">Dépenses Appart</span></div>
           <div class="block-right"><span class="block-val r" id="appart-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -471,7 +471,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     <div id="pan-charges" class="panel">
       <div class="block open" id="blk-charges">
         <div class="block-hdr" onclick="toggleBlock('blk-charges')">
-          <div class="block-left"><span class="block-icon">📅</span><span class="block-title">Charges fixes mensuelles</span></div>
+          <div class="block-left"><span class="block-title">Charges fixes mensuelles</span></div>
           <div class="block-right"><span class="block-val r" id="charges-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
