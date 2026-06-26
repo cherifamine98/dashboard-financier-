@@ -93,11 +93,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .swipe-inner:active{background:var(--bg3)}
 .swipe-actions{position:absolute;right:0;top:0;bottom:0;display:flex;pointer-events:none;z-index:1}
 .swipe-actions.vis{pointer-events:auto}
-.sa-btn{width:56px;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:700;transition:opacity .1s}
+.sa-btn{width:52px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;font-family:var(--font);letter-spacing:0;transition:opacity .1s;line-height:1}
 .sa-eye{background:var(--blue-bg);color:var(--blue);border-left:1px solid var(--border2)}
 .sa-del{background:var(--red-bg);color:var(--red);border-left:1px solid var(--border2)}
-.sa-btn .sa-icon{font-size:16px}
-.swipe-inner.swiped{transform:translateX(-112px)}
+.sa-btn .sa-icon{display:none}
+.swipe-inner.swiped{transform:translateX(-104px)}
 .swipe-inner.dim .col-main,.swipe-inner.dim .col-val{opacity:.3;text-decoration:line-through}
 
 /* ── ROW COLUMNS ── */
@@ -118,7 +118,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .re-btns{display:flex;gap:8px;margin-top:4px}
 .re-save{flex:1;background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}
 .re-cancel{flex:0 0 80px;background:var(--bg2);color:var(--text2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:11px;font-size:14px;cursor:pointer;font-family:var(--font)}
-.re-del{flex:0 0 44px;background:var(--red-bg);color:var(--red);border:1px solid #ff3d5530;border-radius:var(--r-sm);padding:11px;font-size:16px;cursor:pointer}
+.re-del{flex:0 0 60px;background:var(--red-bg);color:var(--red);border:1px solid #ff3d5530;border-radius:var(--r-sm);padding:11px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)}
 
 /* ── SUMMARY ROWS ── */
 .sum-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);gap:8px}
@@ -605,7 +605,7 @@ function stBadge(s){return s==='done'?'<span class="badge b-ok">✓ Réglé</spa
 
 // ═══ SWIPE ENGINE ═════════════════════════════════════════════
 let sw={el:null,sx:0,sy:0,dx:0,ok:false};
-function initSwipes(){document.querySelectorAll('.swipe-wrap').forEach(w=>{const inner=w.querySelector('.swipe-inner');const rev=w.querySelector('.swipe-actions');if(!inner||!rev)return;inner.addEventListener('touchstart',e=>{if(e.touches.length>1)return;sw={el:inner,rev,sx:e.touches[0].clientX,sy:e.touches[0].clientY,dx:0,ok:true};},{passive:true});inner.addEventListener('touchmove',e=>{if(!sw.ok||sw.el!==inner)return;const dx=e.touches[0].clientX-sw.sx,dy=e.touches[0].clientY-sw.sy;if(Math.abs(dy)>Math.abs(dx)*1.5){sw.ok=false;return;}e.preventDefault();sw.dx=dx;const base=inner.classList.contains('swiped')?-112:0;const clamped=Math.max(-112,Math.min(0,base+dx));inner.style.transform=`translateX(${clamped}px)`;rev.classList.add('vis');},{passive:false});inner.addEventListener('touchend',()=>{if(!sw.ok||sw.el!==inner)return;sw.ok=false;const base=inner.classList.contains('swiped')?-112:0;const total=base+sw.dx;inner.style.transform='';if(total<-50){inner.classList.add('swiped');rev.classList.add('vis');}else{inner.classList.remove('swiped');rev.classList.remove('vis');}});});}
+function initSwipes(){document.querySelectorAll('.swipe-wrap').forEach(w=>{const inner=w.querySelector('.swipe-inner');const rev=w.querySelector('.swipe-actions');if(!inner||!rev)return;inner.addEventListener('touchstart',e=>{if(e.touches.length>1)return;sw={el:inner,rev,sx:e.touches[0].clientX,sy:e.touches[0].clientY,dx:0,ok:true};},{passive:true});inner.addEventListener('touchmove',e=>{if(!sw.ok||sw.el!==inner)return;const dx=e.touches[0].clientX-sw.sx,dy=e.touches[0].clientY-sw.sy;if(Math.abs(dy)>Math.abs(dx)*1.5){sw.ok=false;return;}e.preventDefault();sw.dx=dx;const base=inner.classList.contains('swiped')?-104:0;const clamped=Math.max(-104,Math.min(0,base+dx));inner.style.transform=`translateX(${clamped}px)`;rev.classList.add('vis');},{passive:false});inner.addEventListener('touchend',()=>{if(!sw.ok||sw.el!==inner)return;sw.ok=false;const base=inner.classList.contains('swiped')?-104:0;const total=base+sw.dx;inner.style.transform='';if(total<-50){inner.classList.add('swiped');rev.classList.add('vis');}else{inner.classList.remove('swiped');rev.classList.remove('vis');}});});}
 function closeSwipes(){document.querySelectorAll('.swipe-inner.swiped').forEach(el=>{el.classList.remove('swiped');const rev=el.closest('.swipe-wrap')?.querySelector('.swipe-actions');if(rev)rev.classList.remove('vis');});}
 
 // ═══ BLOCK TOGGLE ═════════════════════════════════════════════
@@ -633,8 +633,8 @@ function renderPHC(){
         <span class="col-val g">+ ${f(e.amt)}</span>
       </div>
       <div class="swipe-actions" id="sa-phc-${e.id}">
-        <button class="sa-btn sa-eye" onclick="toggleHide('phc-${e.id}')"><span class="sa-icon">👁</span></button>
-        <button class="sa-btn sa-del" onclick="delPHC('${e.id}')"><span class="sa-icon">🗑</span></button>
+        <button class="sa-btn sa-eye" onclick="toggleHide('phc-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delPHC('${e.id}')">✕</button>
       </div>
     </div>
     <div class="row-edit" id="re-phc-${e.id}">
@@ -664,7 +664,7 @@ function renderPHC(){
       <div class="re-btns">
         <button class="re-save" onclick="savePHC('${e.id}')">Sauvegarder</button>
         <button class="re-cancel" onclick="closeEdit('phc-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delPHC('${e.id}')">🗑</button>
+        <button class="re-del" onclick="delPHC('${e.id}')">Suppr</button>
       </div>
     </div>`;
   }).join('');
@@ -736,8 +736,8 @@ function renderAziz(){
         <span class="col-val ${cls}">${sign} ${f(e.amt)}</span>
       </div>
       <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('az-${e.id}')"><span class="sa-icon">👁</span></button>
-        <button class="sa-btn sa-del" onclick="delAziz('${e.id}')"><span class="sa-icon">🗑</span></button>
+        <button class="sa-btn sa-eye" onclick="toggleHide('az-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delAziz('${e.id}')">✕</button>
       </div>
     </div>
     <div class="row-edit" id="re-az-${e.id}">
@@ -751,7 +751,7 @@ function renderAziz(){
       <div class="re-btns">
         <button class="re-save" onclick="saveAziz('${e.id}')">Sauvegarder</button>
         <button class="re-cancel" onclick="closeEdit('az-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delAziz('${e.id}')">🗑</button>
+        <button class="re-del" onclick="delAziz('${e.id}')">Suppr</button>
       </div>
     </div>`;
   }).join('');
@@ -795,8 +795,8 @@ function renderAirbnb(){
         <span class="col-val ${cls}">${sign} ${f(e.amt)}</span>
       </div>
       <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('ab-${e.id}')"><span class="sa-icon">👁</span></button>
-        <button class="sa-btn sa-del" onclick="delAirbnb('${e.id}')"><span class="sa-icon">🗑</span></button>
+        <button class="sa-btn sa-eye" onclick="toggleHide('ab-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delAirbnb('${e.id}')">✕</button>
       </div>
     </div>
     <div class="row-edit" id="re-ab-${e.id}">
@@ -809,7 +809,7 @@ function renderAirbnb(){
       <div class="re-btns">
         <button class="re-save" onclick="saveAirbnb('${e.id}')">Sauvegarder</button>
         <button class="re-cancel" onclick="closeEdit('ab-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delAirbnb('${e.id}')">🗑</button>
+        <button class="re-del" onclick="delAirbnb('${e.id}')">Suppr</button>
       </div>
     </div>`;
   }).join('');
@@ -856,8 +856,8 @@ function renderTunrooms(){
         <span class="col-val ${cls}">${sign} ${f(e.amt,'DT')}</span>
       </div>
       <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('tr-${e.id}')"><span class="sa-icon">👁</span></button>
-        <button class="sa-btn sa-del" onclick="delTunrooms('${e.id}')"><span class="sa-icon">🗑</span></button>
+        <button class="sa-btn sa-eye" onclick="toggleHide('tr-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delTunrooms('${e.id}')">✕</button>
       </div>
     </div>
     <div class="row-edit" id="re-tr-${e.id}">
@@ -870,7 +870,7 @@ function renderTunrooms(){
       <div class="re-btns">
         <button class="re-save" onclick="saveTunrooms('${e.id}')">Sauvegarder</button>
         <button class="re-cancel" onclick="closeEdit('tr-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delTunrooms('${e.id}')">🗑</button>
+        <button class="re-del" onclick="delTunrooms('${e.id}')">Suppr</button>
       </div>
     </div>`;
   }).join('');
@@ -908,8 +908,8 @@ function renderHatem(){
           <span class="col-val ${cls}">${sign} ${f(e.amt,cur)}</span>
         </div>
         <div class="swipe-actions">
-          <button class="sa-btn sa-eye" onclick="toggleHide('ht-${e.id}')"><span class="sa-icon">👁</span></button>
-          <button class="sa-btn sa-del" onclick="delHatem('${e.id}')"><span class="sa-icon">🗑</span></button>
+          <button class="sa-btn sa-eye" onclick="toggleHide('ht-${e.id}')">●</button>
+          <button class="sa-btn sa-del" onclick="delHatem('${e.id}')">✕</button>
         </div>
       </div>
       <div class="row-edit" id="re-ht-${e.id}">
@@ -923,7 +923,7 @@ function renderHatem(){
         <div class="re-btns">
           <button class="re-save" onclick="saveHatem('${e.id}')">Sauvegarder</button>
           <button class="re-cancel" onclick="closeEdit('ht-${e.id}')">Annuler</button>
-          <button class="re-del" onclick="delHatem('${e.id}')">🗑</button>
+          <button class="re-del" onclick="delHatem('${e.id}')">Suppr</button>
         </div>
       </div>`;
     }).join('');
@@ -964,8 +964,8 @@ function renderAmine(){
         <span class="col-val ${cls}">${sign} ${f(e.amt,cur)}</span>
       </div>
       <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('am-${e.id}')"><span class="sa-icon">👁</span></button>
-        <button class="sa-btn sa-del" onclick="delAmine('${e.id}')"><span class="sa-icon">🗑</span></button>
+        <button class="sa-btn sa-eye" onclick="toggleHide('am-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delAmine('${e.id}')">✕</button>
       </div>
     </div>
     <div class="row-edit" id="re-am-${e.id}">
@@ -979,7 +979,7 @@ function renderAmine(){
       <div class="re-btns">
         <button class="re-save" onclick="saveAmine('${e.id}')">Sauvegarder</button>
         <button class="re-cancel" onclick="closeEdit('am-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delAmine('${e.id}')">🗑</button>
+        <button class="re-del" onclick="delAmine('${e.id}')">Suppr</button>
       </div>
     </div>`;
   }).join('');
@@ -1015,8 +1015,8 @@ function renderAppart(){
         <span class="col-val r">− ${f(e.amt)}</span>
       </div>
       <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('ap-${e.id}')"><span class="sa-icon">👁</span></button>
-        <button class="sa-btn sa-del" onclick="delAppart('${e.id}')"><span class="sa-icon">🗑</span></button>
+        <button class="sa-btn sa-eye" onclick="toggleHide('ap-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delAppart('${e.id}')">✕</button>
       </div>
     </div>
     <div class="row-edit" id="re-ap-${e.id}">
@@ -1029,7 +1029,7 @@ function renderAppart(){
       <div class="re-btns">
         <button class="re-save" onclick="saveAppart('${e.id}')">Sauvegarder</button>
         <button class="re-cancel" onclick="closeEdit('ap-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delAppart('${e.id}')">🗑</button>
+        <button class="re-del" onclick="delAppart('${e.id}')">Suppr</button>
       </div>
     </div>`;
   }).join('');
@@ -1065,8 +1065,8 @@ function renderCharges(){
         <span class="col-val r">− ${f(e.amt)}</span>
       </div>
       <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('ch-${e.id}')"><span class="sa-icon">👁</span></button>
-        <button class="sa-btn sa-del" onclick="delCharge('${e.id}')"><span class="sa-icon">🗑</span></button>
+        <button class="sa-btn sa-eye" onclick="toggleHide('ch-${e.id}')">●</button>
+        <button class="sa-btn sa-del" onclick="delCharge('${e.id}')">✕</button>
       </div>
     </div>
     <div class="row-edit" id="re-ch-${e.id}">
@@ -1078,7 +1078,7 @@ function renderCharges(){
       <div class="re-btns">
         <button class="re-save" onclick="saveCharge('${e.id}')">Sauvegarder</button>
         <button class="re-cancel" onclick="closeEdit('ch-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delCharge('${e.id}')">🗑</button>
+        <button class="re-del" onclick="delCharge('${e.id}')">Suppr</button>
       </div>
     </div>`;
   }).join('');
