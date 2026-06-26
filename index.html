@@ -3,500 +3,510 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Dashboard Amine</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--bg4:#22222e;
-  --border:#ffffff0f;--border2:#ffffff18;--border3:#ffffff25;
-  --text:#f0f0f5;--text2:#8888a0;--text3:#55556a;
-  --green:#00e87a;--red:#ff4757;--blue:#4d9fff;--purple:#a855f7;
-  --orange:#ff8c42;--gold:#f5c842;--teal:#00d4aa;--pink:#ff6eb4;
-  --radius:14px;--radius-sm:8px;
-  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1c1c28;--bg4:#252535;
+  --border:#ffffff0d;--border2:#ffffff18;--border3:#ffffff28;
+  --text:#eeeef5;--text2:#8080a0;--text3:#50506a;
+  --green:#00e07a;--red:#ff3d55;--blue:#4d9cff;
+  --gold:#f0c040;--teal:#00ccaa;--purple:#b06aff;--orange:#ff8040;
+  --green-bg:#00e07a18;--red-bg:#ff3d5518;--blue-bg:#4d9cff18;
+  --gold-bg:#f0c04018;--teal-bg:#00ccaa18;
+  --r:14px;--r-sm:9px;--r-xs:6px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --h-row:52px;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;overscroll-behavior:none}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);overscroll-behavior:none;font-size:15px}
 
-/* LOGIN */
-#login-screen{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);padding:40px 24px}
-#login-screen .logo{font-size:48px;margin-bottom:16px}
-#login-screen h1{font-size:24px;font-weight:700;margin-bottom:8px;text-align:center;letter-spacing:-.5px}
-#login-screen p{font-size:14px;color:var(--text2);text-align:center;margin-bottom:40px;max-width:280px}
-.google-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#1f1f1f;border:none;border-radius:24px;padding:14px 24px;font-size:15px;font-weight:600;cursor:pointer;width:100%;max-width:320px;justify-content:center;box-shadow:0 4px 20px #0008}
-.google-btn img{width:20px;height:20px}
-.google-btn:active{opacity:.85;transform:scale(.98)}
-.login-note{font-size:12px;color:var(--text3);margin-top:16px;text-align:center}
-.user-badge{display:none;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:24px;padding:5px 12px 5px 6px;font-size:12px;cursor:pointer}
-.user-badge img{width:26px;height:26px;border-radius:50%}
-.user-badge.visible{display:flex}
+/* ── LOGIN ── */
+#login{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);padding:32px 24px;gap:0}
+.login-icon{font-size:56px;margin-bottom:20px}
+.login-title{font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+.login-sub{font-size:14px;color:var(--text2);text-align:center;max-width:260px;margin-bottom:40px;line-height:1.5}
+.g-btn{display:flex;align-items:center;gap:12px;background:#fff;color:#111;border:none;border-radius:28px;padding:14px 28px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:300px;justify-content:center;box-shadow:0 4px 24px #0009;letter-spacing:-.2px}
+.g-btn img{width:20px;height:20px}
+.g-btn:active{transform:scale(.97);opacity:.9}
+.login-note{font-size:12px;color:var(--text3);margin-top:14px}
 
-/* APP */
+/* ── APP SHELL ── */
 #app{display:none;flex-direction:column;min-height:100vh}
-#app.visible{display:flex}
+#app.on{display:flex}
 
-/* HEADER */
-.hdr{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between}
-.hdr-title{font-size:16px;font-weight:700;letter-spacing:-.3px}
-.sync-btn{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:5px 11px;font-size:12px;color:var(--text2);cursor:pointer}
-.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
-.sync-dot.off{background:var(--text3)}
-.sync-dot.spin{animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* ── HEADER ── */
+.hdr{position:sticky;top:0;z-index:50;height:52px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.hdr-logo{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.sync-pill{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;user-select:none}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.sdot.off{background:var(--text3)}
+.user-pill{display:none;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:4px 12px 4px 5px;cursor:pointer}
+.user-pill img{width:26px;height:26px;border-radius:50%;object-fit:cover}
+.user-pill span{font-size:12px;font-weight:600}
+.user-pill.on{display:flex}
 
-/* KPI */
-.kpi-scroll{display:flex;gap:10px;padding:14px 16px 0;overflow-x:auto;scrollbar-width:none}
-.kpi-scroll::-webkit-scrollbar{display:none}
-.kpi{flex-shrink:0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;min-width:140px;cursor:pointer;transition:border-color .15s}
-.kpi:active{border-color:var(--border3)}
-.kpi-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:5px}
-.kpi-val{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px;line-height:1.2}
-.kpi-sub{font-size:10px;color:var(--text3);margin-top:3px}
-.green{color:var(--green)}.red{color:var(--red)}.muted{color:var(--text2)}.gold{color:var(--gold)}.teal{color:var(--teal)}.pink{color:var(--pink)}
+/* ── KPI STRIP ── */
+.kpi-strip{display:flex;gap:8px;padding:12px 16px 0;overflow-x:auto;scrollbar-width:none}
+.kpi-strip::-webkit-scrollbar{display:none}
+.kpi-card{flex-shrink:0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;min-width:130px;cursor:pointer;transition:border-color .15s}
+.kpi-card:active{border-color:var(--border3)}
+.kpi-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:5px}
+.kpi-num{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.5px;line-height:1.2}
+.kpi-hint{font-size:10px;color:var(--text3);margin-top:3px}
 
-/* TABS */
-.tabs{display:flex;gap:6px;padding:12px 16px 0;overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{flex-shrink:0;font-size:12px;font-weight:500;padding:6px 14px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
-.tab.on{background:var(--text);color:var(--bg);border-color:transparent;font-weight:600}
+/* ── TABS ── */
+.tab-bar{display:flex;gap:5px;padding:10px 16px 0;overflow-x:auto;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-pill{flex-shrink:0;font-size:12px;font-weight:600;padding:7px 15px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap;letter-spacing:-.1px}
+.tab-pill.on{background:var(--text);color:var(--bg);border-color:transparent}
 
-/* PANELS */
-.panels{padding:14px 16px 100px}
+/* ── PANELS ── */
+.panels{padding:14px 16px 100px;flex:1}
 .panel{display:none}.panel.on{display:block}
 
-/* SECTION */
-.sec{margin-bottom:18px}
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
-.sec-badge{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+/* ── BLOCK (collapsible section) ── */
+.block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.block-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;min-height:52px;gap:12px}
+.block-hdr:active{background:var(--bg3)}
+.block-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.block-icon{font-size:16px;flex-shrink:0}
+.block-title{font-size:13px;font-weight:700;letter-spacing:-.2px;white-space:nowrap}
+.block-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.block-val{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.4px}
+.block-chevron{font-size:11px;color:var(--text3);transition:transform .2s;margin-left:2px}
+.block.open .block-chevron{transform:rotate(180deg)}
+.block-body{display:none;border-top:1px solid var(--border)}
+.block.open .block-body{display:block}
 
-/* TABLE */
-.tbl{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.tbl-head{display:flex;padding:7px 12px;background:var(--bg3);border-bottom:1px solid var(--border);gap:8px}
-.th{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);flex:1}
-.th.r{text-align:right;flex:0 0 auto}
-.th.date{flex:0 0 76px}.th.act{flex:0 0 56px;text-align:center}
-.tbl-row{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);gap:8px;cursor:pointer;transition:background .1s;position:relative}
-.tbl-row:last-child{border-bottom:none}
-.tbl-row:active{background:var(--bg3)}
-.td{font-size:13px;color:var(--text);flex:1;min-width:0}
-.td.r{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
-.td.sub{font-size:11px;color:var(--text3)}
-.td.date{font-size:11px;color:var(--text3);flex:0 0 76px;white-space:nowrap}
-.td.act{flex:0 0 56px;display:flex;justify-content:center;gap:4px}
-.td-main{flex:1;min-width:0}
-.td-name{font-size:13px;line-height:1.3}
-.td-sub{font-size:10px;color:var(--text3);margin-top:1px}
+/* ── TABLE INSIDE BLOCK ── */
+.tbl-hdr{display:flex;padding:7px 14px;background:var(--bg3);gap:8px;border-bottom:1px solid var(--border)}
+.col-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);flex:1}
+.col-hdr.r{text-align:right;flex:0 0 auto}
+.col-hdr.dt{flex:0 0 68px}
 
-.tbl-tot{display:flex;padding:10px 12px;background:var(--bg3);border-top:1px solid var(--border2)}
-.tbl-tot .td{font-weight:700}
-.tbl-sub{display:flex;padding:8px 12px;border-bottom:1px solid var(--border);gap:8px}
-.tbl-sub .label{font-size:12px;color:var(--text3);flex:1}
-.tbl-sub .val{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
-.tbl-tot2{display:flex;padding:10px 12px;background:var(--bg3);border-top:1px solid var(--border2)}
-.tbl-tot2 .label{font-size:13px;font-weight:700;flex:1}
-.tbl-tot2 .val{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+/* ── SWIPEABLE ROW ── */
+.swipe-wrap{overflow:hidden;border-bottom:1px solid var(--border);position:relative}
+.swipe-wrap:last-of-type{border-bottom:none}
+.swipe-inner{display:flex;align-items:center;padding:11px 14px;gap:8px;background:var(--bg2);transition:transform .22s cubic-bezier(.4,0,.2,1);min-height:var(--h-row);cursor:pointer;will-change:transform}
+.swipe-inner:active{background:var(--bg3)}
+.swipe-actions{position:absolute;right:0;top:0;bottom:0;display:flex;pointer-events:none;z-index:1}
+.swipe-actions.vis{pointer-events:auto}
+.sa-btn{width:56px;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:700;transition:opacity .1s}
+.sa-eye{background:var(--blue-bg);color:var(--blue);border-left:1px solid var(--border2)}
+.sa-del{background:var(--red-bg);color:var(--red);border-left:1px solid var(--border2)}
+.sa-btn .sa-icon{font-size:16px}
+.swipe-inner.swiped{transform:translateX(-112px)}
+.swipe-inner.dim .col-main,.swipe-inner.dim .col-val{opacity:.3;text-decoration:line-through}
 
-/* BADGES */
-.badge{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap}
-.b-phc{background:#1a3a6a;color:var(--blue)}.b-fam{background:#3a2500;color:var(--orange)}
-.b-ok{background:#003a20;color:var(--green)}.b-wait{background:#3a2a00;color:var(--gold)}.b-neg{background:#3a0010;color:var(--red)}
-.b-dt{background:#2a1a3a;color:var(--purple)}.b-eur{background:#1a3a6a;color:var(--blue)}
-.tag{display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;width:16px;height:16px;border-radius:4px;flex-shrink:0}
-.tag-s{background:#003a20;color:var(--green)}.tag-b{background:#1a2a4a;color:var(--blue)}
+/* ── ROW COLUMNS ── */
+.col-main{flex:1;min-width:0}
+.col-name{font-size:13px;font-weight:500;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.col-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.col-val{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;flex:0 0 auto}
+.col-dt{font-size:11px;color:var(--text3);flex:0 0 68px;white-space:nowrap}
+.g{color:var(--green)}.r{color:var(--red)}.m{color:var(--text2)}.gd{color:var(--gold)}.tl{color:var(--teal)}
 
-/* INLINE EDIT */
-.ie{display:none;background:var(--bg3);border:1px solid var(--blue);border-radius:var(--radius);padding:14px;margin:0;position:relative;z-index:10}
-.ie.open{display:block}
-.ie input,.ie select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;padding:9px 11px;margin-bottom:8px;font-family:var(--font);appearance:auto}
-.ie input:focus,.ie select:focus{outline:none;border-color:var(--blue)}
-.ie .ie-row{display:flex;gap:6px}.ie .ie-row input{flex:1}
-.ie-btns{display:flex;gap:6px;margin-top:2px}
-.btn-sv{flex:1;padding:9px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)}
-.btn-cn{flex:1;padding:9px;background:var(--bg2);color:var(--text2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:var(--font)}
-.btn-dl{flex:0 0 auto;padding:9px 12px;background:#3a0010;color:var(--red);border:none;border-radius:var(--radius-sm);font-size:13px;cursor:pointer;font-family:var(--font)}
-.ie-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block}
+/* ── INLINE EDIT FORM ── */
+.row-edit{display:none;padding:14px;background:var(--bg3);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.row-edit.on{display:block}
+.re-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;display:block}
+.re-inp,.re-sel{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text);font-size:14px;padding:10px 12px;margin-bottom:10px;font-family:var(--font);-webkit-appearance:none;appearance:none}
+.re-inp:focus,.re-sel:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px #4d9cff18}
+.re-row{display:flex;gap:8px}.re-row .re-inp,.re-row .re-sel{flex:1;min-width:0}
+.re-btns{display:flex;gap:8px;margin-top:4px}
+.re-save{flex:1;background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)}
+.re-cancel{flex:0 0 80px;background:var(--bg2);color:var(--text2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:11px;font-size:14px;cursor:pointer;font-family:var(--font)}
+.re-del{flex:0 0 44px;background:var(--red-bg);color:var(--red);border:1px solid #ff3d5530;border-radius:var(--r-sm);padding:11px;font-size:16px;cursor:pointer}
 
-/* ADD FORM */
-.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border:1px dashed var(--border2);border-radius:var(--radius);background:transparent;color:var(--text3);font-size:13px;cursor:pointer;margin-top:8px;font-family:var(--font);transition:all .15s}
-.add-btn:active{border-color:var(--blue);color:var(--blue)}
-.add-form{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:8px;display:none}
-.add-form.open{display:block}
-.fl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px}
-.add-form input,.add-form select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;padding:9px 11px;margin-bottom:12px;font-family:var(--font);appearance:auto}
-.add-form input:focus,.add-form select:focus{outline:none;border-color:var(--blue)}
-.fr{display:flex;gap:8px}.fr>div{flex:1}
-.btn-add{width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)}
-.btn-add:active{opacity:.85}
+/* ── SUMMARY ROWS ── */
+.sum-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);gap:8px}
+.sum-row:last-child{border-bottom:none}
+.sum-lbl{font-size:13px;color:var(--text2);flex:1}
+.sum-val{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.sum-row.tot{background:var(--bg3)}
+.sum-row.tot .sum-lbl{font-weight:700;color:var(--text);font-size:14px}
+.sum-row.tot .sum-val{font-size:15px}
+.sum-row.sub .sum-lbl,.sum-row.sub .sum-val{font-size:11px;color:var(--text3)}
 
-/* ACTION BTNS */
-.btn-edit{width:26px;height:26px;border-radius:5px;border:none;background:var(--bg3);color:var(--text3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
-.btn-del{width:26px;height:26px;border-radius:5px;border:none;background:var(--bg3);color:var(--text3);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
-.btn-edit:active{background:#1a2a4a;color:var(--blue)}
-.btn-del:active{background:#3a0010;color:var(--red)}
+/* ── ADD ENTRY ── */
+.add-row{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 14px;color:var(--text3);font-size:13px;cursor:pointer;border-top:1px solid var(--border);transition:all .12s;user-select:none}
+.add-row:active{background:var(--bg3);color:var(--blue)}
+.add-form-wrap{display:none;padding:16px;border-top:1px solid var(--border);background:var(--bg3)}
+.add-form-wrap.on{display:block}
+.af-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px;display:block}
+.af-inp,.af-sel{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text);font-size:14px;padding:10px 12px;margin-bottom:12px;font-family:var(--font);-webkit-appearance:none;appearance:none}
+.af-inp:focus,.af-sel:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px #4d9cff18}
+.af-row{display:flex;gap:8px}.af-row>div{flex:1;min-width:0}
+.af-submit{width:100%;background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);letter-spacing:-.2px}
+.af-submit:active{opacity:.85}
 
-/* MONTH */
-.month-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);display:flex;align-items:center;gap:8px;margin:14px 0 8px}
-.month-hdr::after{content:'';flex:1;height:1px;background:var(--border)}
+/* ── BADGE & TAG ── */
+.badge{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px}
+.b-phc{background:var(--blue-bg);color:var(--blue)}
+.b-fam{background:#ff804018;color:var(--orange)}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-wait{background:var(--gold-bg);color:var(--gold)}
+.b-red{background:var(--red-bg);color:var(--red)}
+.tag{display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;width:15px;height:15px;border-radius:4px;margin-left:4px;vertical-align:middle}
+.ts{background:var(--green-bg);color:var(--green)}
+.tb{background:var(--blue-bg);color:var(--blue)}
 
-/* INFO BANNER */
-.banner{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.5}
-.banner strong{color:var(--text)}
+/* ── DIVIDER ── */
+.divider{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.divider-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+.divider::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* TOAST */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:9px 18px;font-size:13px;transition:transform .25s cubic-bezier(.175,.885,.32,1.275);pointer-events:none;z-index:9999;white-space:nowrap}
-.toast.show{transform:translateX(-50%) translateY(0)}
+/* ── EMPTY STATE ── */
+.empty{padding:20px 14px;color:var(--text3);font-size:13px;text-align:center}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(72px);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:9px 18px;font-size:13px;font-weight:600;transition:transform .22s cubic-bezier(.175,.885,.32,1.275);pointer-events:none;z-index:9999;white-space:nowrap;color:var(--text)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* ── CHECKBOX ── */
+.cb-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;color:var(--text2)}
+.cb-row input{width:18px;height:18px;accent-color:var(--blue)}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen">
-  <div class="logo">💳</div>
-  <h1>Dashboard Amine</h1>
-  <p>Connecte-toi pour synchroniser tes données sur tous tes appareils.</p>
-  <button class="google-btn" onclick="signInWithGoogle()">
+<div id="login">
+  <div class="login-icon">💳</div>
+  <div class="login-title">Dashboard</div>
+  <div class="login-sub">Connecte-toi pour accéder à tes données depuis tous tes appareils.</div>
+  <button class="g-btn" onclick="gSignIn()">
     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
     Continuer avec Google
   </button>
-  <p class="login-note">Données sauvegardées dans ton Google Drive</p>
+  <div class="login-note">Sauvegarde automatique sur Google Drive</div>
 </div>
 
 <!-- APP -->
 <div id="app">
-
-  <!-- Header -->
   <div class="hdr">
-    <div class="hdr-title">💳 Dashboard</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <div class="sync-btn" onclick="syncData()"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Sync</span></div>
-      <div class="user-badge" id="user-badge" onclick="signOut()"><img id="user-photo" src="" alt=""><span id="user-name"></span></div>
+    <div class="hdr-logo">💳 Dashboard</div>
+    <div class="hdr-right">
+      <div class="sync-pill" onclick="doSync()"><div class="sdot" id="sdot"></div><span id="slbl">Sync</span></div>
+      <div class="user-pill" id="upill" onclick="gSignOut()"><img id="uphoto" src="" alt=""><span id="uname"></span></div>
     </div>
   </div>
 
-  <!-- KPIs -->
-  <div class="kpi-scroll">
-    <div class="kpi" onclick="sw('phc',document.querySelector('[data-tab=phc]'))">
-      <div class="kpi-label">PHC Net</div>
-      <div class="kpi-val green" id="kpi-phc">—</div>
-      <div class="kpi-sub">Après virement</div>
-    </div>
-    <div class="kpi" onclick="sw('aziz',document.querySelector('[data-tab=aziz]'))">
-      <div class="kpi-label">Aziz</div>
-      <div class="kpi-val green" id="kpi-aziz">—</div>
-      <div class="kpi-sub">Solde total</div>
-    </div>
-    <div class="kpi" onclick="sw('studio',document.querySelector('[data-tab=studio]'))">
-      <div class="kpi-label">Studio</div>
-      <div class="kpi-val teal" id="kpi-studio">—</div>
-      <div class="kpi-sub">Net Airbnb+Tunrooms</div>
-    </div>
-    <div class="kpi" onclick="sw('hatem',document.querySelector('[data-tab=hatem]'))">
-      <div class="kpi-label">Hatem</div>
-      <div class="kpi-val gold" id="kpi-hatem">—</div>
-      <div class="kpi-sub">Solde</div>
-    </div>
-    <div class="kpi" onclick="sw('amine',document.querySelector('[data-tab=amine]'))">
-      <div class="kpi-label">Amine</div>
-      <div class="kpi-val green" id="kpi-amine">—</div>
-      <div class="kpi-sub">Mes mouvements</div>
-    </div>
-    <div class="kpi" onclick="sw('appart',document.querySelector('[data-tab=appart]'))">
-      <div class="kpi-label">Appart</div>
-      <div class="kpi-val red" id="kpi-appart">—</div>
-      <div class="kpi-sub">Dépenses</div>
-    </div>
+  <div class="kpi-strip">
+    <div class="kpi-card" onclick="goTab('phc')"><div class="kpi-lbl">PHC Net</div><div class="kpi-num g" id="kpi-phc">—</div><div class="kpi-hint">Après virement</div></div>
+    <div class="kpi-card" onclick="goTab('aziz')"><div class="kpi-lbl">Aziz</div><div class="kpi-num g" id="kpi-aziz">—</div><div class="kpi-hint">Solde</div></div>
+    <div class="kpi-card" onclick="goTab('studio')"><div class="kpi-lbl">Studio</div><div class="kpi-num tl" id="kpi-studio">—</div><div class="kpi-hint">Airbnb + Tunrooms</div></div>
+    <div class="kpi-card" onclick="goTab('hatem')"><div class="kpi-lbl">Hatem</div><div class="kpi-num gd" id="kpi-hatem">—</div><div class="kpi-hint">Solde €</div></div>
+    <div class="kpi-card" onclick="goTab('amine')"><div class="kpi-lbl">Amine</div><div class="kpi-num g" id="kpi-amine">—</div><div class="kpi-hint">Mes mouvements</div></div>
+    <div class="kpi-card" onclick="goTab('appart')"><div class="kpi-lbl">Appart</div><div class="kpi-num r" id="kpi-appart">—</div><div class="kpi-hint">Dépenses</div></div>
   </div>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab on" data-tab="phc" onclick="sw('phc',this)">PHC</button>
-    <button class="tab" data-tab="aziz" onclick="sw('aziz',this)">Aziz</button>
-    <button class="tab" data-tab="studio" onclick="sw('studio',this)">Studio</button>
-    <button class="tab" data-tab="hatem" onclick="sw('hatem',this)">Hatem</button>
-    <button class="tab" data-tab="amine" onclick="sw('amine',this)">Amine</button>
-    <button class="tab" data-tab="appart" onclick="sw('appart',this)">Appart</button>
-    <button class="tab" data-tab="charges" onclick="sw('charges',this)">Charges</button>
+  <div class="tab-bar">
+    <button class="tab-pill on" data-t="phc" onclick="goTab('phc')">PHC</button>
+    <button class="tab-pill" data-t="aziz" onclick="goTab('aziz')">Aziz</button>
+    <button class="tab-pill" data-t="studio" onclick="goTab('studio')">Studio</button>
+    <button class="tab-pill" data-t="hatem" onclick="goTab('hatem')">Hatem</button>
+    <button class="tab-pill" data-t="amine" onclick="goTab('amine')">Amine</button>
+    <button class="tab-pill" data-t="appart" onclick="goTab('appart')">Appart</button>
+    <button class="tab-pill" data-t="charges" onclick="goTab('charges')">Charges</button>
   </div>
 
   <div class="panels">
 
-    <!-- ═══ PHC ═══ -->
+    <!-- ══ PHC ══ -->
     <div id="pan-phc" class="panel on">
-      <div class="sec">
-        <div class="sec-head">
-          <div class="sec-title">Entrées PHC</div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <span class="tag tag-s">S</span><span style="font-size:10px;color:var(--text3)">Souhail</span>
-            <span class="tag tag-b" style="margin-left:4px">B</span><span style="font-size:10px;color:var(--text3)">Baganda</span>
+      <!-- Block: Entrées PHC (collapsible) -->
+      <div class="block open" id="blk-phc">
+        <div class="block-hdr" onclick="toggleBlock('blk-phc')">
+          <div class="block-left">
+            <span class="block-icon">📥</span>
+            <span class="block-title">Date · Description · Montant</span>
+          </div>
+          <div class="block-right">
+            <span class="block-val g" id="phc-net-val">—</span>
+            <span class="block-chevron">▾</span>
           </div>
         </div>
-        <div class="tbl">
-          <div class="tbl-head">
-            <span class="th date">Date</span>
-            <span class="th">Description</span>
-            <span class="th r">Montant</span>
+        <div class="block-body">
+          <div class="tbl-hdr">
+            <span class="col-hdr dt">Date</span>
+            <span class="col-hdr">Client · Description</span>
+            <span class="col-hdr r">Montant</span>
           </div>
           <div id="phc-list"></div>
-          <div class="tbl-sub"><span class="label">Sous-total brut</span><span class="val green" id="phc-brut">—</span></div>
-          <div class="tbl-sub"><span class="label">Virement logement</span><span class="val red">− 3 574 €</span></div>
-          <div class="tbl-tot2"><span class="label">Net PHC</span><span class="val green" id="phc-net">—</span></div>
-        </div>
-        <button class="add-btn" onclick="toggleForm('f-phc')">+ Ajouter une entrée PHC</button>
-        <div id="f-phc" class="add-form">
-          <span class="fl">Date</span><input type="date" id="f-phc-date">
-          <span class="fl">Client</span>
-          <select id="f-phc-client">
-            <option value="">— Sélectionner —</option>
-            <option value="BC">BC</option>
-            <option value="CJM">CJM</option>
-            <option value="Novedad">Novedad</option>
-            <option value="BC PROD">BC PROD</option>
-            <option value="Nomis PROD">Nomis PROD</option>
-            <option value="Nama">Nama</option>
-            <option value="Volange">Volange</option>
-            <option value="Autre">Autre</option>
-          </select>
-          <span class="fl">Description (optionnel)</span><input type="text" id="f-phc-desc" placeholder="Détail supplémentaire…">
-          <div class="fr">
-            <div><span class="fl">Montant (€)</span><input type="number" id="f-phc-amt" placeholder="0"></div>
-            <div><span class="fl">Via</span>
-              <select id="f-phc-via">
-                <option value="">—</option>
-                <option value="S">Souhail (S)</option>
-                <option value="B">Baganda (B)</option>
-              </select>
+          <div class="sum-row sub"><span class="sum-lbl">Sous-total brut</span><span class="sum-val g" id="phc-brut">—</span></div>
+          <div class="sum-row sub"><span class="sum-lbl">Virement logement</span><span class="sum-val r">− 3 574 €</span></div>
+          <div class="sum-row tot"><span class="sum-lbl">Net PHC</span><span class="sum-val g" id="phc-net">—</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-phc')">＋ Nouvelle entrée PHC</div>
+          <div id="af-phc" class="add-form-wrap">
+            <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-phc-date">
+            <span class="af-lbl">Client</span>
+            <select class="af-sel" id="f-phc-client">
+              <option value="">— Choisir —</option>
+              <option>BC</option><option>CJM</option><option>Novedad</option>
+              <option>BC PROD</option><option>Nomis PROD</option><option>Nama</option>
+              <option>Volange</option><option>Billets avion</option><option>Autre</option>
+            </select>
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-phc-desc" placeholder="Détail…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant (€)</span><input class="af-inp" type="number" id="f-phc-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Via</span>
+                <select class="af-sel" id="f-phc-via"><option value="">—</option><option value="S">Souhail</option><option value="B">Baganda</option></select>
+              </div>
             </div>
+            <button class="af-submit" onclick="addPHC()">Enregistrer</button>
           </div>
-          <button class="btn-add" onclick="addPHC()">Enregistrer</button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ AZIZ ═══ -->
+    <!-- ══ AZIZ ══ -->
     <div id="pan-aziz" class="panel">
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Solde Aziz</div></div>
-        <div class="tbl">
-          <div class="tbl-sub"><span class="label">Solde initial</span><span class="val green">+ 5 030 €</span></div>
-          <div id="aziz-phc-lines"></div>
-          <div class="tbl-tot2"><span class="label">Solde total Aziz</span><span class="val green" id="aziz-total">—</span></div>
+      <!-- Block: Solde Aziz -->
+      <div class="block open" id="blk-aziz-solde">
+        <div class="block-hdr" onclick="toggleBlock('blk-aziz-solde')">
+          <div class="block-left"><span class="block-icon">💰</span><span class="block-title">Solde Aziz</span></div>
+          <div class="block-right"><span class="block-val g" id="aziz-total-val">—</span><span class="block-chevron">▾</span></div>
+        </div>
+        <div class="block-body">
+          <div class="sum-row sub"><span class="sum-lbl">Solde initial</span><span class="sum-val g">+ 5 030 €</span></div>
+          <div id="aziz-phc-auto"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Solde total</span><span class="sum-val g" id="aziz-grand-total">—</span></div>
         </div>
       </div>
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Mouvements (dettes / remboursements)</div></div>
-        <div class="tbl">
-          <div class="tbl-head">
-            <span class="th date">Date</span>
-            <span class="th">Description</span>
-            <span class="th r">Montant</span>
-            <span class="th act">Act.</span>
+      <!-- Block: Mouvements -->
+      <div class="block open" id="blk-aziz-mvt">
+        <div class="block-hdr" onclick="toggleBlock('blk-aziz-mvt')">
+          <div class="block-left"><span class="block-icon">🔄</span><span class="block-title">Mouvements</span></div>
+          <div class="block-right"><span class="block-val m" id="aziz-mvt-val">0 €</span><span class="block-chevron">▾</span></div>
+        </div>
+        <div class="block-body">
+          <div class="tbl-hdr">
+            <span class="col-hdr dt">Date</span>
+            <span class="col-hdr">Description</span>
+            <span class="col-hdr r">Montant</span>
           </div>
           <div id="aziz-list"></div>
-        </div>
-        <button class="add-btn" onclick="toggleForm('f-aziz')">+ Ajouter un mouvement</button>
-        <div id="f-aziz" class="add-form">
-          <span class="fl">Date</span><input type="date" id="f-aziz-date">
-          <span class="fl">Description</span><input type="text" id="f-aziz-desc" placeholder="Ex: Pizza, courses…">
-          <div class="fr">
-            <div><span class="fl">Montant (€)</span><input type="number" id="f-aziz-amt" placeholder="0"></div>
-            <div><span class="fl">Type</span>
-              <select id="f-aziz-type"><option value="credit">Il me doit (+)</option><option value="debit">Je lui dois (−)</option></select>
+          <div class="add-row" onclick="toggleAddForm('af-aziz')">＋ Ajouter un mouvement</div>
+          <div id="af-aziz" class="add-form-wrap">
+            <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-az-date">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-az-desc" placeholder="Ex: courses, pizza…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant (€)</span><input class="af-inp" type="number" id="f-az-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Type</span>
+                <select class="af-sel" id="f-az-type"><option value="credit">Il me doit (+)</option><option value="debit">Je lui dois (−)</option></select>
+              </div>
             </div>
+            <span class="af-lbl">Statut</span>
+            <select class="af-sel" id="f-az-status"><option value="pending">En attente</option><option value="done">Réglé</option></select>
+            <button class="af-submit" onclick="addAziz()">Enregistrer</button>
           </div>
-          <span class="fl">Statut</span>
-          <select id="f-aziz-status"><option value="pending">En attente</option><option value="done">Réglé</option></select>
-          <button class="btn-add" onclick="addAziz()">Enregistrer</button>
         </div>
       </div>
     </div>
 
-    <!-- ═══ STUDIO ═══ -->
+    <!-- ══ STUDIO ══ -->
     <div id="pan-studio" class="panel">
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Airbnb — Entrées (€)</div><div class="sec-badge teal" id="airbnb-total">—</div></div>
-        <div class="month-hdr">Janvier 2025</div>
-        <div class="tbl">
-          <div class="tbl-head"><span class="th">Élément</span><span class="th r">Montant</span></div>
-          <div class="tbl-row"><span class="td">Revenus bruts</span><span class="td r green">+ 1 600 €</span></div>
-          <div class="tbl-row"><span class="td">Billets avion (1)</span><span class="td r red">− 370 €</span></div>
-          <div class="tbl-row"><span class="td">Billets avion (2)</span><span class="td r red">− 420 €</span></div>
-          <div class="tbl-tot"><span class="td">Net Janvier</span><span class="td r green">1 180 €</span></div>
+      <!-- Airbnb block -->
+      <div class="block open" id="blk-airbnb">
+        <div class="block-hdr" onclick="toggleBlock('blk-airbnb')">
+          <div class="block-left"><span class="block-icon">🏠</span><span class="block-title">Airbnb — Entrées €</span></div>
+          <div class="block-right"><span class="block-val tl" id="airbnb-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
-        <div class="month-hdr">Mai 2025</div>
-        <div class="tbl">
-          <div class="tbl-head"><span class="th date">Date</span><span class="th">Description</span><span class="th r">Montant</span><span class="th act">Act.</span></div>
+        <div class="block-body">
+          <div class="divider"><span class="divider-lbl">Janvier 2025</span></div>
+          <div class="swipe-wrap"><div class="swipe-inner"><span class="col-dt">Jan</span><span class="col-main"><span class="col-name">Revenus bruts</span></span><span class="col-val g">+ 1 600 €</span></div></div>
+          <div class="swipe-wrap"><div class="swipe-inner"><span class="col-dt">Jan</span><span class="col-main"><span class="col-name">Billets avion (1)</span></span><span class="col-val r">− 370 €</span></div></div>
+          <div class="swipe-wrap"><div class="swipe-inner"><span class="col-dt">Jan</span><span class="col-main"><span class="col-name">Billets avion (2)</span></span><span class="col-val r">− 420 €</span></div></div>
+          <div class="sum-row sub"><span class="sum-lbl">Net Janvier</span><span class="sum-val g">1 180 €</span></div>
+          <div class="divider"><span class="divider-lbl">Mai 2025</span></div>
           <div id="airbnb-may"></div>
-          <div class="tbl-tot"><span class="td">Net Mai</span><span class="td r green" id="airbnb-may-total">—</span></div>
-        </div>
-        <div id="airbnb-extra-months"></div>
-        <button class="add-btn" onclick="toggleForm('f-airbnb')">+ Ajouter Airbnb</button>
-        <div id="f-airbnb" class="add-form">
-          <span class="fl">Date</span><input type="date" id="f-ab-date">
-          <span class="fl">Description</span><input type="text" id="f-ab-desc" placeholder="Réservation…">
-          <div class="fr">
-            <div><span class="fl">Montant (€)</span><input type="number" id="f-ab-amt" placeholder="0"></div>
-            <div><span class="fl">Type</span><select id="f-ab-type"><option value="credit">Encaissement</option><option value="debit">Déduction</option></select></div>
-          </div>
-          <button class="btn-add" onclick="addAirbnb()">Enregistrer</button>
-        </div>
-      </div>
-
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Tunrooms — Entrées (DT)</div><div class="sec-badge purple" id="tunrooms-total">—</div></div>
-        <div class="tbl">
-          <div class="tbl-head"><span class="th date">Date</span><span class="th">Description</span><span class="th r">Montant</span><span class="th act">Act.</span></div>
-          <div id="tunrooms-list"></div>
-        </div>
-        <button class="add-btn" onclick="toggleForm('f-tunrooms')">+ Ajouter Tunrooms</button>
-        <div id="f-tunrooms" class="add-form">
-          <span class="fl">Date</span><input type="date" id="f-tr-date">
-          <span class="fl">Description</span><input type="text" id="f-tr-desc" placeholder="Réservation…">
-          <div class="fr">
-            <div><span class="fl">Montant (DT)</span><input type="number" id="f-tr-amt" placeholder="0"></div>
-            <div><span class="fl">Type</span><select id="f-tr-type"><option value="credit">Encaissement</option><option value="debit">Déduction</option></select></div>
-          </div>
-          <button class="btn-add" onclick="addTunrooms()">Enregistrer</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ HATEM ═══ -->
-    <div id="pan-hatem" class="panel">
-      <div class="banner">
-        <strong>Hatem</strong> — Solde initial : <strong>+ 300 €</strong> (Juin 2026)
-      </div>
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Mouvements Hatem</div></div>
-        <div class="tbl">
-          <div class="tbl-sub"><span class="label">Solde initial — Juin 2026</span><span class="val gold">+ 300 €</span></div>
-          <div class="tbl-head"><span class="th date">Date</span><span class="th">Description</span><span class="th r">Montant</span><span class="th act">Act.</span></div>
-          <div id="hatem-list"></div>
-          <div class="tbl-tot2"><span class="label">Solde Hatem</span><span class="val gold" id="hatem-total">—</span></div>
-        </div>
-        <button class="add-btn" onclick="toggleForm('f-hatem')">+ Ajouter un mouvement</button>
-        <div id="f-hatem" class="add-form">
-          <span class="fl">Date</span><input type="date" id="f-ht-date">
-          <span class="fl">Description</span><input type="text" id="f-ht-desc" placeholder="Ex: Cigarettes, virement…">
-          <div class="fr">
-            <div><span class="fl">Montant</span><input type="number" id="f-ht-amt" placeholder="0"></div>
-            <div><span class="fl">Devise</span><select id="f-ht-currency"><option value="EUR">€ Euros</option><option value="DT">DT Dinars</option></select></div>
-          </div>
-          <span class="fl">Type</span>
-          <select id="f-ht-type"><option value="credit">Il me doit (+)</option><option value="debit">Je lui dois (−)</option></select>
-          <button class="btn-add" onclick="addHatem()">Enregistrer</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ AMINE ═══ -->
-    <div id="pan-amine" class="panel">
-      <div class="banner">
-        <strong>Mes mouvements personnels</strong> — Solde initial : 0 €
-      </div>
-
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Aziz me doit (en DT)</div></div>
-        <div class="tbl">
-          <div class="tbl-sub"><span class="label">Dette initiale Aziz</span><span class="val gold">8 000 DT</span></div>
-          <div class="tbl-row"><span class="td">TOTO</span><span class="td r red">− 1 000 DT</span></div>
-          <div class="tbl-row"><span class="td">Virement Haïfa</span><span class="td r red">− 1 000 DT</span></div>
-          <div class="tbl-tot2"><span class="label">Reste dû par Aziz</span><span class="val gold">6 000 DT</span></div>
-        </div>
-      </div>
-
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Hatem me doit</div></div>
-        <div class="tbl">
-          <div class="tbl-sub"><span class="label">Dette initiale Hatem</span><span class="val gold">4 600 DT</span></div>
-          <div class="tbl-row"><span class="td">Cigarettes (déduit)</span><span class="td r red">− 400 DT</span></div>
-          <div class="tbl-tot2"><span class="label">Reste dû par Hatem</span><span class="val gold">4 200 DT</span></div>
-        </div>
-      </div>
-
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Mes mouvements (€ / DT)</div><div class="sec-badge green" id="amine-total">0 €</div></div>
-        <div class="tbl">
-          <div class="tbl-head"><span class="th date">Date</span><span class="th">Description</span><span class="th r">Montant</span><span class="th act">Act.</span></div>
-          <div id="amine-list"><div style="padding:12px;color:var(--text3);font-size:13px">Aucun mouvement — tape + pour ajouter</div></div>
-          <div class="tbl-tot2"><span class="label">Solde net</span><span class="val green" id="amine-net">0 €</span></div>
-        </div>
-        <button class="add-btn" onclick="toggleForm('f-amine')">+ Ajouter un mouvement</button>
-        <div id="f-amine" class="add-form">
-          <span class="fl">Date</span><input type="date" id="f-am-date">
-          <span class="fl">Description</span><input type="text" id="f-am-desc" placeholder="Ex: Remboursement, achat…">
-          <div class="fr">
-            <div><span class="fl">Montant</span><input type="number" id="f-am-amt" placeholder="0"></div>
-            <div><span class="fl">Devise</span><select id="f-am-currency"><option value="EUR">€ Euros</option><option value="DT">DT Dinars</option></select></div>
-          </div>
-          <span class="fl">Type</span>
-          <select id="f-am-type"><option value="credit">Entrée (+)</option><option value="debit">Sortie (−)</option></select>
-          <button class="btn-add" onclick="addAmine()">Enregistrer</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ APPART ═══ -->
-    <div id="pan-appart" class="panel">
-      <div class="banner"><strong>Dépenses partagées</strong> marquées ÷2 sont réparties entre toi et Aziz.</div>
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Dépenses Appart</div><div class="sec-badge red" id="appart-total">—</div></div>
-        <div class="tbl">
-          <div class="tbl-head"><span class="th">Description</span><span class="th">Cat.</span><span class="th r">Montant</span><span class="th act">Act.</span></div>
-          <div id="appart-list"></div>
-          <div class="tbl-tot2"><span class="label">Total appart</span><span class="val red" id="appart-total-row">—</span></div>
-        </div>
-        <button class="add-btn" onclick="toggleForm('f-appart')">+ Ajouter une dépense</button>
-        <div id="f-appart" class="add-form">
-          <span class="fl">Description</span><input type="text" id="f-ap-desc" placeholder="Ex: Canapé…">
-          <div class="fr">
-            <div><span class="fl">Montant (€)</span><input type="number" id="f-ap-amt" placeholder="0"></div>
-            <div><span class="fl">Catégorie</span>
-              <select id="f-ap-cat"><option>Mobilier</option><option>Équipement</option><option>Travaux</option><option>Courses</option><option>Divers</option></select>
+          <div class="sum-row sub"><span class="sum-lbl">Net Mai</span><span class="sum-val g" id="airbnb-may-net">—</span></div>
+          <div class="sum-row tot"><span class="sum-lbl">Total Airbnb</span><span class="sum-val tl" id="airbnb-total">—</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-airbnb')">＋ Ajouter Airbnb</div>
+          <div id="af-airbnb" class="add-form-wrap">
+            <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-ab-date">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-ab-desc" placeholder="Réservation…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant (€)</span><input class="af-inp" type="number" id="f-ab-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Type</span><select class="af-sel" id="f-ab-type"><option value="credit">Encaissement</option><option value="debit">Déduction</option></select></div>
             </div>
+            <button class="af-submit" onclick="addAirbnb()">Enregistrer</button>
           </div>
-          <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:12px"><input type="checkbox" id="f-ap-shared"> Partagé ÷ 2</label>
-          <button class="btn-add" onclick="addAppart()">Enregistrer</button>
+        </div>
+      </div>
+      <!-- Tunrooms block -->
+      <div class="block" id="blk-tunrooms">
+        <div class="block-hdr" onclick="toggleBlock('blk-tunrooms')">
+          <div class="block-left"><span class="block-icon">🏡</span><span class="block-title">Tunrooms — Entrées DT</span></div>
+          <div class="block-right"><span class="block-val tl" id="tunrooms-total-val">0 DT</span><span class="block-chevron">▾</span></div>
+        </div>
+        <div class="block-body">
+          <div class="tbl-hdr"><span class="col-hdr dt">Date</span><span class="col-hdr">Description</span><span class="col-hdr r">Montant</span></div>
+          <div id="tunrooms-list"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Total Tunrooms</span><span class="sum-val tl" id="tunrooms-total">0 DT</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-tunrooms')">＋ Ajouter Tunrooms</div>
+          <div id="af-tunrooms" class="add-form-wrap">
+            <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-tr-date">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-tr-desc" placeholder="Réservation…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant (DT)</span><input class="af-inp" type="number" id="f-tr-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Type</span><select class="af-sel" id="f-tr-type"><option value="credit">Encaissement</option><option value="debit">Déduction</option></select></div>
+            </div>
+            <button class="af-submit" onclick="addTunrooms()">Enregistrer</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ CHARGES ═══ -->
+    <!-- ══ HATEM ══ -->
+    <div id="pan-hatem" class="panel">
+      <div class="block open" id="blk-hatem">
+        <div class="block-hdr" onclick="toggleBlock('blk-hatem')">
+          <div class="block-left"><span class="block-icon">🤝</span><span class="block-title">Hatem · Mouvements</span></div>
+          <div class="block-right"><span class="block-val gd" id="hatem-total-val">—</span><span class="block-chevron">▾</span></div>
+        </div>
+        <div class="block-body">
+          <div class="sum-row sub"><span class="sum-lbl">Solde initial (Juin 2026)</span><span class="sum-val gd">+ 300 €</span></div>
+          <div class="tbl-hdr"><span class="col-hdr dt">Date</span><span class="col-hdr">Description</span><span class="col-hdr r">Montant</span></div>
+          <div id="hatem-list"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Solde Hatem</span><span class="sum-val gd" id="hatem-total">—</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-hatem')">＋ Ajouter un mouvement</div>
+          <div id="af-hatem" class="add-form-wrap">
+            <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-ht-date">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-ht-desc" placeholder="Ex: cigarettes, virement…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant</span><input class="af-inp" type="number" id="f-ht-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Devise</span><select class="af-sel" id="f-ht-cur"><option value="EUR">€ Euro</option><option value="DT">DT Dinar</option></select></div>
+            </div>
+            <span class="af-lbl">Type</span>
+            <select class="af-sel" id="f-ht-type"><option value="credit">Il me doit (+)</option><option value="debit">Je lui dois (−)</option></select>
+            <button class="af-submit" onclick="addHatem()">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ AMINE ══ -->
+    <div id="pan-amine" class="panel">
+      <!-- Dettes bloc Aziz -->
+      <div class="block open" id="blk-amine-aziz">
+        <div class="block-hdr" onclick="toggleBlock('blk-amine-aziz')">
+          <div class="block-left"><span class="block-icon">📋</span><span class="block-title">Aziz me doit (DT)</span></div>
+          <div class="block-right"><span class="block-val gd">6 000 DT</span><span class="block-chevron">▾</span></div>
+        </div>
+        <div class="block-body">
+          <div class="sum-row sub"><span class="sum-lbl">Dette initiale</span><span class="sum-val gd">8 000 DT</span></div>
+          <div class="sum-row sub"><span class="sum-lbl">TOTO (remboursé)</span><span class="sum-val r">− 1 000 DT</span></div>
+          <div class="sum-row sub"><span class="sum-lbl">Virement Haïfa</span><span class="sum-val r">− 1 000 DT</span></div>
+          <div class="sum-row tot"><span class="sum-lbl">Reste dû</span><span class="sum-val gd">6 000 DT</span></div>
+        </div>
+      </div>
+      <!-- Dettes bloc Hatem -->
+      <div class="block open" id="blk-amine-hatem">
+        <div class="block-hdr" onclick="toggleBlock('blk-amine-hatem')">
+          <div class="block-left"><span class="block-icon">📋</span><span class="block-title">Hatem me doit (DT)</span></div>
+          <div class="block-right"><span class="block-val gd">4 200 DT</span><span class="block-chevron">▾</span></div>
+        </div>
+        <div class="block-body">
+          <div class="sum-row sub"><span class="sum-lbl">Dette initiale</span><span class="sum-val gd">4 600 DT</span></div>
+          <div class="sum-row sub"><span class="sum-lbl">Cigarettes (déduit)</span><span class="sum-val r">− 400 DT</span></div>
+          <div class="sum-row tot"><span class="sum-lbl">Reste dû</span><span class="sum-val gd">4 200 DT</span></div>
+        </div>
+      </div>
+      <!-- Mes mouvements -->
+      <div class="block open" id="blk-amine-mvt">
+        <div class="block-hdr" onclick="toggleBlock('blk-amine-mvt')">
+          <div class="block-left"><span class="block-icon">💸</span><span class="block-title">Mes mouvements</span></div>
+          <div class="block-right"><span class="block-val g" id="amine-total-val">0 €</span><span class="block-chevron">▾</span></div>
+        </div>
+        <div class="block-body">
+          <div class="tbl-hdr"><span class="col-hdr dt">Date</span><span class="col-hdr">Description</span><span class="col-hdr r">Montant</span></div>
+          <div id="amine-list"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Solde net (€)</span><span class="sum-val g" id="amine-net">0 €</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-amine')">＋ Ajouter un mouvement</div>
+          <div id="af-amine" class="add-form-wrap">
+            <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-am-date">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-am-desc" placeholder="Ex: remboursement, achat…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant</span><input class="af-inp" type="number" id="f-am-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Devise</span><select class="af-sel" id="f-am-cur"><option value="EUR">€ Euro</option><option value="DT">DT Dinar</option></select></div>
+            </div>
+            <span class="af-lbl">Type</span>
+            <select class="af-sel" id="f-am-type"><option value="credit">Entrée (+)</option><option value="debit">Sortie (−)</option></select>
+            <button class="af-submit" onclick="addAmine()">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ APPART ══ -->
+    <div id="pan-appart" class="panel">
+      <div class="block open" id="blk-appart">
+        <div class="block-hdr" onclick="toggleBlock('blk-appart')">
+          <div class="block-left"><span class="block-icon">🛋️</span><span class="block-title">Dépenses Appart</span></div>
+          <div class="block-right"><span class="block-val r" id="appart-total-val">—</span><span class="block-chevron">▾</span></div>
+        </div>
+        <div class="block-body">
+          <div class="tbl-hdr"><span class="col-hdr">Description</span><span class="col-hdr">Cat.</span><span class="col-hdr r">Montant</span></div>
+          <div id="appart-list"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Total appart</span><span class="sum-val r" id="appart-total">—</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-appart')">＋ Ajouter une dépense</div>
+          <div id="af-appart" class="add-form-wrap">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-ap-desc" placeholder="Ex: canapé, TV…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant (€)</span><input class="af-inp" type="number" id="f-ap-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Catégorie</span><select class="af-sel" id="f-ap-cat"><option>Mobilier</option><option>Équipement</option><option>Travaux</option><option>Courses</option><option>Divers</option></select></div>
+            </div>
+            <div class="cb-row"><input type="checkbox" id="f-ap-shared"><label for="f-ap-shared">Partagé ÷ 2 avec Aziz</label></div>
+            <button class="af-submit" onclick="addAppart()">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CHARGES ══ -->
     <div id="pan-charges" class="panel">
-      <div class="sec">
-        <div class="sec-head"><div class="sec-title">Charges fixes mensuelles</div><div class="sec-badge red" id="charges-total">—</div></div>
-        <div class="tbl">
-          <div class="tbl-head"><span class="th">Poste</span><span class="th">Fréq.</span><span class="th r">Montant</span><span class="th act">Act.</span></div>
-          <div id="charges-list"></div>
-          <div class="tbl-tot2"><span class="label">Total mensuel</span><span class="val red" id="charges-total-row">—</span></div>
+      <div class="block open" id="blk-charges">
+        <div class="block-hdr" onclick="toggleBlock('blk-charges')">
+          <div class="block-left"><span class="block-icon">📅</span><span class="block-title">Charges fixes mensuelles</span></div>
+          <div class="block-right"><span class="block-val r" id="charges-total-val">—</span><span class="block-chevron">▾</span></div>
         </div>
-        <button class="add-btn" onclick="toggleForm('f-charge')">+ Ajouter une charge</button>
-        <div id="f-charge" class="add-form">
-          <span class="fl">Poste</span><input type="text" id="f-ch-desc" placeholder="Ex: Netflix…">
-          <div class="fr">
-            <div><span class="fl">Montant (€)</span><input type="number" id="f-ch-amt" placeholder="0"></div>
-            <div><span class="fl">Fréquence</span><select id="f-ch-freq"><option>Mensuel</option><option>Annuel</option></select></div>
+        <div class="block-body">
+          <div class="tbl-hdr"><span class="col-hdr">Poste</span><span class="col-hdr">Fréq.</span><span class="col-hdr r">Montant</span></div>
+          <div id="charges-list"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Total mensuel</span><span class="sum-val r" id="charges-total">—</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-charges')">＋ Ajouter une charge</div>
+          <div id="af-charges" class="add-form-wrap">
+            <span class="af-lbl">Poste</span><input class="af-inp" type="text" id="f-ch-desc" placeholder="Ex: Netflix, Assurance…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant (€)</span><input class="af-inp" type="number" id="f-ch-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Fréquence</span><select class="af-sel" id="f-ch-freq"><option>Mensuel</option><option>Annuel</option></select></div>
+            </div>
+            <button class="af-submit" onclick="addCharge()">Enregistrer</button>
           </div>
-          <button class="btn-add" onclick="addCharge()">Enregistrer</button>
         </div>
       </div>
     </div>
 
-  </div><!-- /panels -->
-</div><!-- /app -->
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══ CONFIG ═══════════════════════════════════════════════════
 const CLIENT_ID='1080899511515-sm2u3tuf69tc7b60cv1o7b8nko7ukhn6.apps.googleusercontent.com';
-const REDIRECT_URI=window.location.origin+window.location.pathname;
+const REDIR=window.location.origin+window.location.pathname;
 const SCOPES='https://www.googleapis.com/auth/drive.file openid profile email';
-const FILE_NAME='dashboard-amine-v3.json';
-let accessToken=null,driveFileId=null;
+const FNAME='dashboard-amine-v5.json';
+let token=null,fileId=null;
 
-// ─── DEFAULT DATA ───────────────────────────────────────────────
-const DEFAULT={
-  phcEntries:[
+// ═══ DEFAULT DATA ═════════════════════════════════════════════
+const DEF={
+  phc:[
     {id:'p1',date:'2025-01-01',client:'',desc:'2 820 €',amt:2820,via:''},
     {id:'p2',date:'2025-01-01',client:'BC',desc:'',amt:462,via:''},
     {id:'p3',date:'2025-01-01',client:'CJM',desc:'',amt:425,via:''},
@@ -513,175 +523,163 @@ const DEFAULT={
     {id:'p14',date:'2025-01-01',client:'Nomis PROD',desc:'',amt:351,via:'B'},
     {id:'p15',date:'2025-01-01',client:'Novedad',desc:'',amt:390,via:'S'},
   ],
-  azizEntries:[],
-  airbnbMay:[
-    {id:'a1',date:'2025-05-01',desc:'Réservation 1',amt:142,type:'credit'},
-    {id:'a2',date:'2025-05-02',desc:'Réservation 2',amt:103,type:'credit'},
-    {id:'a3',date:'2025-05-03',desc:'Réservation 3',amt:160,type:'credit'},
+  aziz:[],
+  airbnb:[
+    {id:'ab1',date:'2025-05-01',desc:'Réservation 1',amt:142,type:'credit'},
+    {id:'ab2',date:'2025-05-08',desc:'Réservation 2',amt:103,type:'credit'},
+    {id:'ab3',date:'2025-05-15',desc:'Réservation 3',amt:160,type:'credit'},
   ],
-  tunroomsEntries:[],
-  hatemEntries:[],
-  amineEntries:[],
-  appartEntries:[
+  tunrooms:[],
+  hatem:[],
+  amine:[],
+  appart:[
     {id:'ap1',desc:'Télévision',cat:'Équipement',amt:366,shared:false},
     {id:'ap2',desc:'IKEA',cat:'Mobilier',amt:1800,shared:false},
     {id:'ap3',desc:'Temu',cat:'Divers',amt:208,shared:false},
     {id:'ap4',desc:'Leroy Merlin',cat:'Travaux',amt:80,shared:false},
     {id:'ap5',desc:'Canapé',cat:'Mobilier',amt:430,shared:true},
   ],
-  chargesEntries:[
+  charges:[
     {id:'c1',desc:'ChatGPT',amt:20,freq:'Mensuel'},
     {id:'c2',desc:'SIM',amt:15,freq:'Mensuel'},
     {id:'c3',desc:'Coiffeur',amt:15,freq:'Mensuel'},
     {id:'c4',desc:'Revolut',amt:10,freq:'Mensuel'},
     {id:'c5',desc:'Salle de sport',amt:35,freq:'Mensuel'},
   ],
+  _hidden:{},
 };
-let DATA=JSON.parse(JSON.stringify(DEFAULT));
+let D=JSON.parse(JSON.stringify(DEF));
 
-// ─── AUTH ──────────────────────────────────────────────────────
-function signInWithGoogle(){
-  const p=new URLSearchParams({client_id:CLIENT_ID,redirect_uri:REDIRECT_URI,response_type:'token',scope:SCOPES});
-  window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+p;
+// ═══ AUTH ═════════════════════════════════════════════════════
+function gSignIn(){
+  const p=new URLSearchParams({client_id:CLIENT_ID,redirect_uri:REDIR,response_type:'token',scope:SCOPES});
+  location.href='https://accounts.google.com/o/oauth2/v2/auth?'+p;
 }
-function signOut(){
-  if(!confirm('Déconnexion ?'))return;
-  accessToken=null;localStorage.removeItem('gat');localStorage.removeItem('gat_exp');
-  document.getElementById('app').classList.remove('visible');document.getElementById('app').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('user-badge').classList.remove('visible');
-}
+function gSignOut(){if(!confirm('Déconnexion ?'))return;token=null;localStorage.removeItem('t');localStorage.removeItem('te');showLogin();}
+function showLogin(){document.getElementById('login').style.display='flex';document.getElementById('app').classList.remove('on');document.getElementById('app').style.display='none';document.getElementById('upill').classList.remove('on');}
 function handleToken(){
-  const h=window.location.hash;if(!h)return false;
+  const h=location.hash;if(!h)return false;
   const p=new URLSearchParams(h.slice(1));const t=p.get('access_token'),e=p.get('expires_in');
   if(!t)return false;
-  accessToken=t;localStorage.setItem('gat',t);localStorage.setItem('gat_exp',Date.now()+parseInt(e)*1000);
-  history.replaceState(null,'',window.location.pathname);return true;
+  token=t;localStorage.setItem('t',t);localStorage.setItem('te',Date.now()+parseInt(e)*1000);
+  history.replaceState(null,'',location.pathname);return true;
 }
-function loadToken(){
-  const t=localStorage.getItem('gat'),e=localStorage.getItem('gat_exp');
-  if(t&&e&&Date.now()<parseInt(e)){accessToken=t;return true;}
-  localStorage.removeItem('gat');localStorage.removeItem('gat_exp');return false;
-}
+function loadToken(){const t=localStorage.getItem('t'),e=localStorage.getItem('te');if(t&&e&&Date.now()<parseInt(e)){token=t;return true;}localStorage.removeItem('t');localStorage.removeItem('te');return false;}
 async function fetchUser(){
-  try{
-    const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+accessToken}});
-    const u=await r.json();
-    document.getElementById('user-name').textContent=u.given_name||'Moi';
-    document.getElementById('user-photo').src=u.picture||'';
-    document.getElementById('user-badge').classList.add('visible');
-  }catch(e){}
+  try{const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+token}});const u=await r.json();
+    document.getElementById('uname').textContent=u.given_name||'Moi';document.getElementById('uphoto').src=u.picture||'';document.getElementById('upill').classList.add('on');}catch(e){}
 }
 
-// ─── DRIVE ────────────────────────────────────────────────────
-async function findDrive(){
-  if(!accessToken)return;
-  try{
-    const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${FILE_NAME}'+and+trashed=false&fields=files(id)`,{headers:{Authorization:'Bearer '+accessToken}});
-    const j=await r.json();
-    if(j.files&&j.files.length){driveFileId=j.files[0].id;await loadDrive();}
-    else await saveDrive();
-  }catch(e){loadLocal();}
+// ═══ DRIVE ════════════════════════════════════════════════════
+async function findFile(){
+  if(!token)return;
+  try{const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${FNAME}'+and+trashed=false&fields=files(id)`,{headers:{Authorization:'Bearer '+token}});
+    const j=await r.json();if(j.files?.length){fileId=j.files[0].id;await loadFile();}else await saveFile();}catch(e){loadLocal();}
 }
-async function saveDrive(){
-  if(!accessToken){saveLocal();return;}
-  const content=JSON.stringify(DATA),b='----boundary314159';
-  const meta=JSON.stringify({name:FILE_NAME,mimeType:'application/json'});
+async function saveFile(){
+  if(!token){saveLocal();return;}
+  const b='--dash-boundary-314159',meta=JSON.stringify({name:FNAME,mimeType:'application/json'}),content=JSON.stringify(D);
   const body=`--${b}\r\nContent-Type: application/json\r\n\r\n${meta}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${content}\r\n--${b}--`;
-  const url=driveFileId?`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-  try{
-    const r=await fetch(url,{method:driveFileId?'PATCH':'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':`multipart/related; boundary="${b}"`},body});
-    const j=await r.json();if(j.id)driveFileId=j.id;
-    dot(true);saveLocal();
-  }catch(e){saveLocal();dot(false);}
+  const url=fileId?`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`:'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+  try{const r=await fetch(url,{method:fileId?'PATCH':'POST',headers:{Authorization:'Bearer '+token,'Content-Type':`multipart/related; boundary="${b}"`},body});
+    const j=await r.json();if(j.id)fileId=j.id;dot(1);saveLocal();}catch(e){saveLocal();dot(0);}
 }
-async function loadDrive(){
-  if(!accessToken||!driveFileId){loadLocal();return;}
-  try{
-    const r=await fetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,{headers:{Authorization:'Bearer '+accessToken}});
-    const j=await r.json();
-    if(j.phcEntries){DATA={...DEFAULT,...j};}
-    renderAll();dot(true);
-  }catch(e){loadLocal();dot(false);}
+async function loadFile(){
+  if(!token||!fileId){loadLocal();return;}
+  try{const r=await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,{headers:{Authorization:'Bearer '+token}});
+    const j=await r.json();if(j.phc)D={...DEF,...j};renderAll();dot(1);}catch(e){loadLocal();dot(0);}
 }
-function saveLocal(){try{localStorage.setItem('dash-v3',JSON.stringify(DATA));}catch(e){}}
-function loadLocal(){try{const d=localStorage.getItem('dash-v3');if(d)DATA={...DEFAULT,...JSON.parse(d)};}catch(e){}renderAll();}
-async function syncData(){
-  dot('spin');document.getElementById('sync-label').textContent='…';
-  await saveDrive();
-  document.getElementById('sync-label').textContent='Sync';
-  showToast('Sauvegardé ✓');
-}
-function dot(s){const d=document.getElementById('sync-dot');d.className='sync-dot'+(s===true?'':s===false?' off':' spin');}
-function autoSave(){saveLocal();clearTimeout(autoSave._t);autoSave._t=setTimeout(()=>saveDrive(),3000);}
+function saveLocal(){try{localStorage.setItem('dash5',JSON.stringify(D));}catch(e){}}
+function loadLocal(){try{const d=localStorage.getItem('dash5');if(d)D={...DEF,...JSON.parse(d)};}catch(e){}renderAll();}
+async function doSync(){dot(2);document.getElementById('slbl').textContent='…';await saveFile();document.getElementById('slbl').textContent='Sync';toast('Sauvegardé ✓');}
+function dot(s){document.getElementById('sdot').className='sdot'+(s===1?'':s===0?' off':'');}
+let _at;function autosave(){saveLocal();clearTimeout(_at);_at=setTimeout(saveFile,3000);}
 
-// ─── HELPERS ──────────────────────────────────────────────────
-function fmt(n,c='€'){return new Intl.NumberFormat('fr-FR').format(Math.abs(Math.round(n)))+' '+c;}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-function fmtDate(d){if(!d)return'';try{return new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});}catch(e){return d;}}
-function today(){return new Date().toISOString().slice(0,10);}
-function tagHTML(v){if(v==='S')return' <span class="tag tag-s">S</span>';if(v==='B')return' <span class="tag tag-b">B</span>';return'';}
-function statusBadge(s){if(s==='done')return'<span class="badge b-ok">✓</span>';if(s==='pending')return'<span class="badge b-wait">⏳</span>';return'';}
+// ═══ UTILS ════════════════════════════════════════════════════
+const f=(n,c='€')=>new Intl.NumberFormat('fr-FR').format(Math.abs(Math.round(n)))+' '+c;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const today=()=>new Date().toISOString().slice(0,10);
+function fd(d){if(!d)return'';try{return new Date(d+'T00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});}catch{return d;}}
+function tagH(v){return v==='S'?'<span class="tag ts">S</span>':v==='B'?'<span class="tag tb">B</span>':'';}
+function stBadge(s){return s==='done'?'<span class="badge b-ok">✓ Réglé</span>':s==='pending'?'<span class="badge b-wait">⏳</span>':'';}
 
-function makeIE(id,fields,saveFunc){
-  return`<div class="ie" id="ie-${id}">
-    ${fields}
-    <div class="ie-btns">
-      <button class="btn-sv" onclick="${saveFunc}('${id}')">Sauvegarder</button>
-      <button class="btn-cn" onclick="closeIE('ie-${id}')">Annuler</button>
-      <button class="btn-dl" onclick="del_${saveFunc.replace('save','')}('${id}')">🗑</button>
-    </div>
-  </div>`;
-}
+// ═══ SWIPE ENGINE ═════════════════════════════════════════════
+let sw={el:null,sx:0,sy:0,dx:0,ok:false};
+function initSwipes(){document.querySelectorAll('.swipe-wrap').forEach(w=>{const inner=w.querySelector('.swipe-inner');const rev=w.querySelector('.swipe-actions');if(!inner||!rev)return;inner.addEventListener('touchstart',e=>{if(e.touches.length>1)return;sw={el:inner,rev,sx:e.touches[0].clientX,sy:e.touches[0].clientY,dx:0,ok:true};},{passive:true});inner.addEventListener('touchmove',e=>{if(!sw.ok||sw.el!==inner)return;const dx=e.touches[0].clientX-sw.sx,dy=e.touches[0].clientY-sw.sy;if(Math.abs(dy)>Math.abs(dx)*1.5){sw.ok=false;return;}e.preventDefault();sw.dx=dx;const base=inner.classList.contains('swiped')?-112:0;const clamped=Math.max(-112,Math.min(0,base+dx));inner.style.transform=`translateX(${clamped}px)`;rev.classList.add('vis');},{passive:false});inner.addEventListener('touchend',()=>{if(!sw.ok||sw.el!==inner)return;sw.ok=false;const base=inner.classList.contains('swiped')?-112:0;const total=base+sw.dx;inner.style.transform='';if(total<-50){inner.classList.add('swiped');rev.classList.add('vis');}else{inner.classList.remove('swiped');rev.classList.remove('vis');}});});}
+function closeSwipes(){document.querySelectorAll('.swipe-inner.swiped').forEach(el=>{el.classList.remove('swiped');const rev=el.closest('.swipe-wrap')?.querySelector('.swipe-actions');if(rev)rev.classList.remove('vis');});}
 
-// ─── PHC ──────────────────────────────────────────────────────
+// ═══ BLOCK TOGGLE ═════════════════════════════════════════════
+function toggleBlock(id){document.getElementById(id).classList.toggle('open');}
+
+// ═══ INLINE EDIT ENGINE ═══════════════════════════════════════
+function toggleEdit(id){document.querySelectorAll('.row-edit.on').forEach(el=>{if(el.id!=='re-'+id)el.classList.remove('on');});document.getElementById('re-'+id)?.classList.toggle('on');closeSwipes();}
+function closeEdit(id){document.getElementById('re-'+id)?.classList.remove('on');}
+
+// ═══ ADD FORMS ════════════════════════════════════════════════
+function toggleAddForm(id){document.getElementById(id).classList.toggle('on');document.getElementById(id).scrollIntoView({behavior:'smooth',block:'nearest'});}
+
+// ═══ PHC ══════════════════════════════════════════════════════
 function renderPHC(){
   const el=document.getElementById('phc-list');
   let brut=0;
-  el.innerHTML=DATA.phcEntries.map(e=>{
+  el.innerHTML=D.phc.map(e=>{
     brut+=e.amt;
-    const label=e.client?(e.desc?e.client+' — '+e.desc:e.client):e.desc;
-    return`<div class="tbl-row" id="row-${e.id}" onclick="toggleIE('ie-${e.id}')">
-      <span class="td date">${fmtDate(e.date)}</span>
-      <span class="td-main"><span class="td-name">${label}${tagHTML(e.via)}</span></span>
-      <span class="td r green">+ ${fmt(e.amt)}</span>
+    const label=e.client?(e.desc?`${e.client} — ${e.desc}`:e.client):e.desc;
+    const hidden=D._hidden?.['phc-'+e.id];
+    return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" id="si-phc-${e.id}" onclick="toggleEdit('phc-${e.id}')">
+        <span class="col-dt">${fd(e.date)}</span>
+        <span class="col-main"><span class="col-name">${label}${tagH(e.via)}</span></span>
+        <span class="col-val g">+ ${f(e.amt)}</span>
+      </div>
+      <div class="swipe-actions" id="sa-phc-${e.id}">
+        <button class="sa-btn sa-eye" onclick="toggleHide('phc-${e.id}')"><span class="sa-icon">👁</span></button>
+        <button class="sa-btn sa-del" onclick="delPHC('${e.id}')"><span class="sa-icon">🗑</span></button>
+      </div>
     </div>
-    <div class="ie" id="ie-${e.id}">
-      <span class="ie-label">Date</span><input type="date" id="ie-phc-date-${e.id}" value="${e.date}">
-      <span class="ie-label">Client</span>
-      <select id="ie-phc-client-${e.id}">
-        <option value="">— Aucun —</option>
-        <option value="BC" ${e.client==='BC'?'selected':''}>BC</option>
-        <option value="CJM" ${e.client==='CJM'?'selected':''}>CJM</option>
-        <option value="Novedad" ${e.client==='Novedad'?'selected':''}>Novedad</option>
-        <option value="BC PROD" ${e.client==='BC PROD'?'selected':''}>BC PROD</option>
-        <option value="Nomis PROD" ${e.client==='Nomis PROD'?'selected':''}>Nomis PROD</option>
-        <option value="Nama" ${e.client==='Nama'?'selected':''}>Nama</option>
-        <option value="Volange" ${e.client==='Volange'?'selected':''}>Volange</option>
-        <option value="Billets avion" ${e.client==='Billets avion'?'selected':''}>Billets avion</option>
-        <option value="Autre" ${e.client==='Autre'?'selected':''}>Autre</option>
+    <div class="row-edit" id="re-phc-${e.id}">
+      <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-phc-date-${e.id}" value="${e.date}">
+      <span class="re-lbl">Client</span>
+      <select class="re-sel" id="red-phc-client-${e.id}">
+        <option value="">—</option>
+        <option ${e.client==='BC'?'selected':''}>BC</option>
+        <option ${e.client==='CJM'?'selected':''}>CJM</option>
+        <option ${e.client==='Novedad'?'selected':''}>Novedad</option>
+        <option ${e.client==='BC PROD'?'selected':''}>BC PROD</option>
+        <option ${e.client==='Nomis PROD'?'selected':''}>Nomis PROD</option>
+        <option ${e.client==='Nama'?'selected':''}>Nama</option>
+        <option ${e.client==='Volange'?'selected':''}>Volange</option>
+        <option ${e.client==='Billets avion'?'selected':''}>Billets avion</option>
+        <option ${e.client==='Autre'?'selected':''}>Autre</option>
       </select>
-      <span class="ie-label">Description</span><input type="text" id="ie-phc-desc-${e.id}" value="${e.desc}">
-      <div class="ie-row">
-        <input type="number" id="ie-phc-amt-${e.id}" value="${e.amt}" placeholder="Montant">
-        <select id="ie-phc-via-${e.id}" style="width:100px">
+      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-phc-desc-${e.id}" value="${e.desc||''}">
+      <div class="re-row">
+        <input class="re-inp" type="number" id="red-phc-amt-${e.id}" value="${e.amt}" placeholder="Montant €">
+        <select class="re-sel" id="red-phc-via-${e.id}">
           <option value="" ${!e.via?'selected':''}>—</option>
-          <option value="S" ${e.via==='S'?'selected':''}>Souhail (S)</option>
-          <option value="B" ${e.via==='B'?'selected':''}>Baganda (B)</option>
+          <option value="S" ${e.via==='S'?'selected':''}>Souhail</option>
+          <option value="B" ${e.via==='B'?'selected':''}>Baganda</option>
         </select>
       </div>
-      <div class="ie-btns">
-        <button class="btn-sv" onclick="savePHC('${e.id}')">Sauvegarder</button>
-        <button class="btn-cn" onclick="closeIE('ie-${e.id}')">Annuler</button>
-        <button class="btn-dl" onclick="delPHC('${e.id}')">🗑</button>
+      <div class="re-btns">
+        <button class="re-save" onclick="savePHC('${e.id}')">Sauvegarder</button>
+        <button class="re-cancel" onclick="closeEdit('phc-${e.id}')">Annuler</button>
+        <button class="re-del" onclick="delPHC('${e.id}')">🗑</button>
       </div>
     </div>`;
   }).join('');
   const net=brut-3574;
-  document.getElementById('phc-brut').textContent=fmt(brut);
-  document.getElementById('phc-net').textContent=fmt(net);
-  document.getElementById('kpi-phc').textContent=fmt(net);
-  renderAzizPHCLines(net);
+  document.getElementById('phc-brut').textContent=f(brut);
+  document.getElementById('phc-net').textContent=f(net);
+  document.getElementById('phc-net-val').textContent=f(net);
+  document.getElementById('kpi-phc').textContent=f(net);
+  // Update Aziz auto-line
+  document.getElementById('aziz-phc-auto').innerHTML=`<div class="sum-row sub"><span class="sum-lbl">PHC net (auto)</span><span class="sum-val g">+ ${f(net)}</span></div>`;
+  const azizTotal=5030+net;
+  document.getElementById('aziz-grand-total').textContent=f(azizTotal);
+  document.getElementById('aziz-total-val').textContent=f(azizTotal);
+  document.getElementById('kpi-aziz').textContent=f(azizTotal);
+  setTimeout(initSwipes,10);
 }
 function addPHC(){
   const date=document.getElementById('f-phc-date').value||today();
@@ -689,414 +687,445 @@ function addPHC(){
   const desc=document.getElementById('f-phc-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-phc-amt').value)||0;
   const via=document.getElementById('f-phc-via').value;
-  if(!amt){showToast('Remplis le montant');return;}
-  DATA.phcEntries.push({id:uid(),date,client,desc,amt,via});
-  clearForm('f-phc',['f-phc-date','f-phc-desc','f-phc-amt']);
-  toggleForm('f-phc');renderPHC();autoSave();showToast('PHC ajouté ✓');
+  if(!amt){toast('Remplis le montant');return;}
+  D.phc.push({id:uid(),date,client,desc,amt,via});
+  ['f-phc-date','f-phc-desc','f-phc-amt'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('f-phc-client').value='';
+  toggleAddForm('af-phc');renderPHC();autosave();toast('PHC ajouté ✓');
 }
 function savePHC(id){
-  const e=DATA.phcEntries.find(x=>x.id===id);if(!e)return;
-  e.date=document.getElementById('ie-phc-date-'+id).value;
-  e.client=document.getElementById('ie-phc-client-'+id).value;
-  e.desc=document.getElementById('ie-phc-desc-'+id).value;
-  e.amt=parseFloat(document.getElementById('ie-phc-amt-'+id).value)||0;
-  e.via=document.getElementById('ie-phc-via-'+id).value;
-  closeIE('ie-'+id);renderPHC();autoSave();showToast('Modifié ✓');
+  const e=D.phc.find(x=>x.id===id);if(!e)return;
+  e.date=document.getElementById(`red-phc-date-${id}`).value;
+  e.client=document.getElementById(`red-phc-client-${id}`).value;
+  e.desc=document.getElementById(`red-phc-desc-${id}`).value;
+  e.amt=parseFloat(document.getElementById(`red-phc-amt-${id}`).value)||0;
+  e.via=document.getElementById(`red-phc-via-${id}`).value;
+  closeEdit('phc-'+id);renderPHC();autosave();toast('Modifié ✓');
 }
-function delPHC(id){if(!confirm('Supprimer ?'))return;DATA.phcEntries=DATA.phcEntries.filter(x=>x.id!==id);renderPHC();autoSave();showToast('Supprimé');}
+function delPHC(id){if(!confirm('Supprimer ?'))return;D.phc=D.phc.filter(x=>x.id!==id);renderPHC();autosave();toast('Supprimé');}
 
-// ─── AZIZ ─────────────────────────────────────────────────────
-function renderAzizPHCLines(phcNet){
-  // Show PHC net in Aziz tab
-  const el=document.getElementById('aziz-phc-lines');
-  el.innerHTML=`<div class="tbl-sub"><span class="label">Net PHC (auto-calculé)</span><span class="val green">+ ${fmt(phcNet)}</span></div>`;
-  const total=5030+phcNet;
-  document.getElementById('aziz-total').textContent=fmt(total);
-  document.getElementById('kpi-aziz').textContent=fmt(total);
+// ═══ HIDE TOGGLE ══════════════════════════════════════════════
+function toggleHide(key){
+  if(!D._hidden)D._hidden={};
+  D._hidden[key]=!D._hidden[key];
+  // Re-render the appropriate section
+  if(key.startsWith('phc-'))renderPHC();
+  else if(key.startsWith('az-'))renderAziz();
+  else if(key.startsWith('ab-'))renderAirbnb();
+  else if(key.startsWith('tr-'))renderTunrooms();
+  else if(key.startsWith('ht-'))renderHatem();
+  else if(key.startsWith('am-'))renderAmine();
+  else if(key.startsWith('ap-'))renderAppart();
+  else if(key.startsWith('ch-'))renderCharges();
+  autosave();closeSwipes();
 }
+
+// ═══ AZIZ ═════════════════════════════════════════════════════
 function renderAziz(){
   const el=document.getElementById('aziz-list');
-  if(!DATA.azizEntries.length){el.innerHTML='<div style="padding:12px;color:var(--text3);font-size:13px">Aucun mouvement</div>';return;}
-  el.innerHTML=DATA.azizEntries.map(e=>{
-    const sign=e.type==='credit'?'+':'−',cls=e.type==='credit'?'green':'red';
-    return`<div class="tbl-row" id="row-az-${e.id}" onclick="toggleIE('ie-az-${e.id}')">
-      <span class="td date">${fmtDate(e.date)}</span>
-      <span class="td-main"><span class="td-name">${e.desc}</span><span class="td-sub">${statusBadge(e.status)}</span></span>
-      <span class="td r ${cls}">${sign} ${fmt(e.amt)}</span>
-      <span class="td act"><button class="btn-edit" onclick="event.stopPropagation();toggleIE('ie-az-${e.id}')">✏️</button></span>
-    </div>
-    <div class="ie" id="ie-az-${e.id}">
-      <span class="ie-label">Date</span><input type="date" id="ie-az-date-${e.id}" value="${e.date}">
-      <span class="ie-label">Description</span><input type="text" id="ie-az-desc-${e.id}" value="${e.desc}">
-      <div class="ie-row">
-        <input type="number" id="ie-az-amt-${e.id}" value="${e.amt}">
-        <select id="ie-az-type-${e.id}" style="width:130px"><option value="credit" ${e.type==='credit'?'selected':''}>Il me doit (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Je lui dois (−)</option></select>
+  if(!D.aziz.length){el.innerHTML='<div class="empty">Aucun mouvement</div>';document.getElementById('aziz-mvt-val').textContent='0 €';return;}
+  let net=0;
+  el.innerHTML=D.aziz.map(e=>{
+    const v=e.type==='credit'?e.amt:-e.amt;net+=v;
+    const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
+    const hidden=D._hidden?.['az-'+e.id];
+    return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('az-${e.id}')">
+        <span class="col-dt">${fd(e.date)}</span>
+        <span class="col-main"><span class="col-name">${e.desc}</span><span class="col-sub">${stBadge(e.status)}</span></span>
+        <span class="col-val ${cls}">${sign} ${f(e.amt)}</span>
       </div>
-      <select id="ie-az-status-${e.id}"><option value="pending" ${e.status==='pending'?'selected':''}>En attente</option><option value="done" ${e.status==='done'?'selected':''}>Réglé</option></select>
-      <div class="ie-btns">
-        <button class="btn-sv" onclick="saveAziz('${e.id}')">Sauvegarder</button>
-        <button class="btn-cn" onclick="closeIE('ie-az-${e.id}')">Annuler</button>
-        <button class="btn-dl" onclick="delAziz('${e.id}')">🗑</button>
+      <div class="swipe-actions">
+        <button class="sa-btn sa-eye" onclick="toggleHide('az-${e.id}')"><span class="sa-icon">👁</span></button>
+        <button class="sa-btn sa-del" onclick="delAziz('${e.id}')"><span class="sa-icon">🗑</span></button>
+      </div>
+    </div>
+    <div class="row-edit" id="re-az-${e.id}">
+      <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-az-date-${e.id}" value="${e.date}">
+      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-az-desc-${e.id}" value="${e.desc}">
+      <div class="re-row">
+        <input class="re-inp" type="number" id="red-az-amt-${e.id}" value="${e.amt}">
+        <select class="re-sel" id="red-az-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Il me doit (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Je lui dois (−)</option></select>
+      </div>
+      <select class="re-sel" id="red-az-status-${e.id}"><option value="pending" ${e.status==='pending'?'selected':''}>En attente</option><option value="done" ${e.status==='done'?'selected':''}>Réglé</option></select>
+      <div class="re-btns">
+        <button class="re-save" onclick="saveAziz('${e.id}')">Sauvegarder</button>
+        <button class="re-cancel" onclick="closeEdit('az-${e.id}')">Annuler</button>
+        <button class="re-del" onclick="delAziz('${e.id}')">🗑</button>
       </div>
     </div>`;
   }).join('');
+  document.getElementById('aziz-mvt-val').textContent=f(net);
+  setTimeout(initSwipes,10);
 }
 function addAziz(){
-  const date=document.getElementById('f-aziz-date').value||today();
-  const desc=document.getElementById('f-aziz-desc').value.trim();
-  const amt=parseFloat(document.getElementById('f-aziz-amt').value)||0;
-  const type=document.getElementById('f-aziz-type').value;
-  const status=document.getElementById('f-aziz-status').value;
-  if(!desc||!amt){showToast('Remplis description et montant');return;}
-  DATA.azizEntries.push({id:uid(),date,desc,amt,type,status});
-  clearForm('f-aziz',['f-aziz-date','f-aziz-desc','f-aziz-amt']);
-  toggleForm('f-aziz');renderAziz();autoSave();showToast('Ajouté ✓');
+  const date=document.getElementById('f-az-date').value||today();
+  const desc=document.getElementById('f-az-desc').value.trim();
+  const amt=parseFloat(document.getElementById('f-az-amt').value)||0;
+  const type=document.getElementById('f-az-type').value;
+  const status=document.getElementById('f-az-status').value;
+  if(!desc||!amt){toast('Remplis description et montant');return;}
+  D.aziz.push({id:uid(),date,desc,amt,type,status});
+  ['f-az-date','f-az-desc','f-az-amt'].forEach(i=>document.getElementById(i).value='');
+  toggleAddForm('af-aziz');renderAziz();autosave();toast('Ajouté ✓');
 }
 function saveAziz(id){
-  const e=DATA.azizEntries.find(x=>x.id===id);if(!e)return;
-  e.date=document.getElementById('ie-az-date-'+id).value;
-  e.desc=document.getElementById('ie-az-desc-'+id).value;
-  e.amt=parseFloat(document.getElementById('ie-az-amt-'+id).value)||0;
-  e.type=document.getElementById('ie-az-type-'+id).value;
-  e.status=document.getElementById('ie-az-status-'+id).value;
-  closeIE('ie-az-'+id);renderAziz();autoSave();showToast('Modifié ✓');
+  const e=D.aziz.find(x=>x.id===id);if(!e)return;
+  e.date=document.getElementById(`red-az-date-${id}`).value;
+  e.desc=document.getElementById(`red-az-desc-${id}`).value;
+  e.amt=parseFloat(document.getElementById(`red-az-amt-${id}`).value)||0;
+  e.type=document.getElementById(`red-az-type-${id}`).value;
+  e.status=document.getElementById(`red-az-status-${id}`).value;
+  closeEdit('az-'+id);renderAziz();autosave();toast('Modifié ✓');
 }
-function delAziz(id){if(!confirm('Supprimer ?'))return;DATA.azizEntries=DATA.azizEntries.filter(x=>x.id!==id);renderAziz();autoSave();showToast('Supprimé');}
+function delAziz(id){if(!confirm('Supprimer ?'))return;D.aziz=D.aziz.filter(x=>x.id!==id);renderAziz();autosave();toast('Supprimé');}
 
-// ─── AIRBNB ───────────────────────────────────────────────────
+// ═══ AIRBNB ═══════════════════════════════════════════════════
 function renderAirbnb(){
-  const may=document.getElementById('airbnb-may');
-  may.innerHTML=DATA.airbnbMay.map(e=>{
-    const cls=e.type==='credit'?'green':'red',sign=e.type==='credit'?'+':'−';
-    return`<div class="tbl-row" id="row-ab-${e.id}" onclick="toggleIE('ie-ab-${e.id}')">
-      <span class="td date">${fmtDate(e.date)}</span>
-      <span class="td">${e.desc}</span>
-      <span class="td r ${cls}">${sign} ${fmt(e.amt)}</span>
-      <span class="td act"><button class="btn-edit" onclick="event.stopPropagation();toggleIE('ie-ab-${e.id}')">✏️</button><button class="btn-del" onclick="event.stopPropagation();delAirbnb('${e.id}')">🗑</button></span>
+  const el=document.getElementById('airbnb-may');
+  let mayNet=0;
+  el.innerHTML=D.airbnb.map(e=>{
+    const v=e.type==='credit'?e.amt:-e.amt;mayNet+=v;
+    const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
+    const hidden=D._hidden?.['ab-'+e.id];
+    return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('ab-${e.id}')">
+        <span class="col-dt">${fd(e.date)}</span>
+        <span class="col-main"><span class="col-name">${e.desc}</span></span>
+        <span class="col-val ${cls}">${sign} ${f(e.amt)}</span>
+      </div>
+      <div class="swipe-actions">
+        <button class="sa-btn sa-eye" onclick="toggleHide('ab-${e.id}')"><span class="sa-icon">👁</span></button>
+        <button class="sa-btn sa-del" onclick="delAirbnb('${e.id}')"><span class="sa-icon">🗑</span></button>
+      </div>
     </div>
-    <div class="ie" id="ie-ab-${e.id}">
-      <span class="ie-label">Date</span><input type="date" id="ie-ab-date-${e.id}" value="${e.date}">
-      <span class="ie-label">Description</span><input type="text" id="ie-ab-desc-${e.id}" value="${e.desc}">
-      <div class="ie-row"><input type="number" id="ie-ab-amt-${e.id}" value="${e.amt}">
-      <select id="ie-ab-type-${e.id}" style="width:130px"><option value="credit" ${e.type==='credit'?'selected':''}>Encaissement</option><option value="debit" ${e.type==='debit'?'selected':''}>Déduction</option></select></div>
-      <div class="ie-btns">
-        <button class="btn-sv" onclick="saveAirbnb('${e.id}')">Sauvegarder</button>
-        <button class="btn-cn" onclick="closeIE('ie-ab-${e.id}')">Annuler</button>
-        <button class="btn-dl" onclick="delAirbnb('${e.id}')">🗑</button>
+    <div class="row-edit" id="re-ab-${e.id}">
+      <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-ab-date-${e.id}" value="${e.date}">
+      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-ab-desc-${e.id}" value="${e.desc}">
+      <div class="re-row">
+        <input class="re-inp" type="number" id="red-ab-amt-${e.id}" value="${e.amt}">
+        <select class="re-sel" id="red-ab-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Encaissement</option><option value="debit" ${e.type==='debit'?'selected':''}>Déduction</option></select>
+      </div>
+      <div class="re-btns">
+        <button class="re-save" onclick="saveAirbnb('${e.id}')">Sauvegarder</button>
+        <button class="re-cancel" onclick="closeEdit('ab-${e.id}')">Annuler</button>
+        <button class="re-del" onclick="delAirbnb('${e.id}')">🗑</button>
       </div>
     </div>`;
   }).join('');
-  const mayT=DATA.airbnbMay.reduce((s,e)=>s+(e.type==='credit'?e.amt:-e.amt),0);
-  document.getElementById('airbnb-may-total').textContent=fmt(mayT);
-  const grand=1180+mayT;
-  document.getElementById('airbnb-total').textContent=fmt(grand);
-  // studio KPI = airbnb + tunrooms
-  const trT=DATA.tunroomsEntries.reduce((s,e)=>s+(e.type==='credit'?e.amt:-e.amt),0);
-  document.getElementById('kpi-studio').textContent=fmt(grand)+' + '+fmt(trT,'DT');
+  const total=1180+mayNet;
+  document.getElementById('airbnb-may-net').textContent=f(mayNet);
+  document.getElementById('airbnb-total').textContent=f(total);
+  document.getElementById('airbnb-total-val').textContent=f(total);
+  document.getElementById('kpi-studio').textContent=f(total);
+  setTimeout(initSwipes,10);
 }
 function addAirbnb(){
   const date=document.getElementById('f-ab-date').value||today();
   const desc=document.getElementById('f-ab-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-ab-amt').value)||0;
   const type=document.getElementById('f-ab-type').value;
-  if(!desc||!amt){showToast('Remplis description et montant');return;}
-  DATA.airbnbMay.push({id:uid(),date,desc,amt,type});
-  clearForm('f-airbnb',['f-ab-date','f-ab-desc','f-ab-amt']);
-  toggleForm('f-airbnb');renderAirbnb();autoSave();showToast('Ajouté ✓');
+  if(!desc||!amt){toast('Remplis description et montant');return;}
+  D.airbnb.push({id:uid(),date,desc,amt,type});
+  ['f-ab-date','f-ab-desc','f-ab-amt'].forEach(i=>document.getElementById(i).value='');
+  toggleAddForm('af-airbnb');renderAirbnb();autosave();toast('Ajouté ✓');
 }
 function saveAirbnb(id){
-  const e=DATA.airbnbMay.find(x=>x.id===id);if(!e)return;
-  e.date=document.getElementById('ie-ab-date-'+id).value;
-  e.desc=document.getElementById('ie-ab-desc-'+id).value;
-  e.amt=parseFloat(document.getElementById('ie-ab-amt-'+id).value)||0;
-  e.type=document.getElementById('ie-ab-type-'+id).value;
-  closeIE('ie-ab-'+id);renderAirbnb();autoSave();showToast('Modifié ✓');
+  const e=D.airbnb.find(x=>x.id===id);if(!e)return;
+  e.date=document.getElementById(`red-ab-date-${id}`).value;
+  e.desc=document.getElementById(`red-ab-desc-${id}`).value;
+  e.amt=parseFloat(document.getElementById(`red-ab-amt-${id}`).value)||0;
+  e.type=document.getElementById(`red-ab-type-${id}`).value;
+  closeEdit('ab-'+id);renderAirbnb();autosave();toast('Modifié ✓');
 }
-function delAirbnb(id){if(!confirm('Supprimer ?'))return;DATA.airbnbMay=DATA.airbnbMay.filter(x=>x.id!==id);renderAirbnb();autoSave();showToast('Supprimé');}
+function delAirbnb(id){if(!confirm('Supprimer ?'))return;D.airbnb=D.airbnb.filter(x=>x.id!==id);renderAirbnb();autosave();toast('Supprimé');}
 
-// ─── TUNROOMS ─────────────────────────────────────────────────
+// ═══ TUNROOMS ═════════════════════════════════════════════════
 function renderTunrooms(){
   const el=document.getElementById('tunrooms-list');
-  if(!DATA.tunroomsEntries.length){el.innerHTML='<div style="padding:12px;color:var(--text3);font-size:13px">Aucune réservation</div>';
-    document.getElementById('tunrooms-total').textContent='0 DT';return;}
+  if(!D.tunrooms.length){el.innerHTML='<div class="empty">Aucune réservation</div>';document.getElementById('tunrooms-total').textContent='0 DT';document.getElementById('tunrooms-total-val').textContent='0 DT';return;}
   let total=0;
-  el.innerHTML=DATA.tunroomsEntries.map(e=>{
+  el.innerHTML=D.tunrooms.map(e=>{
     const v=e.type==='credit'?e.amt:-e.amt;total+=v;
-    const cls=v>=0?'green':'red',sign=v>=0?'+':'−';
-    return`<div class="tbl-row" id="row-tr-${e.id}" onclick="toggleIE('ie-tr-${e.id}')">
-      <span class="td date">${fmtDate(e.date)}</span>
-      <span class="td">${e.desc}</span>
-      <span class="td r ${cls}">${sign} ${fmt(Math.abs(v),'DT')}</span>
-      <span class="td act"><button class="btn-edit" onclick="event.stopPropagation();toggleIE('ie-tr-${e.id}')">✏️</button><button class="btn-del" onclick="event.stopPropagation();delTunrooms('${e.id}')">🗑</button></span>
+    const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
+    const hidden=D._hidden?.['tr-'+e.id];
+    return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('tr-${e.id}')">
+        <span class="col-dt">${fd(e.date)}</span>
+        <span class="col-main"><span class="col-name">${e.desc}</span></span>
+        <span class="col-val ${cls}">${sign} ${f(e.amt,'DT')}</span>
+      </div>
+      <div class="swipe-actions">
+        <button class="sa-btn sa-eye" onclick="toggleHide('tr-${e.id}')"><span class="sa-icon">👁</span></button>
+        <button class="sa-btn sa-del" onclick="delTunrooms('${e.id}')"><span class="sa-icon">🗑</span></button>
+      </div>
     </div>
-    <div class="ie" id="ie-tr-${e.id}">
-      <span class="ie-label">Date</span><input type="date" id="ie-tr-date-${e.id}" value="${e.date}">
-      <span class="ie-label">Description</span><input type="text" id="ie-tr-desc-${e.id}" value="${e.desc}">
-      <div class="ie-row"><input type="number" id="ie-tr-amt-${e.id}" value="${e.amt}">
-      <select id="ie-tr-type-${e.id}" style="width:130px"><option value="credit" ${e.type==='credit'?'selected':''}>Encaissement</option><option value="debit" ${e.type==='debit'?'selected':''}>Déduction</option></select></div>
-      <div class="ie-btns">
-        <button class="btn-sv" onclick="saveTunrooms('${e.id}')">Sauvegarder</button>
-        <button class="btn-cn" onclick="closeIE('ie-tr-${e.id}')">Annuler</button>
-        <button class="btn-dl" onclick="delTunrooms('${e.id}')">🗑</button>
+    <div class="row-edit" id="re-tr-${e.id}">
+      <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-tr-date-${e.id}" value="${e.date}">
+      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-tr-desc-${e.id}" value="${e.desc}">
+      <div class="re-row">
+        <input class="re-inp" type="number" id="red-tr-amt-${e.id}" value="${e.amt}">
+        <select class="re-sel" id="red-tr-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Encaissement</option><option value="debit" ${e.type==='debit'?'selected':''}>Déduction</option></select>
+      </div>
+      <div class="re-btns">
+        <button class="re-save" onclick="saveTunrooms('${e.id}')">Sauvegarder</button>
+        <button class="re-cancel" onclick="closeEdit('tr-${e.id}')">Annuler</button>
+        <button class="re-del" onclick="delTunrooms('${e.id}')">🗑</button>
       </div>
     </div>`;
   }).join('');
-  document.getElementById('tunrooms-total').textContent=fmt(total,'DT');
+  document.getElementById('tunrooms-total').textContent=f(total,'DT');
+  document.getElementById('tunrooms-total-val').textContent=f(total,'DT');
+  setTimeout(initSwipes,10);
 }
 function addTunrooms(){
   const date=document.getElementById('f-tr-date').value||today();
   const desc=document.getElementById('f-tr-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-tr-amt').value)||0;
   const type=document.getElementById('f-tr-type').value;
-  if(!desc||!amt){showToast('Remplis description et montant');return;}
-  DATA.tunroomsEntries.push({id:uid(),date,desc,amt,type});
-  clearForm('f-tunrooms',['f-tr-date','f-tr-desc','f-tr-amt']);
-  toggleForm('f-tunrooms');renderTunrooms();renderAirbnb();autoSave();showToast('Ajouté ✓');
+  if(!desc||!amt){toast('Remplis description et montant');return;}
+  D.tunrooms.push({id:uid(),date,desc,amt,type});
+  ['f-tr-date','f-tr-desc','f-tr-amt'].forEach(i=>document.getElementById(i).value='');
+  toggleAddForm('af-tunrooms');renderTunrooms();autosave();toast('Ajouté ✓');
 }
-function saveTunrooms(id){
-  const e=DATA.tunroomsEntries.find(x=>x.id===id);if(!e)return;
-  e.date=document.getElementById('ie-tr-date-'+id).value;
-  e.desc=document.getElementById('ie-tr-desc-'+id).value;
-  e.amt=parseFloat(document.getElementById('ie-tr-amt-'+id).value)||0;
-  e.type=document.getElementById('ie-tr-type-'+id).value;
-  closeIE('ie-tr-'+id);renderTunrooms();autoSave();showToast('Modifié ✓');
-}
-function delTunrooms(id){if(!confirm('Supprimer ?'))return;DATA.tunroomsEntries=DATA.tunroomsEntries.filter(x=>x.id!==id);renderTunrooms();renderAirbnb();autoSave();showToast('Supprimé');}
+function saveTunrooms(id){const e=D.tunrooms.find(x=>x.id===id);if(!e)return;e.date=document.getElementById(`red-tr-date-${id}`).value;e.desc=document.getElementById(`red-tr-desc-${id}`).value;e.amt=parseFloat(document.getElementById(`red-tr-amt-${id}`).value)||0;e.type=document.getElementById(`red-tr-type-${id}`).value;closeEdit('tr-'+id);renderTunrooms();autosave();toast('Modifié ✓');}
+function delTunrooms(id){if(!confirm('Supprimer ?'))return;D.tunrooms=D.tunrooms.filter(x=>x.id!==id);renderTunrooms();autosave();toast('Supprimé');}
 
-// ─── HATEM ────────────────────────────────────────────────────
+// ═══ HATEM ════════════════════════════════════════════════════
 function renderHatem(){
   const el=document.getElementById('hatem-list');
-  let total=300;// initial
-  if(!DATA.hatemEntries.length){el.innerHTML='<div style="padding:12px;color:var(--text3);font-size:13px">Aucun mouvement</div>';}
+  let total=300;
+  if(!D.hatem.length){el.innerHTML='<div class="empty">Aucun mouvement</div>';}
   else{
-    el.innerHTML=DATA.hatemEntries.map(e=>{
+    el.innerHTML=D.hatem.map(e=>{
       const v=e.type==='credit'?e.amt:-e.amt;total+=v;
-      const cls=v>=0?'green':'red',sign=v>=0?'+':'−';
-      const cur=e.currency||'EUR';
-      return`<div class="tbl-row" id="row-ht-${e.id}" onclick="toggleIE('ie-ht-${e.id}')">
-        <span class="td date">${fmtDate(e.date)}</span>
-        <span class="td">${e.desc}</span>
-        <span class="td r ${cls}">${sign} ${fmt(e.amt,cur)}</span>
-        <span class="td act"><button class="btn-edit" onclick="event.stopPropagation();toggleIE('ie-ht-${e.id}')">✏️</button><button class="btn-del" onclick="event.stopPropagation();delHatem('${e.id}')">🗑</button></span>
+      const cls=v>=0?'g':'r',sign=v>=0?'+':'−',cur=e.cur||'EUR';
+      const hidden=D._hidden?.['ht-'+e.id];
+      return`<div class="swipe-wrap">
+        <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('ht-${e.id}')">
+          <span class="col-dt">${fd(e.date)}</span>
+          <span class="col-main"><span class="col-name">${e.desc}</span></span>
+          <span class="col-val ${cls}">${sign} ${f(e.amt,cur)}</span>
+        </div>
+        <div class="swipe-actions">
+          <button class="sa-btn sa-eye" onclick="toggleHide('ht-${e.id}')"><span class="sa-icon">👁</span></button>
+          <button class="sa-btn sa-del" onclick="delHatem('${e.id}')"><span class="sa-icon">🗑</span></button>
+        </div>
       </div>
-      <div class="ie" id="ie-ht-${e.id}">
-        <span class="ie-label">Date</span><input type="date" id="ie-ht-date-${e.id}" value="${e.date}">
-        <span class="ie-label">Description</span><input type="text" id="ie-ht-desc-${e.id}" value="${e.desc}">
-        <div class="ie-row"><input type="number" id="ie-ht-amt-${e.id}" value="${e.amt}">
-        <select id="ie-ht-cur-${e.id}" style="width:80px"><option value="EUR" ${cur==='EUR'?'selected':''}>€</option><option value="DT" ${cur==='DT'?'selected':''}>DT</option></select>
-        <select id="ie-ht-type-${e.id}" style="width:120px"><option value="credit" ${e.type==='credit'?'selected':''}>Il me doit (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Je lui dois (−)</option></select></div>
-        <div class="ie-btns">
-          <button class="btn-sv" onclick="saveHatem('${e.id}')">Sauvegarder</button>
-          <button class="btn-cn" onclick="closeIE('ie-ht-${e.id}')">Annuler</button>
-          <button class="btn-dl" onclick="delHatem('${e.id}')">🗑</button>
+      <div class="row-edit" id="re-ht-${e.id}">
+        <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-ht-date-${e.id}" value="${e.date}">
+        <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-ht-desc-${e.id}" value="${e.desc}">
+        <div class="re-row">
+          <input class="re-inp" type="number" id="red-ht-amt-${e.id}" value="${e.amt}">
+          <select class="re-sel" id="red-ht-cur-${e.id}"><option value="EUR" ${cur==='EUR'?'selected':''}>€</option><option value="DT" ${cur==='DT'?'selected':''}>DT</option></select>
+          <select class="re-sel" id="red-ht-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Il me doit (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Je lui dois (−)</option></select>
+        </div>
+        <div class="re-btns">
+          <button class="re-save" onclick="saveHatem('${e.id}')">Sauvegarder</button>
+          <button class="re-cancel" onclick="closeEdit('ht-${e.id}')">Annuler</button>
+          <button class="re-del" onclick="delHatem('${e.id}')">🗑</button>
         </div>
       </div>`;
     }).join('');
   }
-  document.getElementById('hatem-total').textContent=fmt(total,'€');
-  document.getElementById('kpi-hatem').textContent=fmt(total,'€');
+  document.getElementById('hatem-total').textContent=f(total);
+  document.getElementById('hatem-total-val').textContent=f(total);
+  document.getElementById('kpi-hatem').textContent=f(total);
+  setTimeout(initSwipes,10);
 }
 function addHatem(){
   const date=document.getElementById('f-ht-date').value||today();
   const desc=document.getElementById('f-ht-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-ht-amt').value)||0;
-  const currency=document.getElementById('f-ht-currency').value;
+  const cur=document.getElementById('f-ht-cur').value;
   const type=document.getElementById('f-ht-type').value;
-  if(!desc||!amt){showToast('Remplis description et montant');return;}
-  DATA.hatemEntries.push({id:uid(),date,desc,amt,currency,type});
-  clearForm('f-hatem',['f-ht-date','f-ht-desc','f-ht-amt']);
-  toggleForm('f-hatem');renderHatem();autoSave();showToast('Ajouté ✓');
+  if(!desc||!amt){toast('Remplis description et montant');return;}
+  D.hatem.push({id:uid(),date,desc,amt,cur,type});
+  ['f-ht-date','f-ht-desc','f-ht-amt'].forEach(i=>document.getElementById(i).value='');
+  toggleAddForm('af-hatem');renderHatem();autosave();toast('Ajouté ✓');
 }
-function saveHatem(id){
-  const e=DATA.hatemEntries.find(x=>x.id===id);if(!e)return;
-  e.date=document.getElementById('ie-ht-date-'+id).value;
-  e.desc=document.getElementById('ie-ht-desc-'+id).value;
-  e.amt=parseFloat(document.getElementById('ie-ht-amt-'+id).value)||0;
-  e.currency=document.getElementById('ie-ht-cur-'+id).value;
-  e.type=document.getElementById('ie-ht-type-'+id).value;
-  closeIE('ie-ht-'+id);renderHatem();autoSave();showToast('Modifié ✓');
-}
-function delHatem(id){if(!confirm('Supprimer ?'))return;DATA.hatemEntries=DATA.hatemEntries.filter(x=>x.id!==id);renderHatem();autoSave();showToast('Supprimé');}
+function saveHatem(id){const e=D.hatem.find(x=>x.id===id);if(!e)return;e.date=document.getElementById(`red-ht-date-${id}`).value;e.desc=document.getElementById(`red-ht-desc-${id}`).value;e.amt=parseFloat(document.getElementById(`red-ht-amt-${id}`).value)||0;e.cur=document.getElementById(`red-ht-cur-${id}`).value;e.type=document.getElementById(`red-ht-type-${id}`).value;closeEdit('ht-'+id);renderHatem();autosave();toast('Modifié ✓');}
+function delHatem(id){if(!confirm('Supprimer ?'))return;D.hatem=D.hatem.filter(x=>x.id!==id);renderHatem();autosave();toast('Supprimé');}
 
-// ─── AMINE ────────────────────────────────────────────────────
+// ═══ AMINE ════════════════════════════════════════════════════
 function renderAmine(){
   const el=document.getElementById('amine-list');
-  if(!DATA.amineEntries.length){el.innerHTML='<div style="padding:12px;color:var(--text3);font-size:13px">Aucun mouvement — tape + pour ajouter</div>';
-    document.getElementById('amine-net').textContent='0 €';document.getElementById('kpi-amine').textContent='0 €';return;}
+  if(!D.amine.length){el.innerHTML='<div class="empty">Aucun mouvement</div>';document.getElementById('amine-net').textContent='0 €';document.getElementById('amine-total-val').textContent='0 €';document.getElementById('kpi-amine').textContent='0 €';return;}
   let netEur=0;
-  el.innerHTML=DATA.amineEntries.map(e=>{
-    const v=e.type==='credit'?e.amt:-e.amt;
-    if(e.currency==='EUR')netEur+=v;
-    const cls=v>=0?'green':'red',sign=v>=0?'+':'−',cur=e.currency||'EUR';
-    return`<div class="tbl-row" id="row-am-${e.id}" onclick="toggleIE('ie-am-${e.id}')">
-      <span class="td date">${fmtDate(e.date)}</span>
-      <span class="td">${e.desc}</span>
-      <span class="td r ${cls}">${sign} ${fmt(e.amt,cur)}</span>
-      <span class="td act"><button class="btn-edit" onclick="event.stopPropagation();toggleIE('ie-am-${e.id}')">✏️</button><button class="btn-del" onclick="event.stopPropagation();delAmine('${e.id}')">🗑</button></span>
+  el.innerHTML=D.amine.map(e=>{
+    const v=e.type==='credit'?e.amt:-e.amt;const cur=e.cur||'EUR';
+    if(cur==='EUR')netEur+=v;
+    const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
+    const hidden=D._hidden?.['am-'+e.id];
+    return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('am-${e.id}')">
+        <span class="col-dt">${fd(e.date)}</span>
+        <span class="col-main"><span class="col-name">${e.desc}</span></span>
+        <span class="col-val ${cls}">${sign} ${f(e.amt,cur)}</span>
+      </div>
+      <div class="swipe-actions">
+        <button class="sa-btn sa-eye" onclick="toggleHide('am-${e.id}')"><span class="sa-icon">👁</span></button>
+        <button class="sa-btn sa-del" onclick="delAmine('${e.id}')"><span class="sa-icon">🗑</span></button>
+      </div>
     </div>
-    <div class="ie" id="ie-am-${e.id}">
-      <span class="ie-label">Date</span><input type="date" id="ie-am-date-${e.id}" value="${e.date}">
-      <span class="ie-label">Description</span><input type="text" id="ie-am-desc-${e.id}" value="${e.desc}">
-      <div class="ie-row"><input type="number" id="ie-am-amt-${e.id}" value="${e.amt}">
-      <select id="ie-am-cur-${e.id}" style="width:80px"><option value="EUR" ${cur==='EUR'?'selected':''}>€</option><option value="DT" ${cur==='DT'?'selected':''}>DT</option></select>
-      <select id="ie-am-type-${e.id}" style="width:100px"><option value="credit" ${e.type==='credit'?'selected':''}>Entrée</option><option value="debit" ${e.type==='debit'?'selected':''}>Sortie</option></select></div>
-      <div class="ie-btns">
-        <button class="btn-sv" onclick="saveAmine('${e.id}')">Sauvegarder</button>
-        <button class="btn-cn" onclick="closeIE('ie-am-${e.id}')">Annuler</button>
-        <button class="btn-dl" onclick="delAmine('${e.id}')">🗑</button>
+    <div class="row-edit" id="re-am-${e.id}">
+      <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-am-date-${e.id}" value="${e.date}">
+      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-am-desc-${e.id}" value="${e.desc}">
+      <div class="re-row">
+        <input class="re-inp" type="number" id="red-am-amt-${e.id}" value="${e.amt}">
+        <select class="re-sel" id="red-am-cur-${e.id}"><option value="EUR" ${cur==='EUR'?'selected':''}>€</option><option value="DT" ${cur==='DT'?'selected':''}>DT</option></select>
+        <select class="re-sel" id="red-am-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Entrée (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Sortie (−)</option></select>
+      </div>
+      <div class="re-btns">
+        <button class="re-save" onclick="saveAmine('${e.id}')">Sauvegarder</button>
+        <button class="re-cancel" onclick="closeEdit('am-${e.id}')">Annuler</button>
+        <button class="re-del" onclick="delAmine('${e.id}')">🗑</button>
       </div>
     </div>`;
   }).join('');
-  document.getElementById('amine-net').textContent=fmt(netEur);
-  document.getElementById('kpi-amine').textContent=fmt(netEur);
+  document.getElementById('amine-net').textContent=f(netEur);
+  document.getElementById('amine-total-val').textContent=f(netEur);
+  document.getElementById('kpi-amine').textContent=f(netEur);
+  setTimeout(initSwipes,10);
 }
 function addAmine(){
   const date=document.getElementById('f-am-date').value||today();
   const desc=document.getElementById('f-am-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-am-amt').value)||0;
-  const currency=document.getElementById('f-am-currency').value;
+  const cur=document.getElementById('f-am-cur').value;
   const type=document.getElementById('f-am-type').value;
-  if(!desc||!amt){showToast('Remplis description et montant');return;}
-  DATA.amineEntries.push({id:uid(),date,desc,amt,currency,type});
-  clearForm('f-amine',['f-am-date','f-am-desc','f-am-amt']);
-  toggleForm('f-amine');renderAmine();autoSave();showToast('Ajouté ✓');
+  if(!desc||!amt){toast('Remplis description et montant');return;}
+  D.amine.push({id:uid(),date,desc,amt,cur,type});
+  ['f-am-date','f-am-desc','f-am-amt'].forEach(i=>document.getElementById(i).value='');
+  toggleAddForm('af-amine');renderAmine();autosave();toast('Ajouté ✓');
 }
-function saveAmine(id){
-  const e=DATA.amineEntries.find(x=>x.id===id);if(!e)return;
-  e.date=document.getElementById('ie-am-date-'+id).value;
-  e.desc=document.getElementById('ie-am-desc-'+id).value;
-  e.amt=parseFloat(document.getElementById('ie-am-amt-'+id).value)||0;
-  e.currency=document.getElementById('ie-am-cur-'+id).value;
-  e.type=document.getElementById('ie-am-type-'+id).value;
-  closeIE('ie-am-'+id);renderAmine();autoSave();showToast('Modifié ✓');
-}
-function delAmine(id){if(!confirm('Supprimer ?'))return;DATA.amineEntries=DATA.amineEntries.filter(x=>x.id!==id);renderAmine();autoSave();showToast('Supprimé');}
+function saveAmine(id){const e=D.amine.find(x=>x.id===id);if(!e)return;e.date=document.getElementById(`red-am-date-${id}`).value;e.desc=document.getElementById(`red-am-desc-${id}`).value;e.amt=parseFloat(document.getElementById(`red-am-amt-${id}`).value)||0;e.cur=document.getElementById(`red-am-cur-${id}`).value;e.type=document.getElementById(`red-am-type-${id}`).value;closeEdit('am-'+id);renderAmine();autosave();toast('Modifié ✓');}
+function delAmine(id){if(!confirm('Supprimer ?'))return;D.amine=D.amine.filter(x=>x.id!==id);renderAmine();autosave();toast('Supprimé');}
 
-// ─── APPART ───────────────────────────────────────────────────
+// ═══ APPART ═══════════════════════════════════════════════════
 function renderAppart(){
   const el=document.getElementById('appart-list');
   let total=0;
-  el.innerHTML=DATA.appartEntries.map(e=>{
+  el.innerHTML=D.appart.map(e=>{
     total+=e.amt;
-    return`<div class="tbl-row" id="row-ap-${e.id}" onclick="toggleIE('ie-ap-${e.id}')">
-      <span class="td-main"><span class="td-name">${e.desc}${e.shared?' <span style="font-size:9px;color:var(--blue)">÷2</span>':''}</span></span>
-      <span class="td"><span class="badge b-appt" style="background:#1a2a4a;color:#7ab3ff">${e.cat}</span></span>
-      <span class="td r red">− ${fmt(e.amt)}</span>
-      <span class="td act"><button class="btn-edit" onclick="event.stopPropagation();toggleIE('ie-ap-${e.id}')">✏️</button><button class="btn-del" onclick="event.stopPropagation();delAppart('${e.id}')">🗑</button></span>
+    const hidden=D._hidden?.['ap-'+e.id];
+    return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('ap-${e.id}')">
+        <span class="col-main"><span class="col-name">${e.desc}${e.shared?' <span style="font-size:9px;color:var(--blue)">÷2</span>':''}</span><span class="col-sub">${e.cat}</span></span>
+        <span class="col-val r">− ${f(e.amt)}</span>
+      </div>
+      <div class="swipe-actions">
+        <button class="sa-btn sa-eye" onclick="toggleHide('ap-${e.id}')"><span class="sa-icon">👁</span></button>
+        <button class="sa-btn sa-del" onclick="delAppart('${e.id}')"><span class="sa-icon">🗑</span></button>
+      </div>
     </div>
-    <div class="ie" id="ie-ap-${e.id}">
-      <span class="ie-label">Description</span><input type="text" id="ie-ap-desc-${e.id}" value="${e.desc}">
-      <div class="ie-row"><input type="number" id="ie-ap-amt-${e.id}" value="${e.amt}">
-      <select id="ie-ap-cat-${e.id}" style="width:120px"><option ${e.cat==='Mobilier'?'selected':''}>Mobilier</option><option ${e.cat==='Équipement'?'selected':''}>Équipement</option><option ${e.cat==='Travaux'?'selected':''}>Travaux</option><option ${e.cat==='Courses'?'selected':''}>Courses</option><option ${e.cat==='Divers'?'selected':''}>Divers</option></select></div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:10px"><input type="checkbox" id="ie-ap-shared-${e.id}" ${e.shared?'checked':''}> Partagé ÷ 2</label>
-      <div class="ie-btns">
-        <button class="btn-sv" onclick="saveAppart('${e.id}')">Sauvegarder</button>
-        <button class="btn-cn" onclick="closeIE('ie-ap-${e.id}')">Annuler</button>
-        <button class="btn-dl" onclick="delAppart('${e.id}')">🗑</button>
+    <div class="row-edit" id="re-ap-${e.id}">
+      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-ap-desc-${e.id}" value="${e.desc}">
+      <div class="re-row">
+        <input class="re-inp" type="number" id="red-ap-amt-${e.id}" value="${e.amt}" placeholder="Montant €">
+        <select class="re-sel" id="red-ap-cat-${e.id}"><option ${e.cat==='Mobilier'?'selected':''}>Mobilier</option><option ${e.cat==='Équipement'?'selected':''}>Équipement</option><option ${e.cat==='Travaux'?'selected':''}>Travaux</option><option ${e.cat==='Courses'?'selected':''}>Courses</option><option ${e.cat==='Divers'?'selected':''}>Divers</option></select>
+      </div>
+      <div class="cb-row"><input type="checkbox" id="red-ap-shared-${e.id}" ${e.shared?'checked':''}><label for="red-ap-shared-${e.id}">Partagé ÷ 2</label></div>
+      <div class="re-btns">
+        <button class="re-save" onclick="saveAppart('${e.id}')">Sauvegarder</button>
+        <button class="re-cancel" onclick="closeEdit('ap-${e.id}')">Annuler</button>
+        <button class="re-del" onclick="delAppart('${e.id}')">🗑</button>
       </div>
     </div>`;
   }).join('');
-  document.getElementById('appart-total').textContent=fmt(total);
-  document.getElementById('appart-total-row').textContent=fmt(total);
-  document.getElementById('kpi-appart').textContent=fmt(total);
+  document.getElementById('appart-total').textContent=f(total);
+  document.getElementById('appart-total-val').textContent=f(total);
+  document.getElementById('kpi-appart').textContent=f(total);
+  setTimeout(initSwipes,10);
 }
 function addAppart(){
   const desc=document.getElementById('f-ap-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-ap-amt').value)||0;
   const cat=document.getElementById('f-ap-cat').value;
   const shared=document.getElementById('f-ap-shared').checked;
-  if(!desc||!amt){showToast('Remplis description et montant');return;}
-  DATA.appartEntries.push({id:uid(),desc,cat,amt,shared});
-  clearForm('f-appart',['f-ap-desc','f-ap-amt']);document.getElementById('f-ap-shared').checked=false;
-  toggleForm('f-appart');renderAppart();autoSave();showToast('Ajouté ✓');
+  if(!desc||!amt){toast('Remplis description et montant');return;}
+  D.appart.push({id:uid(),desc,cat,amt,shared});
+  ['f-ap-desc','f-ap-amt'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('f-ap-shared').checked=false;
+  toggleAddForm('af-appart');renderAppart();autosave();toast('Ajouté ✓');
 }
-function saveAppart(id){
-  const e=DATA.appartEntries.find(x=>x.id===id);if(!e)return;
-  e.desc=document.getElementById('ie-ap-desc-'+id).value;
-  e.amt=parseFloat(document.getElementById('ie-ap-amt-'+id).value)||0;
-  e.cat=document.getElementById('ie-ap-cat-'+id).value;
-  e.shared=document.getElementById('ie-ap-shared-'+id).checked;
-  closeIE('ie-ap-'+id);renderAppart();autoSave();showToast('Modifié ✓');
-}
-function delAppart(id){if(!confirm('Supprimer ?'))return;DATA.appartEntries=DATA.appartEntries.filter(x=>x.id!==id);renderAppart();autoSave();showToast('Supprimé');}
+function saveAppart(id){const e=D.appart.find(x=>x.id===id);if(!e)return;e.desc=document.getElementById(`red-ap-desc-${id}`).value;e.amt=parseFloat(document.getElementById(`red-ap-amt-${id}`).value)||0;e.cat=document.getElementById(`red-ap-cat-${id}`).value;e.shared=document.getElementById(`red-ap-shared-${id}`).checked;closeEdit('ap-'+id);renderAppart();autosave();toast('Modifié ✓');}
+function delAppart(id){if(!confirm('Supprimer ?'))return;D.appart=D.appart.filter(x=>x.id!==id);renderAppart();autosave();toast('Supprimé');}
 
-// ─── CHARGES ──────────────────────────────────────────────────
+// ═══ CHARGES ══════════════════════════════════════════════════
 function renderCharges(){
   const el=document.getElementById('charges-list');
   let total=0;
-  el.innerHTML=DATA.chargesEntries.map(e=>{
+  el.innerHTML=D.charges.map(e=>{
     total+=e.amt;
-    return`<div class="tbl-row" id="row-ch-${e.id}" onclick="toggleIE('ie-ch-${e.id}')">
-      <span class="td">${e.desc}</span>
-      <span class="td" style="color:var(--text3);font-size:12px">${e.freq}</span>
-      <span class="td r red">− ${fmt(e.amt)}</span>
-      <span class="td act"><button class="btn-edit" onclick="event.stopPropagation();toggleIE('ie-ch-${e.id}')">✏️</button><button class="btn-del" onclick="event.stopPropagation();delCharge('${e.id}')">🗑</button></span>
+    const hidden=D._hidden?.['ch-'+e.id];
+    return`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('ch-${e.id}')">
+        <span class="col-main"><span class="col-name">${e.desc}</span><span class="col-sub">${e.freq}</span></span>
+        <span class="col-val r">− ${f(e.amt)}</span>
+      </div>
+      <div class="swipe-actions">
+        <button class="sa-btn sa-eye" onclick="toggleHide('ch-${e.id}')"><span class="sa-icon">👁</span></button>
+        <button class="sa-btn sa-del" onclick="delCharge('${e.id}')"><span class="sa-icon">🗑</span></button>
+      </div>
     </div>
-    <div class="ie" id="ie-ch-${e.id}">
-      <span class="ie-label">Poste</span><input type="text" id="ie-ch-desc-${e.id}" value="${e.desc}">
-      <div class="ie-row"><input type="number" id="ie-ch-amt-${e.id}" value="${e.amt}">
-      <select id="ie-ch-freq-${e.id}" style="width:110px"><option ${e.freq==='Mensuel'?'selected':''}>Mensuel</option><option ${e.freq==='Annuel'?'selected':''}>Annuel</option></select></div>
-      <div class="ie-btns">
-        <button class="btn-sv" onclick="saveCharge('${e.id}')">Sauvegarder</button>
-        <button class="btn-cn" onclick="closeIE('ie-ch-${e.id}')">Annuler</button>
-        <button class="btn-dl" onclick="delCharge('${e.id}')">🗑</button>
+    <div class="row-edit" id="re-ch-${e.id}">
+      <span class="re-lbl">Poste</span><input class="re-inp" type="text" id="red-ch-desc-${e.id}" value="${e.desc}">
+      <div class="re-row">
+        <input class="re-inp" type="number" id="red-ch-amt-${e.id}" value="${e.amt}" placeholder="Montant €">
+        <select class="re-sel" id="red-ch-freq-${e.id}"><option ${e.freq==='Mensuel'?'selected':''}>Mensuel</option><option ${e.freq==='Annuel'?'selected':''}>Annuel</option></select>
+      </div>
+      <div class="re-btns">
+        <button class="re-save" onclick="saveCharge('${e.id}')">Sauvegarder</button>
+        <button class="re-cancel" onclick="closeEdit('ch-${e.id}')">Annuler</button>
+        <button class="re-del" onclick="delCharge('${e.id}')">🗑</button>
       </div>
     </div>`;
   }).join('');
-  document.getElementById('charges-total').textContent=fmt(total);
-  document.getElementById('charges-total-row').textContent=fmt(total);
+  document.getElementById('charges-total').textContent=f(total);
+  document.getElementById('charges-total-val').textContent=f(total);
+  setTimeout(initSwipes,10);
 }
 function addCharge(){
   const desc=document.getElementById('f-ch-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-ch-amt').value)||0;
   const freq=document.getElementById('f-ch-freq').value;
-  if(!desc||!amt){showToast('Remplis poste et montant');return;}
-  DATA.chargesEntries.push({id:uid(),desc,amt,freq});
-  clearForm('f-charge',['f-ch-desc','f-ch-amt']);
-  toggleForm('f-charge');renderCharges();autoSave();showToast('Ajouté ✓');
+  if(!desc||!amt){toast('Remplis poste et montant');return;}
+  D.charges.push({id:uid(),desc,amt,freq});
+  ['f-ch-desc','f-ch-amt'].forEach(i=>document.getElementById(i).value='');
+  toggleAddForm('af-charges');renderCharges();autosave();toast('Ajouté ✓');
 }
-function saveCharge(id){
-  const e=DATA.chargesEntries.find(x=>x.id===id);if(!e)return;
-  e.desc=document.getElementById('ie-ch-desc-'+id).value;
-  e.amt=parseFloat(document.getElementById('ie-ch-amt-'+id).value)||0;
-  e.freq=document.getElementById('ie-ch-freq-'+id).value;
-  closeIE('ie-ch-'+id);renderCharges();autoSave();showToast('Modifié ✓');
-}
-function delCharge(id){if(!confirm('Supprimer ?'))return;DATA.chargesEntries=DATA.chargesEntries.filter(x=>x.id!==id);renderCharges();autoSave();showToast('Supprimé');}
+function saveCharge(id){const e=D.charges.find(x=>x.id===id);if(!e)return;e.desc=document.getElementById(`red-ch-desc-${id}`).value;e.amt=parseFloat(document.getElementById(`red-ch-amt-${id}`).value)||0;e.freq=document.getElementById(`red-ch-freq-${id}`).value;closeEdit('ch-'+id);renderCharges();autosave();toast('Modifié ✓');}
+function delCharge(id){if(!confirm('Supprimer ?'))return;D.charges=D.charges.filter(x=>x.id!==id);renderCharges();autosave();toast('Supprimé');}
 
-// ─── UI ───────────────────────────────────────────────────────
-function sw(name,btn){
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+// ═══ NAV ══════════════════════════════════════════════════════
+function goTab(name){
+  document.querySelectorAll('.tab-pill').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.getElementById('pan-'+name).classList.add('on');
-  if(btn)btn.classList.add('on');
+  document.querySelector(`[data-t="${name}"]`)?.classList.add('on');
 }
-function toggleForm(id){const el=document.getElementById(id);el.classList.toggle('open');if(el.classList.contains('open'))setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),50);}
-function toggleIE(id){
-  document.querySelectorAll('.ie').forEach(el=>{if(el.id!==id)el.classList.remove('open');});
-  const el=document.getElementById(id);if(!el)return;
-  el.classList.toggle('open');if(el.classList.contains('open'))setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
-}
-function closeIE(id){const el=document.getElementById(id);if(el)el.classList.remove('open');}
-function clearForm(formId,inputIds){inputIds.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';})}
-let toastT;
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2500);}
 
+// ═══ TOAST ════════════════════════════════════════════════════
+let _tt;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('on'),2200);}
+
+// ═══ RENDER ALL ═══════════════════════════════════════════════
 function renderAll(){
   renderPHC();renderAziz();renderAirbnb();renderTunrooms();renderHatem();renderAmine();renderAppart();renderCharges();
-  // Set default dates to today
-  ['f-phc-date','f-aziz-date','f-ab-date','f-tr-date','f-ht-date','f-am-date'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.value)el.value=today();});
+  // Set default dates
+  ['f-phc-date','f-az-date','f-ab-date','f-tr-date','f-ht-date','f-am-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today();});
 }
 
+// ═══ BOOT ═════════════════════════════════════════════════════
 async function boot(){
   handleToken();loadToken();
-  if(accessToken){
-    document.getElementById('login-screen').style.display='none';
+  if(token){
+    document.getElementById('login').style.display='none';
     document.getElementById('app').style.display='flex';
-    document.getElementById('app').classList.add('visible');
-    await fetchUser();loadLocal();await findDrive();
+    document.getElementById('app').classList.add('on');
+    await fetchUser();loadLocal();await findFile();
   }else{
-    document.getElementById('login-screen').style.display='flex';
+    document.getElementById('login').style.display='flex';
   }
 }
 window.addEventListener('load',boot);
