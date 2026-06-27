@@ -243,12 +243,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <div id="af-phc" class="add-form-wrap">
             <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-phc-date">
             <span class="af-lbl">Client</span>
-            <select class="af-sel" id="f-phc-client">
+            <select class="af-sel" id="f-phc-client" onchange="toggleNewClient(this)">
               <option value="">— Choisir —</option>
-              <option>BC</option><option>CJM</option><option>Novedad</option>
-              <option>BC PROD</option><option>Nomis PROD</option><option>Nama</option>
-              <option>Volange</option><option>Belges PROD</option><option>Astra PROD</option><option>Billets avion</option><option>Autre</option>
             </select>
+            <input class="af-inp" type="text" id="f-phc-new-client" placeholder="Nouveau client…" style="display:none;margin-top:-4px">
             <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-phc-desc" placeholder="Détail…">
             <div class="af-row">
               <div><span class="af-lbl">Montant (€)</span><input class="af-inp" type="number" id="f-phc-amt" placeholder="0"></div>
@@ -332,14 +330,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Tunrooms block -->
       <div class="block" id="blk-tunrooms">
         <div class="block-hdr" onclick="toggleBlock('blk-tunrooms')">
-          <div class="block-left"><span class="block-title">Tunrooms — Entrées DT</span></div>
+          <div class="block-left"><span class="block-title">Tunrooms / Kabylis — DT</span></div>
           <div class="block-right"><span class="block-val tl" id="tunrooms-total-val">0 DT</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
           <div class="tbl-hdr"><span class="col-hdr dt">Date</span><span class="col-hdr">Description</span><span class="col-hdr r">Montant</span></div>
           <div id="tunrooms-list"></div>
           <div class="sum-row tot"><span class="sum-lbl">Total Tunrooms</span><span class="sum-val tl" id="tunrooms-total">0 DT</span></div>
-          <div class="add-row" onclick="toggleAddForm('af-tunrooms')">＋ Ajouter Tunrooms</div>
+          <div class="add-row" onclick="toggleAddForm('af-tunrooms')">＋ Ajouter réservation</div>
           <div id="af-tunrooms" class="add-form-wrap">
             <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-tr-date">
             <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-tr-desc" placeholder="Réservation…">
@@ -383,7 +381,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 
     <!-- ══ AMINE ══ -->
     <div id="pan-amine" class="panel">
-      <!-- Dettes bloc Aziz -->
+
+      <!-- Bloc 1: Aziz me doit (DT) -->
       <div class="block open" id="blk-amine-aziz">
         <div class="block-hdr" onclick="toggleBlock('blk-amine-aziz')">
           <div class="block-left"><span class="block-title">Aziz me doit (DT)</span></div>
@@ -391,11 +390,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </div>
         <div class="block-body">
           <div id="amine-dette-aziz-row"></div>
-          <div id="amine-aziz-remb"></div>
-          <div class="sum-row tot"><span class="sum-lbl">Reste dû par Aziz</span><span class="sum-val gd" id="aziz-dette-reste">6 000 DT</span></div>
+          <div class="tbl-hdr"><span class="col-hdr dt">Date</span><span class="col-hdr">Description</span><span class="col-hdr r">Montant</span></div>
+          <div id="azizdt-list"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Reste dû par Aziz</span><span class="sum-val gd" id="aziz-dette-reste">—</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-azizdt')">＋ Ajouter un mouvement</div>
+          <div id="af-azizdt" class="add-form-wrap">
+            <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-adt-date">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-adt-desc" placeholder="Ex: remboursement, virement…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant (DT)</span><input class="af-inp" type="number" id="f-adt-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Type</span><select class="af-sel" id="f-adt-type"><option value="debit">Remboursé (−)</option><option value="credit">Nouveau dû (+)</option></select></div>
+            </div>
+            <button class="af-submit" onclick="addAzizDT()">Enregistrer</button>
+          </div>
         </div>
       </div>
-      <!-- Dettes bloc Hatem -->
+
+      <!-- Bloc 2: Hatem me doit (DT) -->
       <div class="block open" id="blk-amine-hatem">
         <div class="block-hdr" onclick="toggleBlock('blk-amine-hatem')">
           <div class="block-left"><span class="block-title">Hatem me doit (DT)</span></div>
@@ -403,14 +414,26 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         </div>
         <div class="block-body">
           <div id="amine-dette-hatem-row"></div>
-          <div id="hatem-deductions"></div>
-          <div class="sum-row tot"><span class="sum-lbl">Reste dû par Hatem</span><span class="sum-val gd" id="hatem-dette-reste">4 200 DT</span></div>
+          <div class="tbl-hdr"><span class="col-hdr dt">Date</span><span class="col-hdr">Description</span><span class="col-hdr r">Montant</span></div>
+          <div id="hatemdt-list"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Reste dû par Hatem</span><span class="sum-val gd" id="hatem-dette-reste">—</span></div>
+          <div class="add-row" onclick="toggleAddForm('af-hatemdt')">＋ Ajouter un mouvement</div>
+          <div id="af-hatemdt" class="add-form-wrap">
+            <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-hdt-date">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-hdt-desc" placeholder="Ex: cigarettes, virement…">
+            <div class="af-row">
+              <div><span class="af-lbl">Montant (DT)</span><input class="af-inp" type="number" id="f-hdt-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Type</span><select class="af-sel" id="f-hdt-type"><option value="debit">Remboursé (−)</option><option value="credit">Nouveau dû (+)</option></select></div>
+            </div>
+            <button class="af-submit" onclick="addHatemDT()">Enregistrer</button>
+          </div>
         </div>
       </div>
-      <!-- Mes mouvements -->
+
+      <!-- Bloc 3: Mes mouvements (€) -->
       <div class="block open" id="blk-amine-mvt">
         <div class="block-hdr" onclick="toggleBlock('blk-amine-mvt')">
-          <div class="block-left"><span class="block-title">Mes mouvements</span></div>
+          <div class="block-left"><span class="block-title">Mes mouvements (€)</span></div>
           <div class="block-right"><span class="block-val g" id="amine-total-val">0 €</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -420,17 +443,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           <div class="add-row" onclick="toggleAddForm('af-amine')">＋ Ajouter un mouvement</div>
           <div id="af-amine" class="add-form-wrap">
             <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-am-date">
-            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-am-desc" placeholder="Ex: remboursement, achat…">
+            <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-am-desc" placeholder="Ex: achat, remboursement…">
             <div class="af-row">
-              <div><span class="af-lbl">Montant</span><input class="af-inp" type="number" id="f-am-amt" placeholder="0"></div>
-              <div><span class="af-lbl">Devise</span><select class="af-sel" id="f-am-cur"><option value="EUR">€ Euro</option><option value="DT">DT Dinar</option></select></div>
+              <div><span class="af-lbl">Montant (€)</span><input class="af-inp" type="number" id="f-am-amt" placeholder="0"></div>
+              <div><span class="af-lbl">Type</span><select class="af-sel" id="f-am-type"><option value="credit">Entrée (+)</option><option value="debit">Sortie (−)</option></select></div>
             </div>
-            <span class="af-lbl">Type</span>
-            <select class="af-sel" id="f-am-type"><option value="credit">Entrée (+)</option><option value="debit">Sortie (−)</option></select>
             <button class="af-submit" onclick="addAmine()">Enregistrer</button>
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- ══ APPART ══ -->
@@ -530,9 +552,13 @@ const DEF={
   hatem:[
     {id:'ht-cig',date:'2026-06-01',desc:'Cigarettes (déduit)',amt:400,cur:'DT',type:'debit'},
   ],
-  amine:[
-    {id:'am-toto',date:'2025-01-01',desc:'TOTO — remboursement Aziz',amt:1000,cur:'DT',type:'credit'},
-    {id:'am-haifa',date:'2025-01-01',desc:'Virement Haïfa — remboursement Aziz',amt:1000,cur:'DT',type:'credit'},
+  amine:[],
+  azizDT:[
+    {id:'adt1',date:'2025-01-01',desc:'TOTO',amt:1000,type:'debit'},
+    {id:'adt2',date:'2025-01-01',desc:'Virement Haïfa',amt:1000,type:'debit'},
+  ],
+  hatemDT:[
+    {id:'hdt1',date:'2026-06-01',desc:'Cigarettes',amt:400,type:'debit'},
   ],
   appart:[
     {id:'ap1',desc:'Télévision',cat:'Équipement',amt:366,shared:false},
@@ -556,6 +582,7 @@ const DEF={
     hatemDette:4600,
     virementLogement:3574,
   },
+  phcClients:['BC','CJM','Novedad','BC PROD','Nomis PROD','Nama','Volange','Belges PROD','Astra PROD','Billets avion'],
 };
 let D=JSON.parse(JSON.stringify(DEF));
 
@@ -625,7 +652,14 @@ function toggleEdit(id){document.querySelectorAll('.row-edit.on').forEach(el=>{i
 function closeEdit(id){document.getElementById('re-'+id)?.classList.remove('on');}
 
 // ═══ ADD FORMS ════════════════════════════════════════════════
-function toggleAddForm(id){document.getElementById(id).classList.toggle('on');document.getElementById(id).scrollIntoView({behavior:'smooth',block:'nearest'});}
+function toggleAddForm(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('on');
+  if(el.classList.contains('on')){
+    el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    if(id==='af-phc') buildClientDropdown('f-phc-client');
+  }
+}
 
 
 // ─── CONFIG ROW RENDERER ─────────────────────────────────────
@@ -661,6 +695,40 @@ function saveCfg(id, key){
   D.cfg[key]=v;
   closeEdit('cfg-'+id);
   renderAll();autosave();toast('Modifié ✓');
+}
+
+// ─── PHC DYNAMIC CLIENT LIST ─────────────────────────────────
+function buildClientDropdown(selectId, selected=''){
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+  const clients = D.phcClients || [];
+  sel.innerHTML = '<option value="">— Choisir —</option>' +
+    clients.map(cl=>`<option value="${cl}" ${cl===selected?'selected':''}>${cl}</option>`).join('') +
+    '<option value="__new__">＋ Nouveau client…</option>';
+}
+function toggleNewClient(sel){
+  const newInput = document.getElementById('f-phc-new-client');
+  if(!newInput) return;
+  if(sel.value === '__new__'){
+    newInput.style.display = 'block';
+    newInput.focus();
+  } else {
+    newInput.style.display = 'none';
+    newInput.value = '';
+  }
+}
+function getSelectedClient(){
+  const sel = document.getElementById('f-phc-client');
+  const newInput = document.getElementById('f-phc-new-client');
+  if(sel.value === '__new__'){
+    const newName = (newInput?.value || '').trim();
+    if(newName && !D.phcClients.includes(newName)){
+      D.phcClients.push(newName);
+      autosave();
+    }
+    return newName;
+  }
+  return sel.value;
 }
 // ═══ PHC ══════════════════════════════════════════════════════
 function renderPHC(){
@@ -700,18 +768,10 @@ function renderPHC(){
       <span class="re-lbl">Client</span>
       <select class="re-sel" id="red-phc-client-${e.id}">
         <option value="">—</option>
-        <option ${e.client==='BC'?'selected':''}>BC</option>
-        <option ${e.client==='CJM'?'selected':''}>CJM</option>
-        <option ${e.client==='Novedad'?'selected':''}>Novedad</option>
-        <option ${e.client==='BC PROD'?'selected':''}>BC PROD</option>
-        <option ${e.client==='Nomis PROD'?'selected':''}>Nomis PROD</option>
-        <option ${e.client==='Nama'?'selected':''}>Nama</option>
-        <option ${e.client==='Volange'?'selected':''}>Volange</option>
-        <option ${e.client==='Belges PROD'?'selected':''}>Belges PROD</option>
-        <option ${e.client==='Astra PROD'?'selected':''}>Astra PROD</option>
-        <option ${e.client==='Billets avion'?'selected':''}>Billets avion</option>
-        <option ${e.client==='Autre'?'selected':''}>Autre</option>
+        ${(D.phcClients||[]).map(cl=>`<option value="${cl}" ${e.client===cl?'selected':''}>${cl}</option>`).join('')}
+        <option value="__new__" onclick="this.closest('.row-edit').querySelector('.re-new-client').style.display='block'">＋ Nouveau…</option>
       </select>
+      <input class="re-inp re-new-client" type="text" placeholder="Nouveau client…" style="display:none;margin-top:-4px">
       <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-phc-desc-${e.id}" value="${e.desc||''}">
       <div class="re-row">
         <input class="re-inp" type="number" id="red-phc-amt-${e.id}" value="${e.amt}" placeholder="Montant €">
@@ -752,7 +812,7 @@ function renderPHC(){
 }
 function addPHC(){
   const date=document.getElementById('f-phc-date').value||today();
-  const client=document.getElementById('f-phc-client').value;
+  const client=getSelectedClient();
   const desc=document.getElementById('f-phc-desc').value.trim();
   const amt=parseFloat(document.getElementById('f-phc-amt').value)||0;
   const via=document.getElementById('f-phc-via').value;
@@ -765,7 +825,15 @@ function addPHC(){
 function savePHC(id){
   const e=D.phc.find(x=>x.id===id);if(!e)return;
   e.date=document.getElementById(`red-phc-date-${id}`).value;
-  e.client=document.getElementById(`red-phc-client-${id}`).value;
+  const phcSelEl=document.getElementById(`red-phc-client-${id}`);
+  const phcNewEl=phcSelEl?.closest('.row-edit')?.querySelector('.re-new-client');
+  if(phcSelEl?.value==='__new__' && phcNewEl?.value.trim()){
+    const nc=phcNewEl.value.trim();
+    if(!D.phcClients.includes(nc)) D.phcClients.push(nc);
+    e.client=nc;
+  } else {
+    e.client=phcSelEl?.value||'';
+  }
   e.desc=document.getElementById(`red-phc-desc-${id}`).value;
   e.amt=parseFloat(document.getElementById(`red-phc-amt-${id}`).value)||0;
   e.via=document.getElementById(`red-phc-via-${id}`).value;
@@ -1029,36 +1097,7 @@ function renderHatem(){
   document.getElementById('hatem-total').textContent=f(total);
   document.getElementById('hatem-total-val').textContent=f(total);
   document.getElementById('kpi-hatem').textContent=f(total);
-  // Update hatem deductions panel in Amine tab
-  const htDed=D.hatem.filter(e=>e.type==='debit');
-  const totalDed=htDed.reduce((s,e)=>s+e.amt,0);
-  const htDedEl=document.getElementById('hatem-deductions');
-  if(htDedEl){
-    htDedEl.innerHTML=htDed.map(e=>{
-      const hidden=D._hidden?.['ht-'+e.id];
-      return`<div class="swipe-wrap">
-      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('ht-${e.id}')">
-        <span class="col-dt">${fd(e.date)}</span>
-        <span class="col-main"><span class="col-name">${e.desc}</span></span>
-        <span class="col-val r">− ${f(e.amt,e.cur||'DT')}</span>
-      </div>
-      <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('ht-${e.id}')">●</button>
-        <button class="sa-btn sa-del" onclick="delHatem('${e.id}')">✕</button>
-      </div></div>
-      <div class="row-edit" id="re-ht-ded-${e.id}">
-        <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-htd-date-${e.id}" value="${e.date}">
-        <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-htd-desc-${e.id}" value="${e.desc}">
-        <div class="re-row"><input class="re-inp" type="number" id="red-htd-amt-${e.id}" value="${e.amt}"><select class="re-sel" id="red-htd-cur-${e.id}"><option value="DT" ${(e.cur||'DT')==='DT'?'selected':''}>DT</option><option value="EUR" ${e.cur==='EUR'?'selected':''}>€</option></select></div>
-        <div class="re-btns"><button class="re-save" onclick="saveHatem('${e.id}')">Sauvegarder</button><button class="re-cancel" onclick="closeEdit('ht-${e.id}')">Annuler</button><button class="re-del" onclick="delHatem('${e.id}')">Suppr</button></div>
-      </div>`;
-    }).join('');
-    const reste=(D.cfg?.hatemDette||4600)-totalDed;
-    const resteEl=document.getElementById('hatem-dette-reste');
-    if(resteEl)resteEl.textContent=f(reste,'DT');
-    const valEl=document.getElementById('hatem-dette-val');
-    if(valEl)valEl.textContent=f(reste,'DT');
-  }
+  // Hatem DT deductions now handled by renderHatemDT()
   setTimeout(initSwipes,10);
 }function addHatem(){
   const date=document.getElementById('f-ht-date').value||today();
@@ -1075,89 +1114,162 @@ function saveHatem(id){const e=D.hatem.find(x=>x.id===id);if(!e)return;e.date=do
 function delHatem(id){if(!confirm('Supprimer ?'))return;D.hatem=D.hatem.filter(x=>x.id!==id);renderHatem();autosave();toast('Supprimé');}
 
 // ═══ AMINE ════════════════════════════════════════════════════
-function renderAmine(){
-  // Aziz remboursements (DT credits in amine linked to Aziz)
-  const azizRemb=D.amine.filter(e=>e.cur==='DT'&&e.type==='credit');
-  const totalRemb=azizRemb.reduce((s,e)=>s+e.amt,0);
-  const azizRembEl=document.getElementById('amine-aziz-remb');
-  if(azizRembEl){
-    azizRembEl.innerHTML=azizRemb.map(e=>{
-      const hidden=D._hidden?.['am-'+e.id];
-      return`<div class="swipe-wrap">
-      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('am-${e.id}')">
-        <span class="col-dt">${fd(e.date)}</span>
-        <span class="col-main"><span class="col-name">${e.desc}</span></span>
-        <span class="col-val r">− ${f(e.amt,'DT')}</span>
+function renderDTBlock(entries, cfg_key, list_id, reste_id, val_id, init_default, currency='DT'){
+  // Generic renderer for DT debt blocks (Aziz/Hatem)
+  const init = D.cfg?.[cfg_key] || init_default;
+  let net = init;
+  const el = document.getElementById(list_id);
+  if(!el) return;
+  if(!entries.length){
+    el.innerHTML='<div class="empty">Aucun mouvement</div>';
+  } else {
+    el.innerHTML = entries.map(e => {
+      // debit = remboursé (diminue la dette), credit = nouveau dû (augmente)
+      const v = e.type==='debit' ? -e.amt : e.amt;
+      net += v;
+      const cls = v<=0 ? 'g' : 'r'; // remboursé = vert, nouveau dû = rouge
+      const sign = v<=0 ? '−' : '+';
+      const pfx = list_id.replace('-list','').replace('dt','dt');
+      const hidden = D._hidden?.[pfx+'-'+e.id];
+      return `<div class="swipe-wrap">
+        <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('${pfx}-${e.id}')">
+          <span class="col-dt">${fd(e.date)}</span>
+          <span class="col-main"><span class="col-name">${e.desc}</span></span>
+          <span class="col-val ${cls}">${sign} ${f(e.amt, currency)}</span>
+        </div>
+        <div class="swipe-actions">
+          <button class="sa-btn sa-eye" onclick="toggleHide('${pfx}-${e.id}')">●</button>
+          <button class="sa-btn sa-del" onclick="delDT('${list_id}','${e.id}')">✕</button>
+        </div>
       </div>
-      <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('am-${e.id}')">●</button>
-        <button class="sa-btn sa-del" onclick="delAmine('${e.id}')">✕</button>
-      </div>
-    </div>
-    <div class="row-edit" id="re-am-${e.id}">
-      <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-am-date-${e.id}" value="${e.date}">
-      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-am-desc-${e.id}" value="${e.desc}">
-      <div class="re-row">
-        <input class="re-inp" type="number" id="red-am-amt-${e.id}" value="${e.amt}">
-        <select class="re-sel" id="red-am-cur-${e.id}"><option value="EUR" ${(e.cur||'EUR')==='EUR'?'selected':''}>€</option><option value="DT" ${e.cur==='DT'?'selected':''}>DT</option></select>
-        <select class="re-sel" id="red-am-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Entrée (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Sortie (−)</option></select>
-      </div>
-      <div class="re-btns">
-        <button class="re-save" onclick="saveAmine('${e.id}')">Sauvegarder</button>
-        <button class="re-cancel" onclick="closeEdit('am-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delAmine('${e.id}')">Suppr</button>
-      </div>
-    </div>`;
+      <div class="row-edit" id="re-${pfx}-${e.id}">
+        <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-${pfx}-date-${e.id}" value="${e.date}">
+        <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-${pfx}-desc-${e.id}" value="${e.desc}">
+        <div class="re-row">
+          <input class="re-inp" type="number" id="red-${pfx}-amt-${e.id}" value="${e.amt}" placeholder="Montant">
+          <select class="re-sel" id="red-${pfx}-type-${e.id}">
+            <option value="debit" ${e.type==='debit'?'selected':''}>Remboursé (−)</option>
+            <option value="credit" ${e.type==='credit'?'selected':''}>Nouveau dû (+)</option>
+          </select>
+        </div>
+        <div class="re-btns">
+          <button class="re-save" onclick="saveDT('${list_id}','${e.id}')">Sauvegarder</button>
+          <button class="re-cancel" onclick="closeEdit('${pfx}-${e.id}')">Annuler</button>
+          <button class="re-del" onclick="delDT('${list_id}','${e.id}')">Suppr</button>
+        </div>
+      </div>`;
     }).join('');
-    const reste=(D.cfg?.azizDette||8000)-totalRemb;
-    const resteEl=document.getElementById('aziz-dette-reste');
-    if(resteEl)resteEl.textContent=f(reste,'DT');
-    const valEl=document.getElementById('aziz-dette-val');
-    if(valEl)valEl.textContent=f(reste,'DT');
   }
-  // Main amine movements (non-DT-credit-aziz)
-  const mainMvt=D.amine.filter(e=>!(e.cur==='DT'&&e.type==='credit'));
-  const el=document.getElementById('amine-list');
-  if(!mainMvt.length){el.innerHTML='<div class="empty">Aucun mouvement</div>';document.getElementById('amine-net').textContent='0 €';document.getElementById('amine-total-val').textContent='0 €';document.getElementById('kpi-amine').textContent='0 €';}
-  else{
-    let netEur=0;
-    el.innerHTML=mainMvt.map(e=>{
-      const v=e.type==='credit'?e.amt:-e.amt;const cur=e.cur||'EUR';
-      if(cur==='EUR')netEur+=v;
-      const cls=v>=0?'g':'r',sign=v>=0?'+':'−';
-      const hidden=D._hidden?.['am-'+e.id];
-      return`<div class="swipe-wrap">
-      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('am-${e.id}')">
-        <span class="col-dt">${fd(e.date)}</span>
-        <span class="col-main"><span class="col-name">${e.desc}</span></span>
-        <span class="col-val ${cls}">${sign} ${f(e.amt,cur)}</span>
-      </div>
-      <div class="swipe-actions">
-        <button class="sa-btn sa-eye" onclick="toggleHide('am-${e.id}')">●</button>
-        <button class="sa-btn sa-del" onclick="delAmine('${e.id}')">✕</button>
-      </div>
-    </div>
-    <div class="row-edit" id="re-am-${e.id}">
-      <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-am-date-${e.id}" value="${e.date}">
-      <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-am-desc-${e.id}" value="${e.desc}">
-      <div class="re-row">
-        <input class="re-inp" type="number" id="red-am-amt-${e.id}" value="${e.amt}">
-        <select class="re-sel" id="red-am-cur-${e.id}"><option value="EUR" ${cur==='EUR'?'selected':''}>€</option><option value="DT" ${cur==='DT'?'selected':''}>DT</option></select>
-        <select class="re-sel" id="red-am-type-${e.id}"><option value="credit" ${e.type==='credit'?'selected':''}>Entrée (+)</option><option value="debit" ${e.type==='debit'?'selected':''}>Sortie (−)</option></select>
-      </div>
-      <div class="re-btns">
-        <button class="re-save" onclick="saveAmine('${e.id}')">Sauvegarder</button>
-        <button class="re-cancel" onclick="closeEdit('am-${e.id}')">Annuler</button>
-        <button class="re-del" onclick="delAmine('${e.id}')">Suppr</button>
-      </div>
-    </div>`;
-    }).join('');
-    document.getElementById('amine-net').textContent=f(netEur);
-    document.getElementById('amine-total-val').textContent=f(netEur);
-    document.getElementById('kpi-amine').textContent=f(netEur);
-  }
-  setTimeout(initSwipes,10);
+  const resteEl = document.getElementById(reste_id);
+  const valEl = document.getElementById(val_id);
+  if(resteEl) resteEl.textContent = f(net, currency);
+  if(valEl) valEl.textContent = f(net, currency);
+  setTimeout(initSwipes, 10);
 }
+
+function renderAzizDT(){
+  // Config row for dette initiale
+  const el = document.getElementById('amine-dette-aziz-row');
+  if(el) el.innerHTML = cfgRow('azizDette','Dette initiale Aziz', D.cfg?.azizDette||8000, 'DT', "saveCfg('azizDette','azizDette')");
+  renderDTBlock(D.azizDT, 'azizDette', 'azizdt-list', 'aziz-dette-reste', 'aziz-dette-val', 8000, 'DT');
+}
+
+function renderHatemDT(){
+  const el = document.getElementById('amine-dette-hatem-row');
+  if(el) el.innerHTML = cfgRow('hatemDette','Dette initiale Hatem', D.cfg?.hatemDette||4600, 'DT', "saveCfg('hatemDette','hatemDette')");
+  renderDTBlock(D.hatemDT, 'hatemDette', 'hatemdt-list', 'hatem-dette-reste', 'hatem-dette-val', 4600, 'DT');
+}
+
+function renderAmine(){
+  const el = document.getElementById('amine-list');
+  if(!el) return;
+  if(!D.amine.length){
+    el.innerHTML='<div class="empty">Aucun mouvement — tape + pour ajouter</div>';
+    document.getElementById('amine-net').textContent='0 €';
+    document.getElementById('amine-total-val').textContent='0 €';
+    document.getElementById('kpi-amine').textContent='0 €';
+  } else {
+    let netEur=0;
+    el.innerHTML = D.amine.map(e => {
+      const v = e.type==='credit' ? e.amt : -e.amt; netEur+=v;
+      const cls=v>=0?'g':'r', sign=v>=0?'+':'−';
+      const hidden = D._hidden?.['am-'+e.id];
+      return `<div class="swipe-wrap">
+        <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('am-${e.id}')">
+          <span class="col-dt">${fd(e.date)}</span>
+          <span class="col-main"><span class="col-name">${e.desc}</span></span>
+          <span class="col-val ${cls}">${sign} ${f(e.amt)}</span>
+        </div>
+        <div class="swipe-actions">
+          <button class="sa-btn sa-eye" onclick="toggleHide('am-${e.id}')">●</button>
+          <button class="sa-btn sa-del" onclick="delAmine('${e.id}')">✕</button>
+        </div>
+      </div>
+      <div class="row-edit" id="re-am-${e.id}">
+        <span class="re-lbl">Date</span><input class="re-inp" type="date" id="red-am-date-${e.id}" value="${e.date}">
+        <span class="re-lbl">Description</span><input class="re-inp" type="text" id="red-am-desc-${e.id}" value="${e.desc}">
+        <div class="re-row">
+          <input class="re-inp" type="number" id="red-am-amt-${e.id}" value="${e.amt}">
+          <select class="re-sel" id="red-am-type-${e.id}">
+            <option value="credit" ${e.type==='credit'?'selected':''}>Entrée (+)</option>
+            <option value="debit" ${e.type==='debit'?'selected':''}>Sortie (−)</option>
+          </select>
+        </div>
+        <div class="re-btns">
+          <button class="re-save" onclick="saveAmine('${e.id}')">Sauvegarder</button>
+          <button class="re-cancel" onclick="closeEdit('am-${e.id}')">Annuler</button>
+          <button class="re-del" onclick="delAmine('${e.id}')">Suppr</button>
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('amine-net').textContent = f(netEur);
+    document.getElementById('amine-total-val').textContent = f(netEur);
+    document.getElementById('kpi-amine').textContent = f(netEur);
+  }
+  setTimeout(initSwipes, 10);
+}
+
+// Generic DT add/save/del
+function addAzizDT(){
+  const date=document.getElementById('f-adt-date').value||today();
+  const desc=document.getElementById('f-adt-desc').value.trim();
+  const amt=parseFloat(document.getElementById('f-adt-amt').value)||0;
+  const type=document.getElementById('f-adt-type').value;
+  if(!desc||!amt){toast('Remplis description et montant');return;}
+  D.azizDT.push({id:uid(),date,desc,amt,type});
+  document.getElementById('f-adt-desc').value='';document.getElementById('f-adt-amt').value='';
+  toggleAddForm('af-azizdt');renderAzizDT();autosave();toast('Ajouté ✓');
+}
+function addHatemDT(){
+  const date=document.getElementById('f-hdt-date').value||today();
+  const desc=document.getElementById('f-hdt-desc').value.trim();
+  const amt=parseFloat(document.getElementById('f-hdt-amt').value)||0;
+  const type=document.getElementById('f-hdt-type').value;
+  if(!desc||!amt){toast('Remplis description et montant');return;}
+  D.hatemDT.push({id:uid(),date,desc,amt,type});
+  document.getElementById('f-hdt-desc').value='';document.getElementById('f-hdt-amt').value='';
+  toggleAddForm('af-hatemdt');renderHatemDT();autosave();toast('Ajouté ✓');
+}
+function saveDT(listId, id){
+  const arr = listId==='azizdt-list' ? D.azizDT : D.hatemDT;
+  const pfx = listId.replace('-list','');
+  const e = arr.find(x=>x.id===id); if(!e)return;
+  e.date=document.getElementById(`red-${pfx}-date-${id}`).value;
+  e.desc=document.getElementById(`red-${pfx}-desc-${id}`).value;
+  e.amt=parseFloat(document.getElementById(`red-${pfx}-amt-${id}`).value)||0;
+  e.type=document.getElementById(`red-${pfx}-type-${id}`).value;
+  closeEdit(pfx+'-'+id);
+  if(listId==='azizdt-list')renderAzizDT();else renderHatemDT();
+  autosave();toast('Modifié ✓');
+}
+function delDT(listId, id){
+  if(!confirm('Supprimer ?'))return;
+  if(listId==='azizdt-list')D.azizDT=D.azizDT.filter(x=>x.id!==id);
+  else D.hatemDT=D.hatemDT.filter(x=>x.id!==id);
+  if(listId==='azizdt-list')renderAzizDT();else renderHatemDT();
+  autosave();toast('Supprimé');
+}
+
 function addAmine(){
   const date=document.getElementById('f-am-date').value||today();
   const desc=document.getElementById('f-am-desc').value.trim();
@@ -1296,25 +1408,9 @@ function renderHatemSolde(){
   setTimeout(initSwipes,10);
 }
 
-function renderAmineDettes(){
-  // Aziz dette initiale
-  const el1=document.getElementById('amine-dette-aziz-row');
-  if(el1){
-    const v=D.cfg?.azizDette||8000;
-    el1.innerHTML=cfgRow('azizDette','Dette initiale Aziz',v,'DT',"saveCfg('azizDette','azizDette')");
-  }
-  // Hatem dette initiale
-  const el2=document.getElementById('amine-dette-hatem-row');
-  if(el2){
-    const v=D.cfg?.hatemDette||4600;
-    el2.innerHTML=cfgRow('hatemDette','Dette initiale Hatem',v,'DT',"saveCfg('hatemDette','hatemDette')");
-  }
-  setTimeout(initSwipes,10);
-}
-// ═══ RENDER ALL ═══════════════════════════════════════════════
 function renderAll(){
   renderPHC();renderAziz();renderAirbnb();renderTunrooms();renderHatem();renderAmine();renderAppart();renderCharges();
-  renderAzizSolde();renderHatemSolde();renderAmineDettes();
+  renderAzizSolde();renderHatemSolde();renderAzizDT();renderHatemDT();
   // Set default dates
   ['f-phc-date','f-az-date','f-ab-date','f-tr-date','f-ht-date','f-am-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today();});
 }
