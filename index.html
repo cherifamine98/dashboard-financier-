@@ -222,7 +222,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
         <div class="block-hdr" onclick="toggleBlock('blk-phc')">
           <div class="block-left">
             
-            <span class="block-title">Date · Description · Montant</span>
+            <span class="block-title">Entrées PHC</span>
           </div>
           <div class="block-right">
             <span class="block-val g" id="phc-net-val">—</span>
@@ -237,8 +237,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
           </div>
           <div id="phc-list"></div>
           <div class="sum-row sub"><span class="sum-lbl">Sous-total brut</span><span class="sum-val g" id="phc-brut">—</span></div>
-          <div class="sum-row sub"><span class="sum-lbl">Virement logement</span><span class="sum-val r">− 3 574 €</span></div>
-          <div class="sum-row tot"><span class="sum-lbl">Net PHC</span><span class="sum-val g" id="phc-net">—</span></div>
+          <div id="phc-virement-row"></div>
+          <div class="sum-row tot"><span class="sum-lbl">Total PHC</span><span class="sum-val g" id="phc-net">—</span></div>
           <div class="add-row" onclick="toggleAddForm('af-phc')">＋ Nouvelle entrée PHC</div>
           <div id="af-phc" class="add-form-wrap">
             <span class="af-lbl">Date</span><input class="af-inp" type="date" id="f-phc-date">
@@ -247,7 +247,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
               <option value="">— Choisir —</option>
               <option>BC</option><option>CJM</option><option>Novedad</option>
               <option>BC PROD</option><option>Nomis PROD</option><option>Nama</option>
-              <option>Volange</option><option>Billets avion</option><option>Autre</option>
+              <option>Volange</option><option>Belges PROD</option><option>Astra PROD</option><option>Billets avion</option><option>Autre</option>
             </select>
             <span class="af-lbl">Description</span><input class="af-inp" type="text" id="f-phc-desc" placeholder="Détail…">
             <div class="af-row">
@@ -278,7 +278,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
       <!-- Block: Mouvements -->
       <div class="block open" id="blk-aziz-mvt">
         <div class="block-hdr" onclick="toggleBlock('blk-aziz-mvt')">
-          <div class="block-left"><span class="block-title">Mouvements</span></div>
+          <div class="block-left"><span class="block-title">Mouvements Aziz</span></div>
           <div class="block-right"><span class="block-val m" id="aziz-mvt-val">0 €</span><span class="block-chevron">▾</span></div>
         </div>
         <div class="block-body">
@@ -513,6 +513,9 @@ const DEF={
     {id:'p13',date:'2025-01-01',client:'Nama',desc:'',amt:117,via:'S'},
     {id:'p14',date:'2025-01-01',client:'Nomis PROD',desc:'',amt:351,via:'B'},
     {id:'p15',date:'2025-01-01',client:'Novedad',desc:'',amt:390,via:'S'},
+    {id:'p16',date:'2026-06-01',client:'Belges PROD',desc:'',amt:312,via:'B'},
+    {id:'p17',date:'2026-06-01',client:'Astra PROD',desc:'',amt:312,via:''},
+    {id:'p18',date:'2026-06-01',client:'Belges PROD',desc:'2ème versement',amt:70,via:'B'},
   ],
   aziz:[],
   airbnb:[
@@ -551,6 +554,7 @@ const DEF={
     hatemSolde:300,
     azizDette:8000,
     hatemDette:4600,
+    virementLogement:3574,
   },
 };
 let D=JSON.parse(JSON.stringify(DEF));
@@ -627,10 +631,12 @@ function toggleAddForm(id){document.getElementById(id).classList.toggle('on');do
 // ─── CONFIG ROW RENDERER ─────────────────────────────────────
 function cfgRow(id, label, val, currency, onSave){
   const hidden=D._hidden?.['cfg-'+id];
+  const cls=val<0?'r':'gd';
+  const sign=val<0?'−':'+';
   return`<div class="swipe-wrap">
     <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('cfg-${id}')">
       <span class="col-main"><span class="col-name">${label}</span></span>
-      <span class="col-val gd">${val>=0?'+':'−'} ${f(Math.abs(val),currency)}</span>
+      <span class="col-val ${cls}">${sign} ${f(Math.abs(val),currency)}</span>
     </div>
     <div class="swipe-actions">
       <button class="sa-btn sa-eye" onclick="toggleHide('cfg-${id}')">●</button>
@@ -639,7 +645,7 @@ function cfgRow(id, label, val, currency, onSave){
   <div class="row-edit" id="re-cfg-${id}">
     <span class="re-lbl">${label}</span>
     <div class="re-row">
-      <input class="re-inp" type="number" id="red-cfg-val-${id}" value="${val}" placeholder="Montant">
+      <input class="re-inp" type="number" id="red-cfg-val-${id}" value="${Math.abs(val)}" placeholder="Montant">
       <span class="re-inp" style="background:transparent;border:none;padding:10px 4px;color:var(--text3);flex:0 0 30px">${currency}</span>
     </div>
     <div class="re-btns">
@@ -649,25 +655,42 @@ function cfgRow(id, label, val, currency, onSave){
   </div>`;
 }
 function saveCfg(id, key){
-  D.cfg[key]=parseFloat(document.getElementById('red-cfg-val-'+id).value)||0;
+  let v=parseFloat(document.getElementById('red-cfg-val-'+id).value)||0;
+  // Virement logement is stored positive, displayed negative
+  if(key==='virementLogement') v=Math.abs(v);
+  D.cfg[key]=v;
   closeEdit('cfg-'+id);
   renderAll();autosave();toast('Modifié ✓');
 }
 // ═══ PHC ══════════════════════════════════════════════════════
 function renderPHC(){
   const el=document.getElementById('phc-list');
+  // Group by month
+  const months={};
+  D.phc.forEach(e=>{
+    const ym=e.date?e.date.slice(0,7):'inconnu';
+    if(!months[ym])months[ym]=[];
+    months[ym].push(e);
+  });
+  const mNames=['','Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc'];
+  let html='';
   let brut=0;
-  el.innerHTML=D.phc.map(e=>{
-    brut+=e.amt;
-    const label=e.client?(e.desc?`${e.client} — ${e.desc}`:e.client):e.desc;
-    const hidden=D._hidden?.['phc-'+e.id];
-    return`<div class="swipe-wrap">
-      <div class="swipe-inner${hidden?' dim':''}" id="si-phc-${e.id}" onclick="toggleEdit('phc-${e.id}')">
+  Object.keys(months).sort().forEach(ym=>{
+    const [y,m]=ym.split('-');
+    const mLabel=ym==='inconnu'?'Sans date':`${mNames[parseInt(m)||0]} ${y}`;
+    let mTotal=0;
+    let mRows='';
+    months[ym].forEach(e=>{
+      brut+=e.amt;mTotal+=e.amt;
+      const label=e.client?(e.desc?`${e.client} — ${e.desc}`:e.client):e.desc;
+      const hidden=D._hidden?.['phc-'+e.id];
+      mRows+=`<div class="swipe-wrap">
+      <div class="swipe-inner${hidden?' dim':''}" onclick="toggleEdit('phc-${e.id}')">
         <span class="col-dt">${fd(e.date)}</span>
         <span class="col-main"><span class="col-name">${label}${tagH(e.via)}</span></span>
         <span class="col-val g">+ ${f(e.amt)}</span>
       </div>
-      <div class="swipe-actions" id="sa-phc-${e.id}">
+      <div class="swipe-actions">
         <button class="sa-btn sa-eye" onclick="toggleHide('phc-${e.id}')">●</button>
         <button class="sa-btn sa-del" onclick="delPHC('${e.id}')">✕</button>
       </div>
@@ -684,6 +707,8 @@ function renderPHC(){
         <option ${e.client==='Nomis PROD'?'selected':''}>Nomis PROD</option>
         <option ${e.client==='Nama'?'selected':''}>Nama</option>
         <option ${e.client==='Volange'?'selected':''}>Volange</option>
+        <option ${e.client==='Belges PROD'?'selected':''}>Belges PROD</option>
+        <option ${e.client==='Astra PROD'?'selected':''}>Astra PROD</option>
         <option ${e.client==='Billets avion'?'selected':''}>Billets avion</option>
         <option ${e.client==='Autre'?'selected':''}>Autre</option>
       </select>
@@ -702,13 +727,22 @@ function renderPHC(){
         <button class="re-del" onclick="delPHC('${e.id}')">Suppr</button>
       </div>
     </div>`;
-  }).join('');
-  const net=brut-3574;
+    });
+    html+=`<div class="divider"><span class="divider-lbl">${mLabel}</span></div>`;
+    html+=mRows;
+    html+=`<div class="sum-row sub"><span class="sum-lbl">Total ${mLabel}</span><span class="sum-val g">+ ${f(mTotal)}</span></div>`;
+  });
+  el.innerHTML=html;
+  // Virement row
+  const virement=D.cfg?.virementLogement||3574;
+  const vEl=document.getElementById('phc-virement-row');
+  if(vEl)vEl.innerHTML=cfgRow('virementLogement','Virement logement',-virement,'€',"saveCfg('virementLogement','virementLogement')");
+  const net=brut-virement;
   document.getElementById('phc-brut').textContent=f(brut);
   document.getElementById('phc-net').textContent=f(net);
   document.getElementById('phc-net-val').textContent=f(net);
   document.getElementById('kpi-phc').textContent=f(net);
-  // Update Aziz total (solde initial comes from D.cfg)
+  // Update Aziz total
   const soldeInit=D.cfg?.azizSolde||5030;
   const azizTotal=soldeInit+net;
   document.getElementById('aziz-grand-total').textContent=f(azizTotal);
@@ -758,7 +792,15 @@ function toggleHide(key){
 // ═══ AZIZ ═════════════════════════════════════════════════════
 function renderAziz(){
   const el=document.getElementById('aziz-list');
-  if(!D.aziz.length){el.innerHTML='<div class="empty">Aucun mouvement</div>';document.getElementById('aziz-mvt-val').textContent='0 €';return;}
+  if(!D.aziz.length){
+    el.innerHTML='<div class="empty">Aucun mouvement — tape + pour ajouter</div>';
+    document.getElementById('aziz-mvt-val').textContent='0 €';
+    const s=D.cfg?.azizSolde||5030;
+    document.getElementById('aziz-grand-total').textContent=f(s);
+    document.getElementById('aziz-total-val').textContent=f(s);
+    document.getElementById('kpi-aziz').textContent=f(s);
+    return;
+  }
   let net=0;
   el.innerHTML=D.aziz.map(e=>{
     const v=e.type==='credit'?e.amt:-e.amt;net+=v;
@@ -790,7 +832,13 @@ function renderAziz(){
       </div>
     </div>`;
   }).join('');
-  document.getElementById('aziz-mvt-val').textContent=f(net);
+  const mvtNet=net;
+  const azizSolde=D.cfg?.azizSolde||5030;
+  const azizGrand=azizSolde+mvtNet;
+  document.getElementById('aziz-mvt-val').textContent=mvtNet!==0?(mvtNet>0?'+ ':'')+f(Math.abs(mvtNet)):'0 €';
+  document.getElementById('aziz-grand-total').textContent=f(azizGrand);
+  document.getElementById('aziz-total-val').textContent=f(azizGrand);
+  document.getElementById('kpi-aziz').textContent=f(azizGrand);
   setTimeout(initSwipes,10);
 }
 function addAziz(){
